@@ -127,5 +127,54 @@ describe('GASClient', () => {
         'GAS authentication failed: 500',
       );
     });
+
+    it('defaults token_type to Bearer when not provided by GAS', async () => {
+      globalThis.fetch = vi.fn().mockResolvedValue(
+        mockFetchResponse({
+          access_token: 'tok-rialto-cinemas-nz',
+          expires_in: 7200,
+          // token_type intentionally omitted
+        }),
+      );
+
+      const client = new GASClient(TEST_CONFIG);
+      const token = await client.requestToken();
+
+      expect(token.tokenType).toBe('Bearer');
+    });
+
+    it('defaults expires_in to 3600 when not provided by GAS', async () => {
+      globalThis.fetch = vi.fn().mockResolvedValue(
+        mockFetchResponse({
+          access_token: 'tok-reading-cinemas-au',
+          token_type: 'Bearer',
+          // expires_in intentionally omitted
+        }),
+      );
+
+      const client = new GASClient(TEST_CONFIG);
+      const token = await client.requestToken();
+
+      expect(token.expiresIn).toBe(3600);
+    });
+
+    it('uses the correct auth URL from config', async () => {
+      const customConfig: GASConfig = {
+        apiKey: 'key-event-cinemas-gold-class',
+        authUrl: 'https://staging-auth.moviexchange.com',
+      };
+
+      globalThis.fetch = vi.fn().mockResolvedValue(
+        mockFetchResponse({ access_token: 'tok-staging', token_type: 'Bearer', expires_in: 1800 }),
+      );
+
+      const client = new GASClient(customConfig);
+      await client.requestToken();
+
+      expect(fetch).toHaveBeenCalledWith(
+        'https://staging-auth.moviexchange.com/oauth/token',
+        expect.any(Object),
+      );
+    });
   });
 });
