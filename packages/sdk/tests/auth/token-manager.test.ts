@@ -100,4 +100,71 @@ describe('TokenManager', () => {
       expect(gasClient.requestToken).toHaveBeenCalledTimes(2);
     });
   });
+
+  describe('getToken — concurrent deduplication', () => {
+    it('deduplicates concurrent refresh requests into a single GAS call', async () => {
+      let resolveToken: (token: GASToken) => void;
+      const tokenPromise = new Promise<GASToken>((resolve) => {
+        resolveToken = resolve;
+      });
+
+      const gasClient = {
+        requestToken: vi.fn().mockReturnValue(tokenPromise),
+      } as unknown as GASClient;
+
+      const manager = new TokenManager(gasClient);
+
+      // Fire 5 concurrent getToken calls
+      const results = Promise.all([
+        manager.getToken(),
+        manager.getToken(),
+        manager.getToken(),
+        manager.getToken(),
+        manager.getToken(),
+      ]);
+
+      // Resolve the single token request
+      resolveToken!(createMockToken({
+        accessToken: 'tok-shared-penthouse-cinema',
+      }));
+
+      const tokens = await results;
+
+      // All 5 calls should get the same token
+      expect(new Set(tokens).size).toBe(1);
+      expect(tokens[0]).toBe('tok-shared-penthouse-cinema');
+
+      // GAS client should only be called ONCE despite 5 concurrent requests
+      expect(gasClient.requestToken).toHaveBeenCalledOnce();
+    });
+  });
+
+  describe('invalidate', () => {
+    it('clears the cached token so the next getToken triggers a fresh request', async () => {
+      const firstToken = createMockToken({
+        accessToken: 'tok-before-invalidation',
+      });
+      const secondToken = createMockToken({
+        accessToken: 'tok-after-invalidation',
+      });
+
+      const gasClient = createMockGASClient(firstToken);
+      const manager = new TokenManager(gasClient);
+
+      // Acquire and cache a token
+      const before = await manager.getToken();
+      expect(before).toBe('tok-before-invalidation');
+
+      // Invalidate (e.g., after receiving a 401 from the API)
+      manager.invalidate();
+
+      // Mock the next token response
+      (gasClient.requestToken as ReturnType<typeof vi.fn>).mockResolvedValue(secondToken);
+
+      // Next getToken should hit GAS again
+      const after = await manager.getToken();
+      expect(after).toBe('tok-after-invalidation');
+      expect(gasClient.requestToken).toHaveBeenCalledTimes(2);
+    });
+  });
 });
