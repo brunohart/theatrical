@@ -67,4 +67,37 @@ describe('TokenManager', () => {
       expect(gasClient.requestToken).toHaveBeenCalledOnce();
     });
   });
+
+  describe('getToken — refresh on expiry', () => {
+    it('refreshes the token when it is within the expiry buffer', async () => {
+      const initialToken = createMockToken({
+        accessToken: 'tok-initial-civic-theatre',
+        expiresIn: 3600,
+        issuedAt: Date.now(),
+      });
+
+      const refreshedToken = createMockToken({
+        accessToken: 'tok-refreshed-civic-theatre',
+        expiresIn: 3600,
+        issuedAt: Date.now() + 3600 * 1000,
+      });
+
+      const gasClient = createMockGASClient(initialToken);
+      const manager = new TokenManager(gasClient);
+
+      // First call — fresh token
+      const first = await manager.getToken();
+      expect(first).toBe('tok-initial-civic-theatre');
+
+      // Advance time past the expiry buffer (3600s - 300s buffer = 3300s)
+      vi.advanceTimersByTime(3301 * 1000);
+
+      // Mock the next requestToken to return refreshed token
+      (gasClient.requestToken as ReturnType<typeof vi.fn>).mockResolvedValue(refreshedToken);
+
+      const second = await manager.getToken();
+      expect(second).toBe('tok-refreshed-civic-theatre');
+      expect(gasClient.requestToken).toHaveBeenCalledTimes(2);
+    });
+  });
 });
