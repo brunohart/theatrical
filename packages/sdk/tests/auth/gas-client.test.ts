@@ -50,4 +50,43 @@ describe('GASClient', () => {
     const client = new GASClient(TEST_CONFIG);
     expect(client).toBeDefined();
   });
+
+  describe('requestToken', () => {
+    it('sends a client_credentials grant and returns a parsed GAS token', async () => {
+      const mockTokenResponse = {
+        access_token: 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.mock-gas-token',
+        token_type: 'Bearer',
+        expires_in: 3600,
+      };
+
+      globalThis.fetch = vi.fn().mockResolvedValue(
+        mockFetchResponse(mockTokenResponse),
+      );
+
+      vi.setSystemTime(new Date('2026-04-08T10:00:00Z'));
+
+      const client = new GASClient(TEST_CONFIG);
+      const token = await client.requestToken();
+
+      // Verify the request was made correctly
+      expect(fetch).toHaveBeenCalledOnce();
+      expect(fetch).toHaveBeenCalledWith(
+        'https://auth.moviexchange.com/oauth/token',
+        expect.objectContaining({
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            grant_type: 'client_credentials',
+            api_key: 'test-api-key-nz-hoyts',
+          }),
+        }),
+      );
+
+      // Verify token parsing
+      expect(token.accessToken).toBe('eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.mock-gas-token');
+      expect(token.tokenType).toBe('Bearer');
+      expect(token.expiresIn).toBe(3600);
+      expect(token.issuedAt).toBe(Date.now());
+    });
+  });
 });
