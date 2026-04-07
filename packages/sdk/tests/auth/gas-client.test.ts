@@ -88,5 +88,44 @@ describe('GASClient', () => {
       expect(token.expiresIn).toBe(3600);
       expect(token.issuedAt).toBe(Date.now());
     });
+
+    it('throws on 401 Unauthorized response from GAS', async () => {
+      globalThis.fetch = vi.fn().mockResolvedValue(
+        mockFetchResponse({ error: 'invalid_client' }, 401),
+      );
+
+      const client = new GASClient(TEST_CONFIG);
+
+      await expect(client.requestToken()).rejects.toThrow(
+        'GAS authentication failed: 401 Unauthorized',
+      );
+    });
+
+    it('throws on 403 Forbidden response from GAS', async () => {
+      globalThis.fetch = vi.fn().mockResolvedValue(
+        mockFetchResponse({ error: 'access_denied' }, 403),
+      );
+
+      const client = new GASClient(TEST_CONFIG);
+
+      await expect(client.requestToken()).rejects.toThrow(
+        'GAS authentication failed: 403 Forbidden',
+      );
+    });
+
+    it('throws on 500 Internal Server Error from GAS', async () => {
+      globalThis.fetch = vi.fn().mockResolvedValue(
+        mockFetchResponse({ error: 'server_error' }, 500),
+      );
+
+      const client = new GASClient({
+        apiKey: 'test-key-event-cinema',
+        authUrl: 'https://auth.moviexchange.com',
+      });
+
+      await expect(client.requestToken()).rejects.toThrow(
+        'GAS authentication failed: 500',
+      );
+    });
   });
 });
