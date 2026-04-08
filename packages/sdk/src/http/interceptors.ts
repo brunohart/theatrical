@@ -59,3 +59,29 @@ export interface RequestConfig {
   /** Serialised request body, or undefined for GET/DELETE. */
   body?: string;
 }
+
+/**
+ * Runs a value through an ordered chain of async interceptor functions.
+ *
+ * Each interceptor receives the output of the previous one. If any interceptor
+ * throws, the error propagates immediately and subsequent interceptors are skipped.
+ * An empty `interceptors` array is a no-op and returns `value` unchanged.
+ *
+ * @param value - Initial value to pass through the chain
+ * @param interceptors - Ordered array of interceptor functions
+ * @returns The value produced by the final interceptor (or the original if none)
+ *
+ * @example
+ * const finalConfig = await runInterceptors(requestConfig, [addCorrelationId, logRequest]);
+ * const finalResponse = await runInterceptors(response, [parseRateLimit, logLatency]);
+ */
+export async function runInterceptors<T>(
+  value: T,
+  interceptors: Array<(v: T) => T | Promise<T>>,
+): Promise<T> {
+  let current = value;
+  for (const interceptor of interceptors) {
+    current = await interceptor(current);
+  }
+  return current;
+}
