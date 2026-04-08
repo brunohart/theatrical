@@ -7,6 +7,7 @@ import {
   ServerError,
 } from '../errors';
 import { computeBackoffDelay, DEFAULT_RETRY_CONFIG, type RetryConfig } from './retry';
+import type { RequestInterceptor, ResponseInterceptor } from './interceptors';
 
 export interface HTTPClientConfig {
   baseUrl: string;
@@ -16,6 +17,20 @@ export interface HTTPClientConfig {
   debug: boolean;
   /** Optional retry configuration. Defaults to {@link DEFAULT_RETRY_CONFIG}. */
   retry?: RetryConfig;
+  /**
+   * Ordered list of request interceptors.
+   * Each interceptor receives the {@link RequestConfig} built for the outgoing
+   * request and may return a mutated copy. Interceptors run in array order
+   * before the `fetch` call is made.
+   */
+  onRequest?: RequestInterceptor[];
+  /**
+   * Ordered list of response interceptors.
+   * Each interceptor receives the raw `Response` object after a successful
+   * (`response.ok`) fetch and may return a mutated copy. Interceptors run in
+   * array order before the response body is decoded.
+   */
+  onResponse?: ResponseInterceptor[];
 }
 
 interface RequestOptions {
