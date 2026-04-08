@@ -6,6 +6,7 @@ import {
   NotFoundError,
   ServerError,
 } from '../errors';
+import { computeBackoffDelay, DEFAULT_RETRY_CONFIG, type RetryConfig } from './retry';
 
 export interface HTTPClientConfig {
   baseUrl: string;
@@ -13,6 +14,8 @@ export interface HTTPClientConfig {
   maxRetries: number;
   tokenManager: TokenManager;
   debug: boolean;
+  /** Optional retry configuration. Defaults to {@link DEFAULT_RETRY_CONFIG}. */
+  retry?: RetryConfig;
 }
 
 interface RequestOptions {
@@ -105,7 +108,8 @@ export class TheatricalHTTPClient {
 
       if (response.status >= 500) {
         if (attempt <= this.config.maxRetries) {
-          await this.delay(this.backoffDelay(attempt));
+          const retryConfig = this.config.retry ?? { ...DEFAULT_RETRY_CONFIG, maxRetries: this.config.maxRetries };
+          await this.delay(computeBackoffDelay(attempt, retryConfig));
           return this.request<T>(options, path, attempt + 1);
         }
         throw new ServerError(undefined, requestId);
@@ -153,10 +157,6 @@ export class TheatricalHTTPClient {
 
   private generateRequestId(): string {
     return `th_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
-  }
-
-  private backoffDelay(attempt: number): number {
-    return Math.min(1000 * Math.pow(2, attempt - 1), 30_000);
   }
 
   private delay(ms: number): Promise<void> {
