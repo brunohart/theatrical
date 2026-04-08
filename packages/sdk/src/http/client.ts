@@ -7,7 +7,7 @@ import {
   ServerError,
 } from '../errors';
 import { computeBackoffDelay, DEFAULT_RETRY_CONFIG, type RetryConfig } from './retry';
-import type { RequestInterceptor, ResponseInterceptor } from './interceptors';
+import { runInterceptors, type RequestInterceptor, type RequestConfig, type ResponseInterceptor } from './interceptors';
 
 export interface HTTPClientConfig {
   baseUrl: string;
@@ -76,25 +76,42 @@ export class TheatricalHTTPClient {
       console.log(`[theatrical] ${options.method} ${url} (${requestId})`);
     }
 
+    // Build the initial RequestConfig and run it through any request interceptors.
+    const serialisedBody = options.body ? JSON.stringify(options.body) : undefined;
+    let requestConfig: RequestConfig = {
+      url,
+      method: options.method ?? 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        'X-Request-ID': requestId,
+        ...options.headers,
+      },
+      body: serialisedBody,
+    };
+
+    if (this.config.onRequest?.length) {
+      requestConfig = await runInterceptors(requestConfig, this.config.onRequest);
+    }
+
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), this.config.timeout);
 
     try {
-      const response = await fetch(url, {
-        method: options.method ?? 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-          'X-Request-ID': requestId,
-          ...options.headers,
-        },
-        body: options.body ? JSON.stringify(options.body) : undefined,
+      let response = await fetch(requestConfig.url, {
+        method: requestConfig.method,
+        headers: requestConfig.headers,
+        body: requestConfig.body,
         signal: controller.signal,
       });
 
       clearTimeout(timeoutId);
 
       if (response.ok) {
+        // Run response interceptors before decoding the body.
+        if (this.config.onResponse?.length) {
+          response = await runInterceptors(response, this.config.onResponse);
+        }
         return (await response.json()) as T;
       }
 
