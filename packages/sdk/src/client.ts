@@ -1,4 +1,6 @@
-import type { TheatricalConfig, TheatricalEnvironment } from './types/config';
+import type { TheatricalConfig } from './types/config';
+import type { ValidatedTheatricalConfig } from './types/config';
+import { validateConfig } from './utils/validate-config';
 import { SessionsResource } from './resources/sessions';
 import { SitesResource } from './resources/sites';
 import { FilmsResource } from './resources/films';
@@ -14,17 +16,24 @@ import { TokenManager } from './auth/token-manager';
 /**
  * API base URLs for each Vista environment
  */
-const ENVIRONMENT_URLS: Record<TheatricalEnvironment, string> = {
+const ENVIRONMENT_URLS: Record<string, string> = {
   sandbox: 'https://api-sandbox.vista.co',
   staging: 'https://api-staging.vista.co',
   production: 'https://api.vista.co',
 };
+
+/** @internal Singleton instance used by TheatricalClient.global() */
+let _globalInstance: TheatricalClient | undefined;
 
 /**
  * TheatricalClient — the primary entry point for the Theatrical SDK.
  *
  * Provides type-safe access to cinema platform API resources through
  * lazily-initialised resource modules.
+ *
+ * Configuration is validated at construction time using Zod schemas.
+ * Invalid configs throw a `ValidationError` immediately so misconfigurations
+ * surface at startup rather than at runtime.
  *
  * @example
  * ```typescript
@@ -35,12 +44,26 @@ const ENVIRONMENT_URLS: Record<TheatricalEnvironment, string> = {
  *
  * const sessions = await client.sessions.list({
  *   siteId: 'roxy-wellington',
- *   date: '2026-04-08',
+ *   date: '2026-04-09',
  * });
+ * ```
+ *
+ * @example Static factory
+ * ```typescript
+ * const client = TheatricalClient.create({
+ *   apiKey: process.env.THEATRICAL_API_KEY!,
+ *   environment: 'production',
+ * });
+ * ```
+ *
+ * @example Singleton
+ * ```typescript
+ * TheatricalClient.setGlobal({ apiKey: 'key', environment: 'sandbox' });
+ * const client = TheatricalClient.global();
  * ```
  */
 export class TheatricalClient {
-  private readonly config: Required<TheatricalConfig>;
+  private readonly config: ValidatedTheatricalConfig;
   private readonly httpClient: TheatricalHTTPClient;
   private readonly tokenManager: TokenManager;
 
@@ -54,15 +77,18 @@ export class TheatricalClient {
   private _pricing?: PricingResource;
   private _fnb?: FoodAndBeverageResource;
 
+  /**
+   * Constructs a TheatricalClient with validated configuration.
+   *
+   * Throws `ValidationError` immediately if config is invalid.
+   *
+   * @param config - SDK configuration
+   * @throws {ValidationError} if config fails schema validation
+   */
   constructor(config: TheatricalConfig) {
-    this.config = {
-      apiKey: config.apiKey,
-      environment: config.environment ?? 'sandbox',
-      baseUrl: config.baseUrl ?? ENVIRONMENT_URLS[config.environment ?? 'sandbox'],
-      timeout: config.timeout ?? 30_000,
-      maxRetries: config.maxRetries ?? 3,
-      debug: config.debug ?? false,
-    };
+    this.config = validateConfig(config);
+
+    const baseUrl = this.config.baseUrl ?? ENVIRONMENT_URLS[this.config.environment];
 
     const gasClient = new GASClient({
       apiKey: this.config.apiKey,
@@ -72,12 +98,101 @@ export class TheatricalClient {
     this.tokenManager = new TokenManager(gasClient);
 
     this.httpClient = new TheatricalHTTPClient({
-      baseUrl: this.config.baseUrl,
+      baseUrl,
       timeout: this.config.timeout,
       maxRetries: this.config.maxRetries,
       tokenManager: this.tokenManager,
       debug: this.config.debug,
     });
+  }
+
+  /**
+   * Creates a new TheatricalClient instance.
+   *
+   * Equivalent to `new TheatricalClient(config)` but provided as a static
+   * factory for clarity in configuration-heavy setups.
+   *
+   * @param config - SDK configuration
+   * @returns New TheatricalClient instance
+   * @throws {ValidationError} if config fails schema validation
+   *
+   * @example
+   * ```typescript
+   * const client = TheatricalClient.create({
+   *   apiKey: process.env.THEATRICAL_API_KEY!,
+   *   environment: 'production',
+   *   timeout: 15_000,
+   * });
+   * ```
+   */
+  static create(config: TheatricalConfig): TheatricalClient {
+    return new TheatricalClient(config);
+  }
+
+  /**
+   * Returns the global singleton TheatricalClient instance.
+   *
+   * Throws if no global instance has been configured via `setGlobal()`.
+   * Useful for applications that initialise the client once at startup and
+   * access it throughout without passing the instance around.
+   *
+   * @returns The global TheatricalClient instance
+   * @throws {Error} if setGlobal() has not been called
+   *
+   * @example
+   * ```typescript
+   * // At startup:
+   * TheatricalClient.setGlobal({ apiKey: 'key', environment: 'production' });
+   *
+   * // Anywhere in your app:
+   * const client = TheatricalClient.global();
+   * const films = await client.films.nowShowing({ siteId: 'roxy-wellington' });
+   * ```
+   */
+  static global(): TheatricalClient {
+    if (!_globalInstance) {
+      throw new Error(
+        'No global TheatricalClient configured. Call TheatricalClient.setGlobal(config) first.'
+      );
+    }
+    return _globalInstance;
+  }
+
+  /**
+   * Configures the global singleton TheatricalClient instance.
+   *
+   * Replaces any existing global instance. Subsequent calls to
+   * `TheatricalClient.global()` will return this instance.
+   *
+   * @param config - SDK configuration
+   * @throws {ValidationError} if config fails schema validation
+   *
+   * @example
+   * ```typescript
+   * TheatricalClient.setGlobal({
+   *   apiKey: process.env.THEATRICAL_API_KEY!,
+   *   environment: 'production',
+   * });
+   * ```
+   */
+  static setGlobal(config: TheatricalConfig): void {
+    _globalInstance = new TheatricalClient(config);
+  }
+
+  /**
+   * Resets the global singleton instance.
+   *
+   * Primarily intended for testing — allows tests to start with a clean slate.
+   *
+   * @example
+   * ```typescript
+   * afterEach(() => {
+   *   TheatricalClient.resetGlobal();
+   * });
+   * ```
+   */
+  static resetGlobal(): void {
+    _globalInstance = undefined;
   }
 
   /** Sessions — showtimes, availability, seat maps */
