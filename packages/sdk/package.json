@@ -11,7 +11,9 @@
       "require": "./dist/index.cjs"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc",
     "test": "vitest run",
@@ -21,14 +23,25 @@
     "clean": "rm -rf dist coverage"
   },
   "dependencies": {
+    "@esbuild/linux-arm64": "^0.28.0",
+    "@rollup/rollup-linux-arm64-gnu": "^4.60.1",
     "zod": "^3.23.0"
   },
   "devDependencies": {
+    "@types/node": "^20.0.0",
     "typescript": "^5.4.0",
-    "vitest": "^1.6.0",
-    "@types/node": "^20.0.0"
+    "vitest": "^1.6.0"
   },
-  "keywords": ["cinema", "ticketing", "sdk", "api", "theatrical", "cinema-management", "showtime", "booking"],
+  "keywords": [
+    "cinema",
+    "ticketing",
+    "sdk",
+    "api",
+    "theatrical",
+    "cinema-management",
+    "showtime",
+    "booking"
+  ],
   "author": "Bruno Hart <hello@theatrical.dev>",
   "license": "MIT",
   "repository": {

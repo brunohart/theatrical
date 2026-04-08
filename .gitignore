@@ -30,6 +30,12 @@ Thumbs.db
 # npm lockfiles (this project uses pnpm)
 package-lock.json
 
+# Agent swarm (local-only automation)
+scripts/.logs/
+scripts/.build-output-*
+scripts/agents/
+scripts/build-agent.md
+
 # Misc
 *.log
 npm-debug.log*
