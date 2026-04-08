@@ -1,4 +1,5 @@
-export type { TheatricalConfig, TheatricalEnvironment } from './config';
+export type { TheatricalConfig, TheatricalEnvironment, ValidatedTheatricalConfig } from './config';
+export { theatricalConfigSchema } from './config';
 export type { Session, SessionFilter, SessionListResponse, SeatAvailability, Seat, SeatStatus } from './session';
 export type { Site, Screen, SiteConfig, Address, GeoLocation } from './site';
 export type { Film, FilmFilter, Genre, CastMember, Rating } from './film';
