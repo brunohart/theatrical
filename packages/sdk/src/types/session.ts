@@ -152,6 +152,35 @@ export interface SessionListResponse {
 /** Seat status in an availability map */
 export type SeatStatus = z.infer<typeof seatStatusSchema>;
 
+/**
+ * Zod schema for an individual seat in the auditorium.
+ * Validates seat identifiers, position, and availability state.
+ */
+export const seatSchema = z.object({
+  id: z.string(),
+  row: z.string(),
+  number: z.number().int().positive(),
+  status: seatStatusSchema,
+  x: z.number(),
+  y: z.number(),
+  type: z.string().optional(),
+  isAccessible: z.boolean(),
+});
+
+/**
+ * Zod schema for a seat availability response.
+ * Validates the complete auditorium seat map for a session.
+ */
+export const seatAvailabilitySchema = z.object({
+  sessionId: z.string(),
+  screenName: z.string(),
+  seats: z.array(seatSchema),
+  rowCount: z.number().int().positive(),
+  screenPosition: z.enum(['top', 'bottom']),
+  availableCount: z.number().int().nonnegative(),
+  totalCount: z.number().int().positive(),
+});
+
 /** Individual seat in the auditorium */
 export interface Seat {
   /** Seat identifier */
