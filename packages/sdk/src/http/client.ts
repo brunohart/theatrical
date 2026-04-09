@@ -7,6 +7,7 @@ import {
   ServerError,
 } from '../errors';
 import { computeBackoffDelay, DEFAULT_RETRY_CONFIG, type RetryConfig } from './retry';
+import { RateLimiter } from './rate-limiter';
 import { runInterceptors, type RequestInterceptor, type RequestConfig, type ResponseInterceptor } from './interceptors';
 
 export interface HTTPClientConfig {
@@ -17,6 +18,26 @@ export interface HTTPClientConfig {
   debug: boolean;
   /** Optional retry configuration. Defaults to {@link DEFAULT_RETRY_CONFIG}. */
   retry?: RetryConfig;
+  /**
+   * Optional rate limiter instance for proactive request throttling.
+   *
+   * When provided, `waitForSlot()` is called before each outgoing request to
+   * ensure the SDK never exceeds Vista's OCAPI rate limits. If not provided,
+   * no proactive limiting is applied — the client falls back to reactive
+   * handling of 429 responses.
+   *
+   * Inject a shared `RateLimiter` when multiple SDK instances target the same
+   * Vista operator key, so all instances contribute to the same window count.
+   *
+   * @example
+   * ```typescript
+   * import { RateLimiter } from '@theatrical/sdk';
+   *
+   * const limiter = new RateLimiter({ maxRequests: 60, windowMs: 60_000 });
+   * const client = new TheatricalHTTPClient({ ..., rateLimiter: limiter });
+   * ```
+   */
+  rateLimiter?: RateLimiter;
   /**
    * Ordered list of request interceptors.
    * Each interceptor receives the {@link RequestConfig} built for the outgoing
@@ -68,6 +89,12 @@ export class TheatricalHTTPClient {
   }
 
   private async request<T>(options: RequestOptions, path: string, attempt = 1): Promise<T> {
+    // Proactively wait for a rate-limit slot before acquiring a token or
+    // building the request. This prevents bursting past Vista's OCAPI limits.
+    if (this.config.rateLimiter) {
+      await this.config.rateLimiter.waitForSlot();
+    }
+
     const token = await this.config.tokenManager.getToken();
     const url = this.buildUrl(path, options.params);
     const requestId = this.generateRequestId();
