@@ -70,3 +70,9 @@ export class ServerError extends TheatricalError {
     this.name = 'ServerError';
   }
 }
+
+// ─── Error parser ─────────────────────────────────────────────────────────────
+export { parseErrorResponse } from './parser';
+export type { VistaErrorBody, VistaErrorEnvelope, VistaFieldError, OcapiErrorEnvelope } from './types';
+export { VISTA_ERROR_CODES, VISTA_ERROR_MESSAGES, resolveVistaMessage } from './codes';
+export type { VistaErrorCode } from './codes';
