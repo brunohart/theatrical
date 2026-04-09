@@ -83,6 +83,29 @@ export interface Session {
 /** Presentation format for a cinema session */
 export type SessionFormat = z.infer<typeof sessionFormatSchema>;
 
+/**
+ * Zod schema for a cinema session (showtime).
+ * Validates the shape and types of session objects returned from the API.
+ */
+export const sessionSchema = z.object({
+  id: z.string(),
+  filmId: z.string(),
+  filmTitle: z.string(),
+  siteId: z.string(),
+  screenId: z.string(),
+  screenName: z.string(),
+  startTime: z.string(),
+  endTime: z.string(),
+  format: sessionFormatSchema,
+  isBookable: z.boolean(),
+  isSoldOut: z.boolean(),
+  seatsAvailable: z.number().int().nonnegative(),
+  seatsTotal: z.number().int().positive(),
+  priceFrom: z.number().nonnegative().optional(),
+  currency: z.string().length(3).optional(),
+  attributes: z.record(z.string()),
+});
+
 export interface SessionFilter {
   /** Filter by cinema site */
   siteId?: string;
