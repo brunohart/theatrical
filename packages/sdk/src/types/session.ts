@@ -1,3 +1,31 @@
+import { z } from 'zod';
+
+/**
+ * Zod schema for presentation format — validates format strings from the API.
+ */
+export const sessionFormatSchema = z.enum([
+  '2D',
+  '3D',
+  'IMAX',
+  'IMAX3D',
+  '4DX',
+  'DOLBY_CINEMA',
+  'SCREENX',
+  'STANDARD',
+]);
+
+/**
+ * Zod schema for seat status — validates seat availability state from the API.
+ */
+export const seatStatusSchema = z.enum([
+  'available',
+  'taken',
+  'reserved',
+  'wheelchair',
+  'companion',
+  'blocked',
+]);
+
 /**
  * A cinema session (showtime) — a specific screening of a film
  * at a specific site, screen, date, and time.
@@ -52,7 +80,8 @@ export interface Session {
   attributes: Record<string, string>;
 }
 
-export type SessionFormat = '2D' | '3D' | 'IMAX' | 'IMAX3D' | '4DX' | 'DOLBY_CINEMA' | 'SCREENX' | 'STANDARD';
+/** Presentation format for a cinema session */
+export type SessionFormat = z.infer<typeof sessionFormatSchema>;
 
 export interface SessionFilter {
   /** Filter by cinema site */
@@ -98,7 +127,7 @@ export interface SessionListResponse {
 }
 
 /** Seat status in an availability map */
-export type SeatStatus = 'available' | 'taken' | 'reserved' | 'wheelchair' | 'companion' | 'blocked';
+export type SeatStatus = z.infer<typeof seatStatusSchema>;
 
 /** Individual seat in the auditorium */
 export interface Seat {
