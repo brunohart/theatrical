@@ -106,6 +106,32 @@ export const sessionSchema = z.object({
   attributes: z.record(z.string()),
 });
 
+/**
+ * Zod schema for session list filters.
+ * Validates query parameters before they are sent to the API.
+ */
+export const sessionFilterSchema = z.object({
+  siteId: z.string().optional(),
+  filmId: z.string().optional(),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  dateFrom: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  dateTo: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  format: sessionFormatSchema.optional(),
+  bookableOnly: z.boolean().optional(),
+  limit: z.number().int().positive().max(500).optional(),
+  offset: z.number().int().nonnegative().optional(),
+});
+
+/**
+ * Zod schema for a paginated session list response.
+ */
+export const sessionListResponseSchema = z.object({
+  sessions: z.array(sessionSchema),
+  total: z.number().int().nonnegative(),
+  hasMore: z.boolean(),
+  nextOffset: z.number().int().nonnegative().optional(),
+});
+
 export interface SessionFilter {
   /** Filter by cinema site */
   siteId?: string;
