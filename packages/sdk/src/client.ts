@@ -12,6 +12,7 @@ import { FoodAndBeverageResource } from './resources/food-and-beverage';
 import { TheatricalHTTPClient } from './http/client';
 import { GASClient } from './auth/gas-client';
 import { TokenManager } from './auth/token-manager';
+import { RateLimiter, DEFAULT_RATE_LIMITER_CONFIG } from './http/rate-limiter';
 
 /**
  * API base URLs for each Vista environment
@@ -103,6 +104,7 @@ export class TheatricalClient {
       maxRetries: this.config.maxRetries,
       tokenManager: this.tokenManager,
       debug: this.config.debug,
+      rateLimiter: new RateLimiter(DEFAULT_RATE_LIMITER_CONFIG),
     });
   }
 
