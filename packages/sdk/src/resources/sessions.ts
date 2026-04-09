@@ -1,5 +1,6 @@
 import type { TheatricalHTTPClient } from '../http/client';
 import type { Session, SessionFilter, SessionListResponse, SeatAvailability } from '../types/session';
+import { sessionSchema, sessionListResponseSchema, seatAvailabilitySchema } from '../types/session';
 
 /**
  * Sessions resource — showtimes, availability, and seat maps.
@@ -19,26 +20,32 @@ export class SessionsResource {
 
   /**
    * List sessions (showtimes) with optional filters.
+   * Response is validated at runtime using Zod — malformed API responses throw a parse error.
    * @see https://developer.vista.co/digital-platform/sessions/
    */
   async list(filters?: SessionFilter): Promise<SessionListResponse> {
-    return this.http.get<SessionListResponse>('/ocapi/v1/sessions', {
+    const raw = await this.http.get<unknown>('/ocapi/v1/sessions', {
       params: filters as Record<string, string | number | boolean | undefined>,
     });
+    return sessionListResponseSchema.parse(raw);
   }
 
   /**
    * Get a single session by ID.
+   * Response is validated at runtime using Zod.
    */
   async get(sessionId: string): Promise<Session> {
-    return this.http.get<Session>(`/ocapi/v1/sessions/${sessionId}`);
+    const raw = await this.http.get<unknown>(`/ocapi/v1/sessions/${sessionId}`);
+    return sessionSchema.parse(raw);
   }
 
   /**
    * Get seat availability for a session.
    * Returns the complete auditorium seat map with status for each seat.
+   * Response is validated at runtime using Zod.
    */
   async availability(sessionId: string): Promise<SeatAvailability> {
-    return this.http.get<SeatAvailability>(`/ocapi/v1/sessions/${sessionId}/seat-plan`);
+    const raw = await this.http.get<unknown>(`/ocapi/v1/sessions/${sessionId}/seat-plan`);
+    return seatAvailabilitySchema.parse(raw);
   }
 }
