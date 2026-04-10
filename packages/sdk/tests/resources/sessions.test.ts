@@ -329,3 +329,106 @@ describe('SessionsResource.availability()', () => {
     expect(result.rowCount).toBe(10);
   });
 });
+
+// ---------------------------------------------------------------------------
+// listAll() — async generator auto-pagination
+// ---------------------------------------------------------------------------
+
+describe('SessionsResource.listAll()', () => {
+  let resource: SessionsResource;
+  let mockGet: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    ({ resource, mockGet } = createMockHTTPClient());
+  });
+
+  it('yields all sessions from a single page', async () => {
+    const sessions = [
+      createMockSession({ id: 'ses_001' }),
+      createMockSession({ id: 'ses_002', filmTitle: 'Perfect Days' }),
+    ];
+    mockGet.mockResolvedValueOnce(
+      createMockSessionListResponse(sessions, { total: 2, hasMore: false }),
+    );
+
+    const collected: Session[] = [];
+    for await (const session of resource.listAll()) {
+      collected.push(session);
+    }
+
+    expect(collected).toHaveLength(2);
+    expect(collected[0].id).toBe('ses_001');
+    expect(collected[1].filmTitle).toBe('Perfect Days');
+    expect(mockGet).toHaveBeenCalledOnce();
+  });
+
+  it('auto-fetches the next page when hasMore is true', async () => {
+    const page1 = [createMockSession({ id: 'ses_p1_001' }), createMockSession({ id: 'ses_p1_002' })];
+    const page2 = [createMockSession({ id: 'ses_p2_001' })];
+
+    mockGet
+      .mockResolvedValueOnce(
+        createMockSessionListResponse(page1, { total: 3, hasMore: true, nextOffset: 2 }),
+      )
+      .mockResolvedValueOnce(
+        createMockSessionListResponse(page2, { total: 3, hasMore: false }),
+      );
+
+    const collected: Session[] = [];
+    for await (const session of resource.listAll()) {
+      collected.push(session);
+    }
+
+    expect(collected).toHaveLength(3);
+    expect(mockGet).toHaveBeenCalledTimes(2);
+  });
+
+  it('passes the siteId filter on every page request', async () => {
+    const page1 = [createMockSession({ id: 'ses_emb_001' })];
+    mockGet.mockResolvedValueOnce(
+      createMockSessionListResponse(page1, { hasMore: false }),
+    );
+
+    const collected: Session[] = [];
+    for await (const session of resource.listAll({ siteId: 'site_embassy_wellington' })) {
+      collected.push(session);
+    }
+
+    expect(collected).toHaveLength(1);
+    expect(mockGet).toHaveBeenCalledWith(
+      '/ocapi/v1/sessions',
+      expect.objectContaining({ params: expect.objectContaining({ siteId: 'site_embassy_wellington' }) }),
+    );
+  });
+
+  it('uses the provided pageSize when fetching pages', async () => {
+    mockGet.mockResolvedValueOnce(
+      createMockSessionListResponse([createMockSession()], { hasMore: false }),
+    );
+
+    const collected: Session[] = [];
+    for await (const session of resource.listAll({}, 25)) {
+      collected.push(session);
+    }
+
+    expect(collected).toHaveLength(1);
+    expect(mockGet).toHaveBeenCalledWith(
+      '/ocapi/v1/sessions',
+      expect.objectContaining({ params: expect.objectContaining({ limit: 25, offset: 0 }) }),
+    );
+  });
+
+  it('handles an empty first page without fetching more', async () => {
+    mockGet.mockResolvedValueOnce(
+      createMockSessionListResponse([], { total: 0, hasMore: false }),
+    );
+
+    const collected: Session[] = [];
+    for await (const session of resource.listAll()) {
+      collected.push(session);
+    }
+
+    expect(collected).toHaveLength(0);
+    expect(mockGet).toHaveBeenCalledOnce();
+  });
+});
