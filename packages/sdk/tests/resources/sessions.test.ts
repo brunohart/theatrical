@@ -432,3 +432,56 @@ describe('SessionsResource.listAll()', () => {
     expect(mockGet).toHaveBeenCalledOnce();
   });
 });
+
+// ---------------------------------------------------------------------------
+// Zod validation — malformed response rejection
+// ---------------------------------------------------------------------------
+
+describe('SessionsResource — Zod schema validation', () => {
+  let resource: SessionsResource;
+  let mockGet: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    ({ resource, mockGet } = createMockHTTPClient());
+  });
+
+  it('rejects a list response missing the sessions array', async () => {
+    mockGet.mockResolvedValueOnce({ total: 0, hasMore: false });
+
+    await expect(resource.list()).rejects.toThrow();
+  });
+
+  it('rejects a session with an invalid format enum value', async () => {
+    const malformed = createMockSession({ format: 'VR' as never });
+    mockGet.mockResolvedValueOnce(malformed);
+
+    await expect(resource.get(malformed.id)).rejects.toThrow();
+  });
+
+  it('rejects a session where seatsAvailable is negative', async () => {
+    const malformed = createMockSession({ seatsAvailable: -5 });
+    mockGet.mockResolvedValueOnce(malformed);
+
+    await expect(resource.get(malformed.id)).rejects.toThrow();
+  });
+
+  it('rejects an availability response with an invalid seat status', async () => {
+    const malformed = createMockSeatAvailability({
+      seats: [
+        { id: 'Z9', row: 'Z', number: 9, status: 'invisible' as never, x: 0, y: 0, isAccessible: false },
+      ],
+    });
+    mockGet.mockResolvedValueOnce(malformed);
+
+    await expect(resource.availability('ses_roxy_holdovers_20260410_1915')).rejects.toThrow();
+  });
+
+  it('rejects a list response where a session has a missing required field', async () => {
+    const incomplete = { ...createMockSession() };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    delete (incomplete as any).filmTitle;
+    mockGet.mockResolvedValueOnce(createMockSessionListResponse([incomplete as Session]));
+
+    await expect(resource.list()).rejects.toThrow();
+  });
+});
