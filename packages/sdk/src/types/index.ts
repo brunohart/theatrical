@@ -2,7 +2,8 @@ export type { TheatricalConfig, TheatricalEnvironment, ValidatedTheatricalConfig
 export { theatricalConfigSchema } from './config';
 export type { Session, SessionFilter, SessionListResponse, SeatAvailability, Seat, SeatStatus, SessionFormat } from './session';
 export { sessionSchema, sessionFormatSchema, sessionFilterSchema, sessionListResponseSchema, seatSchema, seatStatusSchema, seatAvailabilitySchema } from './session';
-export type { Site, Screen, SiteConfig, Address, GeoLocation } from './site';
+export type { Site, Screen, SiteConfig, Address, GeoLocation, Amenity } from './site';
+export { siteSchema, screenSchema, addressSchema, geoLocationSchema, amenitySchema, siteConfigSchema, siteListResponseSchema } from './site';
 export type { Film, FilmFilter, Genre, CastMember, Rating } from './film';
 export type { Order, OrderItem, Ticket, OrderStatus } from './order';
 export type { LoyaltyMember, LoyaltyTier } from './loyalty';
