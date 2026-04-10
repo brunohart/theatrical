@@ -153,6 +153,16 @@ describe('SessionsResource.list()', () => {
     expect(result.hasMore).toBe(false);
   });
 
+  it('returns film title and format for each session', async () => {
+    const session = createMockSession({ filmTitle: 'Oppenheimer', format: 'IMAX3D' });
+    mockGet.mockResolvedValueOnce(createMockSessionListResponse([session]));
+
+    const result = await resource.list({ format: 'IMAX3D' });
+
+    expect(result.sessions[0].filmTitle).toBe('Oppenheimer');
+    expect(result.sessions[0].format).toBe('IMAX3D');
+  });
+
   it('returns multiple sessions from different sites', async () => {
     const sessions = [
       createMockSession({ id: 'ses_001', siteId: 'site_roxy_wellington' }),
@@ -170,5 +180,73 @@ describe('SessionsResource.list()', () => {
     expect(result.sessions).toHaveLength(2);
     expect(result.sessions[0].siteId).toBe('site_roxy_wellington');
     expect(result.sessions[1].format).toBe('IMAX');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// get() — single session retrieval
+// ---------------------------------------------------------------------------
+
+describe('SessionsResource.get()', () => {
+  let resource: SessionsResource;
+  let mockGet: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    ({ resource, mockGet } = createMockHTTPClient());
+  });
+
+  it('fetches a session from the correct endpoint path', async () => {
+    const session = createMockSession();
+    mockGet.mockResolvedValueOnce(session);
+
+    await resource.get('ses_roxy_holdovers_20260410_1915');
+
+    expect(mockGet).toHaveBeenCalledWith(
+      '/ocapi/v1/sessions/ses_roxy_holdovers_20260410_1915',
+    );
+  });
+
+  it('returns a session with the correct shape', async () => {
+    const expected = createMockSession({
+      filmTitle: 'Anatomy of a Fall',
+      format: '2D',
+      priceFrom: 21.00,
+      currency: 'NZD',
+    });
+    mockGet.mockResolvedValueOnce(expected);
+
+    const result = await resource.get(expected.id);
+
+    expect(result.filmTitle).toBe('Anatomy of a Fall');
+    expect(result.format).toBe('2D');
+    expect(result.priceFrom).toBe(21.00);
+    expect(result.currency).toBe('NZD');
+  });
+
+  it('returns bookability flags from the API response', async () => {
+    const soldOut = createMockSession({
+      isBookable: false,
+      isSoldOut: true,
+      seatsAvailable: 0,
+    });
+    mockGet.mockResolvedValueOnce(soldOut);
+
+    const result = await resource.get(soldOut.id);
+
+    expect(result.isBookable).toBe(false);
+    expect(result.isSoldOut).toBe(true);
+    expect(result.seatsAvailable).toBe(0);
+  });
+
+  it('returns optional attributes map from the session', async () => {
+    const session = createMockSession({
+      attributes: { subtitles: 'English', audio: 'English', hearing_loop: 'true' },
+    });
+    mockGet.mockResolvedValueOnce(session);
+
+    const result = await resource.get(session.id);
+
+    expect(result.attributes.subtitles).toBe('English');
+    expect(result.attributes.hearing_loop).toBe('true');
   });
 });
