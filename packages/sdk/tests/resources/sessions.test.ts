@@ -485,3 +485,53 @@ describe('SessionsResource — Zod schema validation', () => {
     await expect(resource.list()).rejects.toThrow();
   });
 });
+
+// ---------------------------------------------------------------------------
+// Error propagation — HTTP errors surface from resource methods
+// ---------------------------------------------------------------------------
+
+describe('SessionsResource — error propagation', () => {
+  let resource: SessionsResource;
+  let mockGet: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    ({ resource, mockGet } = createMockHTTPClient());
+  });
+
+  it('propagates a not-found error from list()', async () => {
+    const notFound = Object.assign(new Error('Session not found'), { statusCode: 404 });
+    mockGet.mockRejectedValueOnce(notFound);
+
+    await expect(resource.list({ siteId: 'site_nonexistent' })).rejects.toMatchObject({
+      message: 'Session not found',
+    });
+  });
+
+  it('propagates a not-found error from get()', async () => {
+    const notFound = Object.assign(new Error('Session ses_expired not found'), { statusCode: 404 });
+    mockGet.mockRejectedValueOnce(notFound);
+
+    await expect(resource.get('ses_expired')).rejects.toMatchObject({
+      statusCode: 404,
+    });
+  });
+
+  it('propagates a network error from availability()', async () => {
+    mockGet.mockRejectedValueOnce(new Error('fetch failed'));
+
+    await expect(resource.availability('ses_roxy_holdovers_20260410_1915')).rejects.toThrow(
+      'fetch failed',
+    );
+  });
+
+  it('propagates a rate-limit error with retryAfter from listAll()', async () => {
+    const rateLimitError = Object.assign(new Error('Rate limit exceeded'), {
+      statusCode: 429,
+      retryAfter: 30,
+    });
+    mockGet.mockRejectedValueOnce(rateLimitError);
+
+    const gen = resource.listAll({ siteId: 'site_event_queen_street' });
+    await expect(gen.next()).rejects.toMatchObject({ retryAfter: 30 });
+  });
+});
