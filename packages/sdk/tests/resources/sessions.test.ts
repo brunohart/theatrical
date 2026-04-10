@@ -250,3 +250,82 @@ describe('SessionsResource.get()', () => {
     expect(result.attributes.hearing_loop).toBe('true');
   });
 });
+
+// ---------------------------------------------------------------------------
+// availability() — seat map retrieval
+// ---------------------------------------------------------------------------
+
+describe('SessionsResource.availability()', () => {
+  let resource: SessionsResource;
+  let mockGet: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    ({ resource, mockGet } = createMockHTTPClient());
+  });
+
+  it('fetches from the correct seat-plan endpoint path', async () => {
+    mockGet.mockResolvedValueOnce(createMockSeatAvailability());
+
+    await resource.availability('ses_roxy_holdovers_20260410_1915');
+
+    expect(mockGet).toHaveBeenCalledWith(
+      '/ocapi/v1/sessions/ses_roxy_holdovers_20260410_1915/seat-plan',
+    );
+  });
+
+  it('returns the complete seat map with correct counts', async () => {
+    mockGet.mockResolvedValueOnce(
+      createMockSeatAvailability({ availableCount: 74, totalCount: 120 }),
+    );
+
+    const result = await resource.availability('ses_roxy_holdovers_20260410_1915');
+
+    expect(result.availableCount).toBe(74);
+    expect(result.totalCount).toBe(120);
+    expect(result.screenName).toBe('Screen 3');
+  });
+
+  it('returns individual seat records with position and status', async () => {
+    mockGet.mockResolvedValueOnce(createMockSeatAvailability());
+
+    const result = await resource.availability('ses_roxy_holdovers_20260410_1915');
+
+    const seatH7 = result.seats.find(s => s.id === 'H7');
+    expect(seatH7).toBeDefined();
+    expect(seatH7?.row).toBe('H');
+    expect(seatH7?.number).toBe(7);
+    expect(seatH7?.status).toBe('available');
+    expect(seatH7?.isAccessible).toBe(false);
+  });
+
+  it('identifies accessible (wheelchair) seats correctly', async () => {
+    mockGet.mockResolvedValueOnce(createMockSeatAvailability());
+
+    const result = await resource.availability('ses_roxy_holdovers_20260410_1915');
+
+    const wheelchairSeats = result.seats.filter(s => s.status === 'wheelchair');
+    expect(wheelchairSeats).toHaveLength(1);
+    expect(wheelchairSeats[0].isAccessible).toBe(true);
+    expect(wheelchairSeats[0].id).toBe('A1');
+  });
+
+  it('distinguishes available from taken seats', async () => {
+    mockGet.mockResolvedValueOnce(createMockSeatAvailability());
+
+    const result = await resource.availability('ses_roxy_holdovers_20260410_1915');
+
+    const available = result.seats.filter(s => s.status === 'available');
+    const taken = result.seats.filter(s => s.status === 'taken');
+    expect(available).toHaveLength(2);
+    expect(taken).toHaveLength(1);
+  });
+
+  it('returns screen orientation for the auditorium renderer', async () => {
+    mockGet.mockResolvedValueOnce(createMockSeatAvailability({ screenPosition: 'top' }));
+
+    const result = await resource.availability('ses_roxy_holdovers_20260410_1915');
+
+    expect(result.screenPosition).toBe('top');
+    expect(result.rowCount).toBe(10);
+  });
+});
