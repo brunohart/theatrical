@@ -9,3 +9,5 @@ export type { LoyaltyMember, LoyaltyTier } from './loyalty';
 export type { Subscription, SubscriptionPlan } from './subscription';
 export type { PriceCalculation, TicketType } from './pricing';
 export type { MenuItem, MenuCategory } from './menu';
+export type { PaginatedResponse, PaginationParams, PaginationStrategy } from './pagination';
+export { paginationParamsSchema, paginatedResponseSchema } from './pagination';
