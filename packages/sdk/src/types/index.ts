@@ -5,7 +5,8 @@ export { sessionSchema, sessionFormatSchema, sessionFilterSchema, sessionListRes
 export type { Site, Screen, SiteConfig, Address, GeoLocation, Amenity } from './site';
 export { siteSchema, screenSchema, addressSchema, geoLocationSchema, amenitySchema, siteConfigSchema, siteListResponseSchema } from './site';
 export type { Film, FilmFilter, Genre, CastMember, Rating } from './film';
-export type { Order, OrderItem, Ticket, OrderStatus } from './order';
+export type { Order, OrderItem, Ticket, OrderStatus, OrderTransition, AddTicketsInput, AddItemsInput, ApplyLoyaltyInput, OrderHistoryFilter } from './order';
+export { orderSchema, orderItemSchema, ticketSchema, orderStatusSchema, orderHistoryFilterSchema, ORDER_TRANSITIONS } from './order';
 export type { LoyaltyMember, LoyaltyTier } from './loyalty';
 export type { Subscription, SubscriptionPlan } from './subscription';
 export type { PriceCalculation, TicketType } from './pricing';
