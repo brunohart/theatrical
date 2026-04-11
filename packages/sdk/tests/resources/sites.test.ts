@@ -134,3 +134,86 @@ describe('SitesResource', () => {
     expect(resource).toBeInstanceOf(SitesResource);
   });
 });
+
+// ---------------------------------------------------------------------------
+// list() — fetching and filtering sites
+// ---------------------------------------------------------------------------
+
+describe('SitesResource.list()', () => {
+  let resource: SitesResource;
+  let mockGet: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    ({ resource, mockGet } = createMockHTTPClient());
+  });
+
+  it('fetches sites from the correct OCAPI endpoint', async () => {
+    mockGet.mockResolvedValueOnce([createRoxySite()]);
+
+    await resource.list();
+
+    expect(mockGet).toHaveBeenCalledOnce();
+    expect(mockGet).toHaveBeenCalledWith('/ocapi/v1/sites', expect.any(Object));
+  });
+
+  it('returns multiple NZ cinema sites', async () => {
+    const sites = [createRoxySite(), createEmbassySite(), createEventQueenStreetSite()];
+    mockGet.mockResolvedValueOnce(sites);
+
+    const result = await resource.list();
+
+    expect(result).toHaveLength(3);
+    expect(result[0].name).toBe('Roxy Cinema');
+    expect(result[1].name).toBe('Embassy Theatre');
+    expect(result[2].name).toBe('Event Cinemas Queen Street');
+  });
+
+  it('passes text search query as parameter', async () => {
+    mockGet.mockResolvedValueOnce([createEmbassySite()]);
+
+    await resource.list({ query: 'Embassy' });
+
+    expect(mockGet).toHaveBeenCalledWith('/ocapi/v1/sites', {
+      params: { query: 'Embassy' },
+    });
+  });
+
+  it('passes geographic filter parameters together', async () => {
+    mockGet.mockResolvedValueOnce([createRoxySite()]);
+
+    await resource.list({ latitude: -41.2865, longitude: 174.7762, radius: 10 });
+
+    expect(mockGet).toHaveBeenCalledWith('/ocapi/v1/sites', {
+      params: { latitude: -41.2865, longitude: 174.7762, radius: 10 },
+    });
+  });
+
+  it('returns an empty list when no sites match', async () => {
+    mockGet.mockResolvedValueOnce([]);
+
+    const result = await resource.list({ query: 'nonexistent' });
+
+    expect(result).toHaveLength(0);
+  });
+
+  it('returns site amenities when present', async () => {
+    mockGet.mockResolvedValueOnce([createEmbassySite()]);
+
+    const result = await resource.list();
+    const embassy = result[0];
+
+    expect(embassy.amenities).toBeDefined();
+    expect(embassy.amenities!).toHaveLength(3);
+    expect(embassy.amenities!.some(a => a.id === 'imax')).toBe(true);
+  });
+
+  it('returns screen configurations embedded in each site', async () => {
+    mockGet.mockResolvedValueOnce([createEventQueenStreetSite()]);
+
+    const result = await resource.list();
+
+    expect(result[0].screens).toHaveLength(4);
+    expect(result[0].screens[3].name).toBe('Gold Lounge');
+    expect(result[0].screens[3].seatCount).toBe(48);
+  });
+});
