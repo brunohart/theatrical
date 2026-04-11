@@ -1,6 +1,9 @@
 import type { TheatricalHTTPClient } from '../http/client';
 import type { Order, AddTicketsInput, AddItemsInput, ApplyLoyaltyInput, OrderHistoryFilter } from '../types/order';
+import { orderSchema } from '../types/order';
 import type { PaginatedResponse } from '../types/pagination';
+import { paginatedResponseSchema } from '../types/pagination';
+import { z } from 'zod';
 
 export interface CreateOrderInput {
   sessionId: string;
@@ -15,9 +18,31 @@ export interface CreateOrderInput {
  * Covers the entire booking flow for Vista OCAPI:
  * create → add tickets → optionally add F&B → apply loyalty → confirm → complete.
  * Orders can also be cancelled or refunded depending on their current state.
+ *
+ * All responses are validated at runtime using Zod schemas to ensure
+ * the API response matches the expected shape before reaching application code.
  */
 export class OrdersResource {
   constructor(private readonly http: TheatricalHTTPClient) {}
+
+  /**
+   * Parse and validate a raw order response from the API.
+   * Throws a ZodError if the response doesn't match the expected shape.
+   */
+  private parseOrder(data: unknown): Order {
+    return orderSchema.parse(data) as Order;
+  }
+
+  /**
+   * Parse and validate a paginated order response from the API.
+   */
+  private parsePaginatedOrders(data: unknown): PaginatedResponse<Order> {
+    const envelopeSchema = paginatedResponseSchema.extend({
+      data: z.array(orderSchema),
+    });
+    const parsed = envelopeSchema.parse(data);
+    return parsed as PaginatedResponse<Order>;
+  }
 
   /**
    * Create a new draft order for a session.
@@ -26,7 +51,8 @@ export class OrdersResource {
    * @returns The newly created order in 'draft' status
    */
   async create(input: CreateOrderInput): Promise<Order> {
-    return this.http.post<Order>('/ocapi/v1/orders', { body: input });
+    const data = await this.http.post<unknown>('/ocapi/v1/orders', { body: input });
+    return this.parseOrder(data);
   }
 
   /**
@@ -35,7 +61,8 @@ export class OrdersResource {
    * @param orderId - The UUID of the order to retrieve
    */
   async get(orderId: string): Promise<Order> {
-    return this.http.get<Order>(`/ocapi/v1/orders/${orderId}`);
+    const data = await this.http.get<unknown>(`/ocapi/v1/orders/${orderId}`);
+    return this.parseOrder(data);
   }
 
   /**
@@ -47,7 +74,8 @@ export class OrdersResource {
    * @returns The updated order with new tickets included
    */
   async addTickets(orderId: string, input: AddTicketsInput): Promise<Order> {
-    return this.http.post<Order>(`/ocapi/v1/orders/${orderId}/tickets`, { body: input });
+    const data = await this.http.post<unknown>(`/ocapi/v1/orders/${orderId}/tickets`, { body: input });
+    return this.parseOrder(data);
   }
 
   /**
@@ -59,7 +87,8 @@ export class OrdersResource {
    * @returns The updated order with new items included
    */
   async addItems(orderId: string, input: AddItemsInput): Promise<Order> {
-    return this.http.post<Order>(`/ocapi/v1/orders/${orderId}/items`, { body: input });
+    const data = await this.http.post<unknown>(`/ocapi/v1/orders/${orderId}/items`, { body: input });
+    return this.parseOrder(data);
   }
 
   /**
@@ -69,7 +98,8 @@ export class OrdersResource {
    * @param orderId - The UUID of the order to confirm
    */
   async confirm(orderId: string): Promise<Order> {
-    return this.http.post<Order>(`/ocapi/v1/orders/${orderId}/confirm`);
+    const data = await this.http.post<unknown>(`/ocapi/v1/orders/${orderId}/confirm`);
+    return this.parseOrder(data);
   }
 
   /**
@@ -78,14 +108,9 @@ export class OrdersResource {
    *
    * @param orderId - The UUID of the order to cancel
    */
-  /**
-   * Cancel an order. Can be applied to 'pending' or 'confirmed' orders.
-   * Releases any held seats back to the pool.
-   *
-   * @param orderId - The UUID of the order to cancel
-   */
   async cancel(orderId: string): Promise<Order> {
-    return this.http.post<Order>(`/ocapi/v1/orders/${orderId}/cancel`);
+    const data = await this.http.post<unknown>(`/ocapi/v1/orders/${orderId}/cancel`);
+    return this.parseOrder(data);
   }
 
   /**
@@ -98,7 +123,8 @@ export class OrdersResource {
    * @returns The updated order with loyalty discount applied
    */
   async applyLoyalty(orderId: string, input: ApplyLoyaltyInput): Promise<Order> {
-    return this.http.post<Order>(`/ocapi/v1/orders/${orderId}/loyalty`, { body: input });
+    const data = await this.http.post<unknown>(`/ocapi/v1/orders/${orderId}/loyalty`, { body: input });
+    return this.parseOrder(data);
   }
 
   /**
@@ -108,7 +134,8 @@ export class OrdersResource {
    * @param orderId - The UUID of the order to refund
    */
   async refund(orderId: string): Promise<Order> {
-    return this.http.post<Order>(`/ocapi/v1/orders/${orderId}/refund`);
+    const data = await this.http.post<unknown>(`/ocapi/v1/orders/${orderId}/refund`);
+    return this.parseOrder(data);
   }
 
   /**
@@ -117,7 +144,8 @@ export class OrdersResource {
    * @param orderId - The UUID of the confirmed order
    */
   async complete(orderId: string): Promise<Order> {
-    return this.http.post<Order>(`/ocapi/v1/orders/${orderId}/complete`);
+    const data = await this.http.post<unknown>(`/ocapi/v1/orders/${orderId}/complete`);
+    return this.parseOrder(data);
   }
 
   /**
@@ -135,6 +163,7 @@ export class OrdersResource {
     if (filter?.limit) params.limit = String(filter.limit);
     if (filter?.cursor) params.cursor = filter.cursor;
 
-    return this.http.get<PaginatedResponse<Order>>(`/ocapi/v1/members/${memberId}/orders`, { params });
+    const data = await this.http.get<unknown>(`/ocapi/v1/members/${memberId}/orders`, { params });
+    return this.parsePaginatedOrders(data);
   }
 }
