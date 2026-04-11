@@ -1,3 +1,77 @@
+import { z } from 'zod';
+
+/**
+ * Zod schema for order status — validates the lifecycle state string from the API.
+ */
+export const orderStatusSchema = z.enum([
+  'draft',
+  'pending',
+  'confirmed',
+  'completed',
+  'cancelled',
+  'refunded',
+]);
+
+/**
+ * Zod schema for a ticket within a booking order.
+ */
+export const ticketSchema = z.object({
+  id: z.string(),
+  type: z.string(),
+  seatId: z.string(),
+  seatLabel: z.string(),
+  price: z.number().nonnegative(),
+  discount: z.number().nonnegative().optional(),
+});
+
+/**
+ * Zod schema for a concession or merchandise line item.
+ */
+export const orderItemSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  category: z.string(),
+  quantity: z.number().int().positive(),
+  unitPrice: z.number().nonnegative(),
+  totalPrice: z.number().nonnegative(),
+});
+
+/**
+ * Zod schema for a complete booking order — validates the full API response shape.
+ */
+export const orderSchema = z.object({
+  id: z.string(),
+  sessionId: z.string(),
+  status: orderStatusSchema,
+  tickets: z.array(ticketSchema),
+  items: z.array(orderItemSchema),
+  subtotal: z.number().nonnegative(),
+  tax: z.number().nonnegative(),
+  discount: z.number().nonnegative(),
+  total: z.number().nonnegative(),
+  currency: z.string().length(3),
+  loyaltyMemberId: z.string().optional(),
+  loyaltyPointsEarned: z.number().int().nonnegative().optional(),
+  loyaltyPointsRedeemed: z.number().int().nonnegative().optional(),
+  createdAt: z.string(),
+  updatedAt: z.string().optional(),
+  confirmedAt: z.string().optional(),
+  completedAt: z.string().optional(),
+  cancelledAt: z.string().optional(),
+  refundedAt: z.string().optional(),
+});
+
+/**
+ * Zod schema for order history filter parameters.
+ */
+export const orderHistoryFilterSchema = z.object({
+  status: orderStatusSchema.optional(),
+  since: z.string().optional(),
+  until: z.string().optional(),
+  limit: z.number().int().positive().max(100).optional(),
+  cursor: z.string().optional(),
+});
+
 /**
  * Represents the lifecycle state of a cinema booking order.
  *
