@@ -1,5 +1,6 @@
 import type { TheatricalHTTPClient } from '../http/client';
-import type { Order, AddTicketsInput, AddItemsInput } from '../types/order';
+import type { Order, AddTicketsInput, AddItemsInput, ApplyLoyaltyInput, OrderHistoryFilter } from '../types/order';
+import type { PaginatedResponse } from '../types/pagination';
 
 export interface CreateOrderInput {
   sessionId: string;
@@ -77,7 +78,63 @@ export class OrdersResource {
    *
    * @param orderId - The UUID of the order to cancel
    */
+  /**
+   * Cancel an order. Can be applied to 'pending' or 'confirmed' orders.
+   * Releases any held seats back to the pool.
+   *
+   * @param orderId - The UUID of the order to cancel
+   */
   async cancel(orderId: string): Promise<Order> {
     return this.http.post<Order>(`/ocapi/v1/orders/${orderId}/cancel`);
+  }
+
+  /**
+   * Apply a loyalty membership discount to an order.
+   * Links the member to the order and optionally redeems loyalty points
+   * for a discount on the total.
+   *
+   * @param orderId - The UUID of the order
+   * @param input - Loyalty member ID and optional points to redeem
+   * @returns The updated order with loyalty discount applied
+   */
+  async applyLoyalty(orderId: string, input: ApplyLoyaltyInput): Promise<Order> {
+    return this.http.post<Order>(`/ocapi/v1/orders/${orderId}/loyalty`, { body: input });
+  }
+
+  /**
+   * Request a refund for a confirmed or completed order.
+   * Triggers the refund workflow in Vista's payment system.
+   *
+   * @param orderId - The UUID of the order to refund
+   */
+  async refund(orderId: string): Promise<Order> {
+    return this.http.post<Order>(`/ocapi/v1/orders/${orderId}/refund`);
+  }
+
+  /**
+   * Mark a confirmed order as completed (e.g., after the screening).
+   *
+   * @param orderId - The UUID of the confirmed order
+   */
+  async complete(orderId: string): Promise<Order> {
+    return this.http.post<Order>(`/ocapi/v1/orders/${orderId}/complete`);
+  }
+
+  /**
+   * Retrieve order history for a loyalty member.
+   * Returns a paginated list of orders, newest first.
+   *
+   * @param memberId - The loyalty member's unique identifier
+   * @param filter - Optional filters for status, date range, and pagination
+   */
+  async history(memberId: string, filter?: OrderHistoryFilter): Promise<PaginatedResponse<Order>> {
+    const params: Record<string, string> = {};
+    if (filter?.status) params.status = filter.status;
+    if (filter?.since) params.since = filter.since;
+    if (filter?.until) params.until = filter.until;
+    if (filter?.limit) params.limit = String(filter.limit);
+    if (filter?.cursor) params.cursor = filter.cursor;
+
+    return this.http.get<PaginatedResponse<Order>>(`/ocapi/v1/members/${memberId}/orders`, { params });
   }
 }
