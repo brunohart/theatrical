@@ -480,3 +480,53 @@ describe('SitesResource — Zod schema validation', () => {
     expect(result[0].amenities).toBeUndefined();
   });
 });
+
+// ---------------------------------------------------------------------------
+// Error propagation — HTTP errors surface from resource methods
+// ---------------------------------------------------------------------------
+
+describe('SitesResource — error propagation', () => {
+  let resource: SitesResource;
+  let mockGet: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    ({ resource, mockGet } = createMockHTTPClient());
+  });
+
+  it('propagates a not-found error from get()', async () => {
+    const notFound = Object.assign(new Error('Site not found'), { statusCode: 404 });
+    mockGet.mockRejectedValueOnce(notFound);
+
+    await expect(resource.get('site_nonexistent')).rejects.toMatchObject({
+      statusCode: 404,
+    });
+  });
+
+  it('propagates a network error from list()', async () => {
+    mockGet.mockRejectedValueOnce(new Error('fetch failed'));
+
+    await expect(resource.list()).rejects.toThrow('fetch failed');
+  });
+
+  it('propagates a rate-limit error from nearby()', async () => {
+    const rateLimitError = Object.assign(new Error('Rate limit exceeded'), {
+      statusCode: 429,
+      retryAfter: 60,
+    });
+    mockGet.mockRejectedValueOnce(rateLimitError);
+
+    await expect(resource.nearby(-41.2865, 174.7762, 10)).rejects.toMatchObject({
+      statusCode: 429,
+      retryAfter: 60,
+    });
+  });
+
+  it('propagates a server error from screens()', async () => {
+    const serverError = Object.assign(new Error('Internal server error'), { statusCode: 500 });
+    mockGet.mockRejectedValueOnce(serverError);
+
+    await expect(resource.screens('site_roxy_wellington')).rejects.toMatchObject({
+      statusCode: 500,
+    });
+  });
+});
