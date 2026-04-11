@@ -217,3 +217,73 @@ describe('SitesResource.list()', () => {
     expect(result[0].screens[3].seatCount).toBe(48);
   });
 });
+
+// ---------------------------------------------------------------------------
+// get() — single site retrieval
+// ---------------------------------------------------------------------------
+
+describe('SitesResource.get()', () => {
+  let resource: SitesResource;
+  let mockGet: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    ({ resource, mockGet } = createMockHTTPClient());
+  });
+
+  it('fetches a site from the correct endpoint path', async () => {
+    mockGet.mockResolvedValueOnce(createRoxySite());
+
+    await resource.get('site_roxy_wellington');
+
+    expect(mockGet).toHaveBeenCalledWith('/ocapi/v1/sites/site_roxy_wellington');
+  });
+
+  it('returns site address with correct NZ postal format', async () => {
+    mockGet.mockResolvedValueOnce(createRoxySite());
+
+    const result = await resource.get('site_roxy_wellington');
+
+    expect(result.address.line1).toBe('5 Park Road');
+    expect(result.address.city).toBe('Wellington');
+    expect(result.address.postalCode).toBe('6022');
+    expect(result.address.country).toBe('NZ');
+  });
+
+  it('returns site location coordinates', async () => {
+    mockGet.mockResolvedValueOnce(createEmbassySite());
+
+    const result = await resource.get('site_embassy_wellington');
+
+    expect(result.location.latitude).toBeCloseTo(-41.2942, 4);
+    expect(result.location.longitude).toBeCloseTo(174.7843, 4);
+  });
+
+  it('returns site operational configuration', async () => {
+    mockGet.mockResolvedValueOnce(createRoxySite());
+
+    const result = await resource.get('site_roxy_wellington');
+
+    expect(result.config.bookingLeadTime).toBe(30);
+    expect(result.config.maxTicketsPerOrder).toBe(10);
+    expect(result.config.loyaltyEnabled).toBe(true);
+    expect(result.config.fnbEnabled).toBe(true);
+  });
+
+  it('returns timezone and currency for the region', async () => {
+    mockGet.mockResolvedValueOnce(createRoxySite());
+
+    const result = await resource.get('site_roxy_wellington');
+
+    expect(result.timezone).toBe('Pacific/Auckland');
+    expect(result.currency).toBe('NZD');
+  });
+
+  it('returns isActive flag for operational status', async () => {
+    const inactive = createRoxySite({ isActive: false });
+    mockGet.mockResolvedValueOnce(inactive);
+
+    const result = await resource.get('site_roxy_wellington');
+
+    expect(result.isActive).toBe(false);
+  });
+});
