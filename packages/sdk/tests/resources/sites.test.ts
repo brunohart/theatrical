@@ -287,3 +287,119 @@ describe('SitesResource.get()', () => {
     expect(result.isActive).toBe(false);
   });
 });
+
+// ---------------------------------------------------------------------------
+// screens() — auditorium configuration retrieval
+// ---------------------------------------------------------------------------
+
+describe('SitesResource.screens()', () => {
+  let resource: SitesResource;
+  let mockGet: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    ({ resource, mockGet } = createMockHTTPClient());
+  });
+
+  it('fetches screens from the correct endpoint path', async () => {
+    const screens: Screen[] = [
+      { id: 'scr_embassy_main', name: 'Grand Theatre', seatCount: 810, formats: ['2D', 'IMAX', 'Dolby Atmos'], isAccessible: true },
+    ];
+    mockGet.mockResolvedValueOnce(screens);
+
+    await resource.screens('site_embassy_wellington');
+
+    expect(mockGet).toHaveBeenCalledWith('/ocapi/v1/sites/site_embassy_wellington/screens');
+  });
+
+  it('returns screen formats for format-aware booking', async () => {
+    const screens: Screen[] = [
+      { id: 'scr_event_1', name: 'Screen 1', seatCount: 350, formats: ['2D', 'IMAX'], isAccessible: true },
+      { id: 'scr_event_4', name: 'Gold Lounge', seatCount: 48, formats: ['2D', '4DX'], isAccessible: true },
+    ];
+    mockGet.mockResolvedValueOnce(screens);
+
+    const result = await resource.screens('site_event_queen_street');
+
+    expect(result[0].formats).toContain('IMAX');
+    expect(result[1].formats).toContain('4DX');
+  });
+
+  it('returns accessibility status for each screen', async () => {
+    const screens: Screen[] = [
+      { id: 'scr_roxy_1', name: 'Main Auditorium', seatCount: 174, formats: ['2D'], isAccessible: true },
+      { id: 'scr_roxy_2', name: 'Lounge', seatCount: 42, formats: ['2D'], isAccessible: false },
+    ];
+    mockGet.mockResolvedValueOnce(screens);
+
+    const result = await resource.screens('site_roxy_wellington');
+
+    const accessible = result.filter(s => s.isAccessible);
+    const notAccessible = result.filter(s => !s.isAccessible);
+    expect(accessible).toHaveLength(1);
+    expect(notAccessible).toHaveLength(1);
+    expect(accessible[0].name).toBe('Main Auditorium');
+  });
+
+  it('returns seat capacity for each screen', async () => {
+    const screens: Screen[] = [
+      { id: 'scr_embassy_main', name: 'Grand Theatre', seatCount: 810, formats: ['2D', 'IMAX'], isAccessible: true },
+    ];
+    mockGet.mockResolvedValueOnce(screens);
+
+    const result = await resource.screens('site_embassy_wellington');
+
+    expect(result[0].seatCount).toBe(810);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// nearby() — geographic radius search
+// ---------------------------------------------------------------------------
+
+describe('SitesResource.nearby()', () => {
+  let resource: SitesResource;
+  let mockGet: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    ({ resource, mockGet } = createMockHTTPClient());
+  });
+
+  it('passes lat/lng/radius to the OCAPI endpoint', async () => {
+    mockGet.mockResolvedValueOnce([createRoxySite()]);
+
+    await resource.nearby(-41.2865, 174.7762, 5);
+
+    expect(mockGet).toHaveBeenCalledWith('/ocapi/v1/sites', {
+      params: { latitude: -41.2865, longitude: 174.7762, radius: 5 },
+    });
+  });
+
+  it('returns cinemas within range of central Wellington', async () => {
+    const wellingtonSites = [createRoxySite(), createEmbassySite()];
+    mockGet.mockResolvedValueOnce(wellingtonSites);
+
+    const result = await resource.nearby(-41.2865, 174.7762, 10);
+
+    expect(result).toHaveLength(2);
+    expect(result.map(s => s.name)).toContain('Roxy Cinema');
+    expect(result.map(s => s.name)).toContain('Embassy Theatre');
+  });
+
+  it('returns empty list when no cinemas within radius', async () => {
+    mockGet.mockResolvedValueOnce([]);
+
+    const result = await resource.nearby(-45.8788, 170.5028, 1);
+
+    expect(result).toHaveLength(0);
+  });
+
+  it('returns sites from a different city with appropriate coordinates', async () => {
+    mockGet.mockResolvedValueOnce([createEventQueenStreetSite()]);
+
+    const result = await resource.nearby(-36.8509, 174.7645, 5);
+
+    expect(result).toHaveLength(1);
+    expect(result[0].name).toBe('Event Cinemas Queen Street');
+    expect(result[0].address.city).toBe('Auckland');
+  });
+});
