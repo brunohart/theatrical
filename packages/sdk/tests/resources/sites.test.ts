@@ -403,3 +403,80 @@ describe('SitesResource.nearby()', () => {
     expect(result[0].address.city).toBe('Auckland');
   });
 });
+
+// ---------------------------------------------------------------------------
+// Zod validation — malformed response rejection
+// ---------------------------------------------------------------------------
+
+describe('SitesResource — Zod schema validation', () => {
+  let resource: SitesResource;
+  let mockGet: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    ({ resource, mockGet } = createMockHTTPClient());
+  });
+
+  it('rejects a site with latitude out of range', async () => {
+    const malformed = createRoxySite();
+    malformed.location.latitude = -200;
+    mockGet.mockResolvedValueOnce([malformed]);
+
+    await expect(resource.list()).rejects.toThrow();
+  });
+
+  it('rejects a site with longitude out of range', async () => {
+    const malformed = createRoxySite();
+    malformed.location.longitude = 999;
+    mockGet.mockResolvedValueOnce([malformed]);
+
+    await expect(resource.list()).rejects.toThrow();
+  });
+
+  it('rejects a site missing required name field', async () => {
+    const malformed = { ...createRoxySite() };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    delete (malformed as any).name;
+    mockGet.mockResolvedValueOnce(malformed);
+
+    await expect(resource.get('site_roxy_wellington')).rejects.toThrow();
+  });
+
+  it('rejects a screen with zero seat count', async () => {
+    const screens = [{ id: 'scr_broken', name: 'Empty Screen', seatCount: 0, formats: ['2D'], isAccessible: false }];
+    mockGet.mockResolvedValueOnce(screens);
+
+    await expect(resource.screens('site_test')).rejects.toThrow();
+  });
+
+  it('rejects a screen with no formats', async () => {
+    const screens = [{ id: 'scr_broken', name: 'No Format Screen', seatCount: 100, formats: [], isAccessible: true }];
+    mockGet.mockResolvedValueOnce(screens);
+
+    await expect(resource.screens('site_test')).rejects.toThrow();
+  });
+
+  it('rejects a site with invalid two-letter country code', async () => {
+    const malformed = createRoxySite();
+    malformed.address.country = 'NEW ZEALAND';
+    mockGet.mockResolvedValueOnce([malformed]);
+
+    await expect(resource.list()).rejects.toThrow();
+  });
+
+  it('rejects a site with invalid currency code length', async () => {
+    const malformed = createRoxySite({ currency: 'NZ' });
+    mockGet.mockResolvedValueOnce([malformed]);
+
+    await expect(resource.list()).rejects.toThrow();
+  });
+
+  it('accepts a site without optional amenities', async () => {
+    const site = createRoxySite({ amenities: undefined });
+    mockGet.mockResolvedValueOnce([site]);
+
+    const result = await resource.list();
+
+    expect(result).toHaveLength(1);
+    expect(result[0].amenities).toBeUndefined();
+  });
+});
