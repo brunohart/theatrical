@@ -415,3 +415,102 @@ describe('OrdersResource.addItems()', () => {
     expect(result.items[1].totalPrice).toBe(13.00);
   });
 });
+
+// ---------------------------------------------------------------------------
+// confirm() / cancel() / complete() — order lifecycle transitions
+// ---------------------------------------------------------------------------
+
+describe('OrdersResource lifecycle transitions', () => {
+  let resource: OrdersResource;
+  let mockPost: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    ({ resource, mockPost } = createMockHTTPClient());
+  });
+
+  it('confirm() posts to the correct confirm endpoint', async () => {
+    const orderId = 'ord_evt_qst_wildrobot_20260412';
+    mockPost.mockResolvedValueOnce(createMockConfirmedOrder());
+
+    await resource.confirm(orderId);
+
+    expect(mockPost).toHaveBeenCalledWith(`/ocapi/v1/orders/${orderId}/confirm`);
+  });
+
+  it('confirm() returns an order in confirmed status with confirmedAt timestamp', async () => {
+    const confirmed = createMockConfirmedOrder();
+    mockPost.mockResolvedValueOnce(confirmed);
+
+    const result = await resource.confirm('ord_evt_qst_wildrobot_20260412');
+
+    expect(result.status).toBe('confirmed');
+    expect(result.confirmedAt).toBe('2026-04-12T09:02:00+12:00');
+  });
+
+  it('cancel() posts to the correct cancel endpoint', async () => {
+    const orderId = 'ord_evt_qst_wildrobot_20260412';
+    const cancelled = createMockOrder({
+      status: 'cancelled',
+      cancelledAt: '2026-04-12T09:05:00+12:00',
+    });
+    mockPost.mockResolvedValueOnce(cancelled);
+
+    await resource.cancel(orderId);
+
+    expect(mockPost).toHaveBeenCalledWith(`/ocapi/v1/orders/${orderId}/cancel`);
+  });
+
+  it('cancel() returns an order in cancelled status with cancelledAt timestamp', async () => {
+    const cancelled = createMockOrder({
+      status: 'cancelled',
+      cancelledAt: '2026-04-12T09:05:00+12:00',
+    });
+    mockPost.mockResolvedValueOnce(cancelled);
+
+    const result = await resource.cancel('ord_evt_qst_wildrobot_20260412');
+
+    expect(result.status).toBe('cancelled');
+    expect(result.cancelledAt).toBeDefined();
+  });
+
+  it('complete() posts to the correct complete endpoint', async () => {
+    const orderId = 'ord_evt_qst_wildrobot_20260412';
+    const completed = createMockConfirmedOrder({
+      status: 'completed',
+      completedAt: '2026-04-12T21:55:00+12:00',
+    });
+    mockPost.mockResolvedValueOnce(completed);
+
+    await resource.complete(orderId);
+
+    expect(mockPost).toHaveBeenCalledWith(`/ocapi/v1/orders/${orderId}/complete`);
+  });
+
+  it('complete() returns an order in completed status with completedAt timestamp', async () => {
+    const completed = createMockConfirmedOrder({
+      status: 'completed',
+      completedAt: '2026-04-12T21:55:00+12:00',
+    });
+    mockPost.mockResolvedValueOnce(completed);
+
+    const result = await resource.complete('ord_evt_qst_wildrobot_20260412');
+
+    expect(result.status).toBe('completed');
+    expect(result.completedAt).toBe('2026-04-12T21:55:00+12:00');
+  });
+
+  it('each lifecycle transition targets a different order status', async () => {
+    const statuses: OrderStatus[] = ['confirmed', 'cancelled', 'completed'];
+    for (const status of statuses) {
+      mockPost.mockResolvedValueOnce(createMockOrder({ status }));
+    }
+
+    const confirmed = await resource.confirm('ord_001');
+    const cancelled = await resource.cancel('ord_002');
+    const completed = await resource.complete('ord_003');
+
+    expect(confirmed.status).toBe('confirmed');
+    expect(cancelled.status).toBe('cancelled');
+    expect(completed.status).toBe('completed');
+  });
+});
