@@ -2,6 +2,10 @@ import { z } from 'zod';
 
 // ─── Enums & Primitives ────────────────────────────────────
 
+/**
+ * Film genre classification. Includes standard MPAA/NZ Film Commission genres
+ * plus a string fallback for distributor-specific categories.
+ */
 export type Genre = 'action' | 'adventure' | 'animation' | 'comedy' | 'crime' | 'documentary' |
   'drama' | 'family' | 'fantasy' | 'horror' | 'musical' | 'mystery' | 'romance' |
   'sci-fi' | 'thriller' | 'war' | 'western' | string;
@@ -14,13 +18,22 @@ export type FilmLanguage = 'en' | 'es' | 'fr' | 'de' | 'ja' | 'ko' | 'zh' | 'hi'
 
 // ─── Interfaces ────────────────────────────────────────────
 
+/**
+ * Age classification rating (e.g., NZ: G, PG, M, R13, R16, R18;
+ * US: G, PG, PG-13, R, NC-17).
+ */
 export interface Rating {
+  /** Rating classification code (e.g., 'M', 'PG-13', 'R16') */
   classification: string;
+  /** Human-readable content advisory (e.g., 'Violence, offensive language') */
   description?: string;
 }
 
+/** An actor appearing in the film */
 export interface CastMember {
+  /** Full name of the actor */
   name: string;
+  /** Character name or role description */
   role?: string;
 }
 
@@ -38,21 +51,40 @@ export interface FilmRating {
   outOf?: string;
 }
 
-/** A film available for screening — core list representation */
+/**
+ * A film available for screening — core list representation.
+ *
+ * This is the shape returned by list endpoints (`nowShowing`, `comingSoon`, `search`).
+ * For full detail including crew, ratings, and formats, use `FilmDetail` via `getDetail()`.
+ */
 export interface Film {
+  /** Unique film identifier (UUID) */
   id: string;
+  /** Display title in the local market */
   title: string;
+  /** Marketing synopsis / plot summary */
   synopsis: string;
+  /** Genre classifications */
   genres: Genre[];
+  /** Runtime in minutes */
   runtime: number;
+  /** Age classification rating */
   rating: Rating;
+  /** Theatrical release date (ISO 8601 date string) */
   releaseDate: string;
+  /** URL to the film's poster image */
   posterUrl?: string;
+  /** URL to the official trailer */
   trailerUrl?: string;
+  /** Principal cast members */
   cast: CastMember[];
+  /** Primary director name */
   director: string;
+  /** Distribution company */
   distributor?: string;
+  /** Whether the film is currently screening */
   isNowShowing: boolean;
+  /** Whether the film is announced but not yet released */
   isComingSoon: boolean;
 }
 
@@ -74,26 +106,48 @@ export interface FilmDetail extends Film {
   website?: string;
 }
 
+/** Basic filter options for film list and search endpoints */
 export interface FilmFilter {
+  /** Restrict results to a specific cinema site */
   siteId?: string;
+  /** Filter by genre classification */
   genre?: Genre;
+  /** Free-text search across title and synopsis */
   query?: string;
+  /** Only return films currently screening */
   nowShowing?: boolean;
+  /** Only return upcoming / announced films */
   comingSoon?: boolean;
+  /** Maximum number of results to return */
   limit?: number;
+  /** Offset for pagination */
   offset?: number;
 }
 
-/** Extended search filters for `films.search()` */
+/**
+ * Extended search filters for `films.advancedSearch()`.
+ *
+ * Adds format, language, rating, runtime range, date range, and sorting
+ * on top of the base FilmFilter fields.
+ */
 export interface FilmSearchFilter extends FilmFilter {
+  /** Filter by age rating classification (e.g., 'PG', 'M', 'R16') */
   ratingClassification?: string;
+  /** Filter by screening format (e.g., 'IMAX', '3D', 'Dolby Atmos') */
   format?: FilmFormat;
+  /** Filter by audio/subtitle language (ISO 639-1 code) */
   language?: FilmLanguage;
+  /** Films released on or after this date (ISO 8601) */
   releaseDateFrom?: string;
+  /** Films released on or before this date (ISO 8601) */
   releaseDateTo?: string;
+  /** Minimum runtime in minutes */
   minRuntime?: number;
+  /** Maximum runtime in minutes */
   maxRuntime?: number;
+  /** Sort field */
   sortBy?: 'title' | 'releaseDate' | 'runtime' | 'popularity';
+  /** Sort direction */
   sortOrder?: 'asc' | 'desc';
 }
 
