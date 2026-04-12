@@ -95,7 +95,8 @@ function createMockOrderHistory(
     data: orders,
     total: orders.length,
     hasMore: false,
-    cursor: undefined,
+    strategy: 'cursor',
+    nextCursor: undefined,
     ...overrides,
   };
 }
@@ -655,5 +656,126 @@ describe('OrdersResource.refund()', () => {
     expect(result.tickets).toHaveLength(2);
     expect(result.items).toHaveLength(1);
     expect(result.total).toBe(67.85);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// history() — paginated order history for a loyalty member
+// ---------------------------------------------------------------------------
+
+describe('OrdersResource.history()', () => {
+  let resource: OrdersResource;
+  let mockGet: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    ({ resource, mockGet } = createMockHTTPClient());
+  });
+
+  it('fetches from the correct member orders endpoint', async () => {
+    const memberId = 'mem_hemi_walker_012';
+    mockGet.mockResolvedValueOnce(createMockOrderHistory());
+
+    await resource.history(memberId);
+
+    expect(mockGet).toHaveBeenCalledWith(
+      `/ocapi/v1/members/${memberId}/orders`,
+      expect.any(Object),
+    );
+  });
+
+  it('returns a paginated response with the orders array', async () => {
+    const orders = [
+      createMockConfirmedOrder({ id: 'ord_001' }),
+      createMockConfirmedOrder({ id: 'ord_002', status: 'completed' }),
+    ];
+    mockGet.mockResolvedValueOnce(createMockOrderHistory(orders, { total: 2 }));
+
+    const result = await resource.history('mem_hemi_walker_012');
+
+    expect(result.data).toHaveLength(2);
+    expect(result.total).toBe(2);
+    expect(result.data[0].id).toBe('ord_001');
+    expect(result.data[1].status).toBe('completed');
+  });
+
+  it('passes status filter as a query parameter', async () => {
+    mockGet.mockResolvedValueOnce(createMockOrderHistory());
+
+    await resource.history('mem_hemi_walker_012', { status: 'confirmed' });
+
+    expect(mockGet).toHaveBeenCalledWith(
+      '/ocapi/v1/members/mem_hemi_walker_012/orders',
+      { params: { status: 'confirmed' } },
+    );
+  });
+
+  it('passes since and until date filters as query parameters', async () => {
+    mockGet.mockResolvedValueOnce(createMockOrderHistory());
+
+    await resource.history('mem_hemi_walker_012', {
+      since: '2026-01-01T00:00:00+12:00',
+      until: '2026-04-12T23:59:59+12:00',
+    });
+
+    expect(mockGet).toHaveBeenCalledWith(
+      '/ocapi/v1/members/mem_hemi_walker_012/orders',
+      {
+        params: {
+          since: '2026-01-01T00:00:00+12:00',
+          until: '2026-04-12T23:59:59+12:00',
+        },
+      },
+    );
+  });
+
+  it('passes limit and cursor pagination parameters', async () => {
+    const page2cursor = 'cursor_page2_abc123';
+    mockGet.mockResolvedValueOnce(createMockOrderHistory());
+
+    await resource.history('mem_hemi_walker_012', {
+      limit: 10,
+      cursor: page2cursor,
+    });
+
+    expect(mockGet).toHaveBeenCalledWith(
+      '/ocapi/v1/members/mem_hemi_walker_012/orders',
+      { params: { limit: '10', cursor: page2cursor } },
+    );
+  });
+
+  it('returns hasMore false and no nextCursor for the final page', async () => {
+    mockGet.mockResolvedValueOnce(
+      createMockOrderHistory([createMockConfirmedOrder()], { hasMore: false, nextCursor: undefined }),
+    );
+
+    const result = await resource.history('mem_hemi_walker_012');
+
+    expect(result.hasMore).toBe(false);
+    expect(result.nextCursor).toBeUndefined();
+  });
+
+  it('returns a nextCursor when more pages exist', async () => {
+    const manyOrders = Array.from({ length: 10 }, (_, i) =>
+      createMockConfirmedOrder({ id: `ord_${String(i).padStart(3, '0')}` }),
+    );
+    mockGet.mockResolvedValueOnce(
+      createMockOrderHistory(manyOrders, { hasMore: true, nextCursor: 'cursor_next_page', total: 25 }),
+    );
+
+    const result = await resource.history('mem_hemi_walker_012', { limit: 10 });
+
+    expect(result.hasMore).toBe(true);
+    expect(result.nextCursor).toBe('cursor_next_page');
+    expect(result.total).toBe(25);
+    expect(result.data).toHaveLength(10);
+  });
+
+  it('returns an empty history for a member with no orders', async () => {
+    mockGet.mockResolvedValueOnce(createMockOrderHistory([], { total: 0, hasMore: false }));
+
+    const result = await resource.history('mem_new_member_999');
+
+    expect(result.data).toHaveLength(0);
+    expect(result.total).toBe(0);
   });
 });
