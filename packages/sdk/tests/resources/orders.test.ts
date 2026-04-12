@@ -779,3 +779,149 @@ describe('OrdersResource.history()', () => {
     expect(result.total).toBe(0);
   });
 });
+
+// ---------------------------------------------------------------------------
+// Zod schema validation — malformed response rejection
+// ---------------------------------------------------------------------------
+
+describe('OrdersResource — Zod schema validation', () => {
+  let resource: OrdersResource;
+  let mockGet: ReturnType<typeof vi.fn>;
+  let mockPost: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    ({ resource, mockGet, mockPost } = createMockHTTPClient());
+  });
+
+  it('rejects an order with an invalid status string', async () => {
+    const malformed = { ...createMockOrder(), status: 'awaiting_payment' };
+    mockGet.mockResolvedValueOnce(malformed);
+
+    await expect(resource.get('ord_001')).rejects.toThrow();
+  });
+
+  it('rejects an order with a negative ticket price', async () => {
+    const malformed = createMockOrder({
+      tickets: [createMockTicket({ price: -5 })],
+    });
+    mockPost.mockResolvedValueOnce(malformed);
+
+    await expect(
+      resource.create({ sessionId: 'ses_001', tickets: [{ type: 'Adult', seatId: 'A1' }] }),
+    ).rejects.toThrow();
+  });
+
+  it('rejects an order missing the required currency field', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const malformed = { ...createMockOrder() } as any;
+    delete malformed.currency;
+    mockPost.mockResolvedValueOnce(malformed);
+
+    await expect(
+      resource.confirm('ord_001'),
+    ).rejects.toThrow();
+  });
+
+  it('rejects an order item with a zero quantity', async () => {
+    const malformed = createMockOrder({
+      items: [createMockOrderItem({ quantity: 0 })],
+    });
+    mockGet.mockResolvedValueOnce(malformed);
+
+    await expect(resource.get('ord_001')).rejects.toThrow();
+  });
+
+  it('rejects a history response missing the strategy field', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const malformed = { ...createMockOrderHistory() } as any;
+    delete malformed.strategy;
+    mockGet.mockResolvedValueOnce(malformed);
+
+    await expect(resource.history('mem_001')).rejects.toThrow();
+  });
+
+  it('rejects an order with a currency code that is not 3 characters', async () => {
+    const malformed = createMockOrder({ currency: 'NZ' });
+    mockGet.mockResolvedValueOnce(malformed);
+
+    await expect(resource.get('ord_001')).rejects.toThrow();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Error propagation — HTTP errors surface from resource methods
+// ---------------------------------------------------------------------------
+
+describe('OrdersResource — error propagation', () => {
+  let resource: OrdersResource;
+  let mockGet: ReturnType<typeof vi.fn>;
+  let mockPost: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    ({ resource, mockGet, mockPost } = createMockHTTPClient());
+  });
+
+  it('propagates a not-found error from get()', async () => {
+    const notFound = Object.assign(new Error('Order ord_expired not found'), { statusCode: 404 });
+    mockGet.mockRejectedValueOnce(notFound);
+
+    await expect(resource.get('ord_expired')).rejects.toMatchObject({
+      statusCode: 404,
+    });
+  });
+
+  it('propagates a conflict error from confirm() — e.g. order already confirmed', async () => {
+    const conflict = Object.assign(
+      new Error('Order is already in confirmed state'),
+      { statusCode: 409 },
+    );
+    mockPost.mockRejectedValueOnce(conflict);
+
+    await expect(resource.confirm('ord_001')).rejects.toMatchObject({
+      statusCode: 409,
+    });
+  });
+
+  it('propagates a payment error from create()', async () => {
+    const paymentError = Object.assign(
+      new Error('Payment method declined'),
+      { statusCode: 402 },
+    );
+    mockPost.mockRejectedValueOnce(paymentError);
+
+    await expect(
+      resource.create({ sessionId: 'ses_001', tickets: [{ type: 'Adult', seatId: 'A1' }] }),
+    ).rejects.toMatchObject({ statusCode: 402 });
+  });
+
+  it('propagates a network error from addTickets()', async () => {
+    mockPost.mockRejectedValueOnce(new Error('fetch failed'));
+
+    await expect(
+      resource.addTickets('ord_001', { tickets: [{ type: 'Adult', seatId: 'B2' }] }),
+    ).rejects.toThrow('fetch failed');
+  });
+
+  it('propagates a forbidden error from refund()', async () => {
+    const forbidden = Object.assign(
+      new Error('Refund window has expired'),
+      { statusCode: 403 },
+    );
+    mockPost.mockRejectedValueOnce(forbidden);
+
+    await expect(resource.refund('ord_001')).rejects.toMatchObject({
+      statusCode: 403,
+      message: 'Refund window has expired',
+    });
+  });
+
+  it('propagates a rate-limit error from history()', async () => {
+    const rateLimitError = Object.assign(new Error('Rate limit exceeded'), {
+      statusCode: 429,
+      retryAfter: 60,
+    });
+    mockGet.mockRejectedValueOnce(rateLimitError);
+
+    await expect(resource.history('mem_001')).rejects.toMatchObject({ retryAfter: 60 });
+  });
+});
