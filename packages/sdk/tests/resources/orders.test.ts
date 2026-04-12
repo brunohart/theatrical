@@ -514,3 +514,146 @@ describe('OrdersResource lifecycle transitions', () => {
     expect(completed.status).toBe('completed');
   });
 });
+
+// ---------------------------------------------------------------------------
+// applyLoyalty() — attach loyalty member and redeem points
+// ---------------------------------------------------------------------------
+
+describe('OrdersResource.applyLoyalty()', () => {
+  let resource: OrdersResource;
+  let mockPost: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    ({ resource, mockPost } = createMockHTTPClient());
+  });
+
+  it('posts to the correct loyalty sub-resource path', async () => {
+    const orderId = 'ord_evt_qst_wildrobot_20260412';
+    mockPost.mockResolvedValueOnce(createMockConfirmedOrder());
+
+    await resource.applyLoyalty(orderId, { memberId: 'mem_hemi_walker_012' });
+
+    expect(mockPost).toHaveBeenCalledWith(
+      `/ocapi/v1/orders/${orderId}/loyalty`,
+      expect.any(Object),
+    );
+  });
+
+  it('sends the memberId in the request body', async () => {
+    const orderId = 'ord_evt_qst_wildrobot_20260412';
+    mockPost.mockResolvedValueOnce(createMockConfirmedOrder());
+
+    await resource.applyLoyalty(orderId, { memberId: 'mem_hemi_walker_012' });
+
+    expect(mockPost).toHaveBeenCalledWith(`/ocapi/v1/orders/${orderId}/loyalty`, {
+      body: { memberId: 'mem_hemi_walker_012' },
+    });
+  });
+
+  it('sends pointsToRedeem when provided', async () => {
+    const orderId = 'ord_evt_qst_wildrobot_20260412';
+    const withRedemption = createMockConfirmedOrder({
+      loyaltyPointsRedeemed: 200,
+      discount: 5.00,
+      total: 62.85,
+    });
+    mockPost.mockResolvedValueOnce(withRedemption);
+
+    await resource.applyLoyalty(orderId, {
+      memberId: 'mem_hemi_walker_012',
+      pointsToRedeem: 200,
+    });
+
+    expect(mockPost).toHaveBeenCalledWith(`/ocapi/v1/orders/${orderId}/loyalty`, {
+      body: { memberId: 'mem_hemi_walker_012', pointsToRedeem: 200 },
+    });
+  });
+
+  it('returns the updated order with loyalty fields populated', async () => {
+    const withLoyalty = createMockConfirmedOrder({
+      loyaltyMemberId: 'mem_hemi_walker_012',
+      loyaltyPointsEarned: 68,
+      loyaltyPointsRedeemed: 0,
+    });
+    mockPost.mockResolvedValueOnce(withLoyalty);
+
+    const result = await resource.applyLoyalty('ord_evt_qst_wildrobot_20260412', {
+      memberId: 'mem_hemi_walker_012',
+    });
+
+    expect(result.loyaltyMemberId).toBe('mem_hemi_walker_012');
+    expect(result.loyaltyPointsEarned).toBe(68);
+    expect(result.loyaltyPointsRedeemed).toBe(0);
+  });
+
+  it('reflects a discount on the order total when points are redeemed', async () => {
+    const withDiscount = createMockConfirmedOrder({
+      loyaltyPointsRedeemed: 500,
+      discount: 10.00,
+      total: 57.85,
+    });
+    mockPost.mockResolvedValueOnce(withDiscount);
+
+    const result = await resource.applyLoyalty('ord_evt_qst_wildrobot_20260412', {
+      memberId: 'mem_hemi_walker_012',
+      pointsToRedeem: 500,
+    });
+
+    expect(result.discount).toBe(10.00);
+    expect(result.total).toBe(57.85);
+    expect(result.loyaltyPointsRedeemed).toBe(500);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// refund() — trigger refund workflow for a confirmed/completed order
+// ---------------------------------------------------------------------------
+
+describe('OrdersResource.refund()', () => {
+  let resource: OrdersResource;
+  let mockPost: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    ({ resource, mockPost } = createMockHTTPClient());
+  });
+
+  it('posts to the correct refund endpoint', async () => {
+    const orderId = 'ord_evt_qst_wildrobot_20260412';
+    const refunded = createMockOrder({
+      status: 'refunded',
+      refundedAt: '2026-04-12T10:00:00+12:00',
+    });
+    mockPost.mockResolvedValueOnce(refunded);
+
+    await resource.refund(orderId);
+
+    expect(mockPost).toHaveBeenCalledWith(`/ocapi/v1/orders/${orderId}/refund`);
+  });
+
+  it('returns an order in refunded status with refundedAt timestamp', async () => {
+    const refunded = createMockOrder({
+      status: 'refunded',
+      refundedAt: '2026-04-12T10:00:00+12:00',
+    });
+    mockPost.mockResolvedValueOnce(refunded);
+
+    const result = await resource.refund('ord_evt_qst_wildrobot_20260412');
+
+    expect(result.status).toBe('refunded');
+    expect(result.refundedAt).toBe('2026-04-12T10:00:00+12:00');
+  });
+
+  it('preserves the original ticket and item data on the refunded order', async () => {
+    const refunded = createMockOrder({
+      status: 'refunded',
+      refundedAt: '2026-04-12T10:00:00+12:00',
+    });
+    mockPost.mockResolvedValueOnce(refunded);
+
+    const result = await resource.refund('ord_evt_qst_wildrobot_20260412');
+
+    expect(result.tickets).toHaveLength(2);
+    expect(result.items).toHaveLength(1);
+    expect(result.total).toBe(67.85);
+  });
+});
