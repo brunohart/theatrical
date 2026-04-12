@@ -267,3 +267,151 @@ describe('OrdersResource.get()', () => {
     expect(result.loyaltyPointsEarned).toBe(68);
   });
 });
+
+// ---------------------------------------------------------------------------
+// addTickets() — append tickets to a draft order
+// ---------------------------------------------------------------------------
+
+describe('OrdersResource.addTickets()', () => {
+  let resource: OrdersResource;
+  let mockPost: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    ({ resource, mockPost } = createMockHTTPClient());
+  });
+
+  it('posts to the correct tickets sub-resource path', async () => {
+    const orderId = 'ord_evt_qst_wildrobot_20260412';
+    mockPost.mockResolvedValueOnce(createMockOrder());
+
+    await resource.addTickets(orderId, {
+      tickets: [{ type: 'Adult', seatId: 'K5' }],
+    });
+
+    expect(mockPost).toHaveBeenCalledWith(
+      `/ocapi/v1/orders/${orderId}/tickets`,
+      expect.any(Object),
+    );
+  });
+
+  it('sends the tickets array in the request body', async () => {
+    const orderId = 'ord_evt_qst_wildrobot_20260412';
+    mockPost.mockResolvedValueOnce(createMockOrder());
+
+    await resource.addTickets(orderId, {
+      tickets: [
+        { type: 'Child', seatId: 'K6' },
+        { type: 'Senior', seatId: 'K7' },
+      ],
+    });
+
+    expect(mockPost).toHaveBeenCalledWith(`/ocapi/v1/orders/${orderId}/tickets`, {
+      body: {
+        tickets: [
+          { type: 'Child', seatId: 'K6' },
+          { type: 'Senior', seatId: 'K7' },
+        ],
+      },
+    });
+  });
+
+  it('returns the updated order with all tickets included', async () => {
+    const updatedOrder = createMockOrder({
+      tickets: [
+        createMockTicket({ id: 'tkt_001', seatId: 'J12' }),
+        createMockTicket({ id: 'tkt_002', seatId: 'J13' }),
+        createMockTicket({ id: 'tkt_003', seatId: 'K5', type: 'Child', price: 14.50 }),
+      ],
+    });
+    mockPost.mockResolvedValueOnce(updatedOrder);
+
+    const result = await resource.addTickets('ord_evt_qst_wildrobot_20260412', {
+      tickets: [{ type: 'Child', seatId: 'K5' }],
+    });
+
+    expect(result.tickets).toHaveLength(3);
+    expect(result.tickets[2].type).toBe('Child');
+    expect(result.tickets[2].seatId).toBe('K5');
+  });
+
+  it('reflects updated total after adding a ticket', async () => {
+    const updatedOrder = createMockOrder({ subtotal: 81.50, total: 93.73 });
+    mockPost.mockResolvedValueOnce(updatedOrder);
+
+    const result = await resource.addTickets('ord_evt_qst_wildrobot_20260412', {
+      tickets: [{ type: 'Child', seatId: 'K5' }],
+    });
+
+    expect(result.subtotal).toBe(81.50);
+    expect(result.total).toBe(93.73);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// addItems() — append concession items to an order
+// ---------------------------------------------------------------------------
+
+describe('OrdersResource.addItems()', () => {
+  let resource: OrdersResource;
+  let mockPost: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    ({ resource, mockPost } = createMockHTTPClient());
+  });
+
+  it('posts to the correct items sub-resource path', async () => {
+    const orderId = 'ord_evt_qst_wildrobot_20260412';
+    mockPost.mockResolvedValueOnce(createMockOrder());
+
+    await resource.addItems(orderId, {
+      items: [{ menuItemId: 'mnui_large_popcorn', quantity: 2 }],
+    });
+
+    expect(mockPost).toHaveBeenCalledWith(
+      `/ocapi/v1/orders/${orderId}/items`,
+      expect.any(Object),
+    );
+  });
+
+  it('sends the items array with menuItemId and quantity', async () => {
+    const orderId = 'ord_evt_qst_wildrobot_20260412';
+    mockPost.mockResolvedValueOnce(createMockOrder());
+
+    await resource.addItems(orderId, {
+      items: [
+        { menuItemId: 'mnui_large_popcorn', quantity: 2 },
+        { menuItemId: 'mnui_coke_large', quantity: 2 },
+      ],
+    });
+
+    expect(mockPost).toHaveBeenCalledWith(`/ocapi/v1/orders/${orderId}/items`, {
+      body: {
+        items: [
+          { menuItemId: 'mnui_large_popcorn', quantity: 2 },
+          { menuItemId: 'mnui_coke_large', quantity: 2 },
+        ],
+      },
+    });
+  });
+
+  it('returns the updated order with new items reflected', async () => {
+    const updatedOrder = createMockOrder({
+      items: [
+        createMockOrderItem({ id: 'item_001', name: 'Large Popcorn Combo', quantity: 1, totalPrice: 14.00 }),
+        createMockOrderItem({ id: 'item_002', name: 'Large Coca-Cola', category: 'Drinks', quantity: 2, unitPrice: 6.50, totalPrice: 13.00 }),
+      ],
+      subtotal: 72.00,
+      total: 82.80,
+    });
+    mockPost.mockResolvedValueOnce(updatedOrder);
+
+    const result = await resource.addItems('ord_evt_qst_wildrobot_20260412', {
+      items: [{ menuItemId: 'mnui_coke_large', quantity: 2 }],
+    });
+
+    expect(result.items).toHaveLength(2);
+    expect(result.items[1].name).toBe('Large Coca-Cola');
+    expect(result.items[1].quantity).toBe(2);
+    expect(result.items[1].totalPrice).toBe(13.00);
+  });
+});
