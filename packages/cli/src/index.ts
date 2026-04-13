@@ -23,6 +23,7 @@
 import { Command } from 'commander';
 import { printBanner } from './utils/output.js';
 import { resolveConfig } from './utils/config.js';
+import { createInitCommand } from './commands/init.js';
 
 /** Package version — injected at build time, fallback for development */
 const VERSION = '0.1.0';
@@ -75,7 +76,7 @@ export function createProgram(): Command {
     });
 
   // Register subcommands
-  // (Commands are registered as the CLI grows — init, codegen, inspect)
+  program.addCommand(createInitCommand());
   registerPlaceholderCommands(program);
 
   return program;
@@ -86,18 +87,6 @@ export function createProgram(): Command {
  * Each outputs a helpful "coming soon" message with expected functionality.
  */
 function registerPlaceholderCommands(program: Command): void {
-  program
-    .command('init [project-name]')
-    .description('Scaffold a new cinema platform project')
-    .option('-t, --template <template>', 'Project template to use', 'default')
-    .option('--no-install', 'Skip dependency installation')
-    .action(async (projectName?: string) => {
-      console.log(
-        `🎬 theatrical init — scaffold a new project${projectName ? ` "${projectName}"` : ''}`
-      );
-      console.log('   Implementation coming in the next commit.');
-    });
-
   program
     .command('codegen')
     .description('Generate TypeScript types and Zod schemas from OpenAPI specs')
