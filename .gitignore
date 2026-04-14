@@ -30,11 +30,12 @@ Thumbs.db
 # npm lockfiles (this project uses pnpm)
 package-lock.json
 
-# Agent swarm (local-only automation)
+# Agent swarm logs (ephemeral, not tracked)
 scripts/.logs/
 scripts/.build-output-*
-scripts/agents/
-scripts/build-agent.md
+
+# Agent prompts ARE tracked — self-healing requires agents to commit fixes to their own prompts.
+# Only logs and build artifacts are ignored.
 
 # Misc
 *.log
