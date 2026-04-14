@@ -103,7 +103,7 @@ export const sessionSchema = z.object({
   seatsTotal: z.number().int().positive(),
   priceFrom: z.number().nonnegative().optional(),
   currency: z.string().length(3).optional(),
-  attributes: z.record(z.string()),
+  attributes: z.record(z.string(), z.string()),
 });
 
 /**
