@@ -5,6 +5,12 @@ export default defineConfig({
     globals: true,
     environment: 'node',
     include: ['tests/**/*.test.ts'],
+    /**
+     * Use 'forks' pool instead of default 'threads' to support
+     * process.chdir() in init command tests. Worker threads don't
+     * allow cwd changes — forked processes do.
+     */
+    pool: 'forks',
     coverage: {
       provider: 'v8',
       include: ['src/**/*.ts'],
