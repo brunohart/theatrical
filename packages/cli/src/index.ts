@@ -16,7 +16,7 @@
  * theatrical codegen --spec ./openapi.yaml --output ./src/types
  *
  * # Explore API responses interactively
- * theatrical inspect sessions list --site abc123 --date 2026-04-14
+ * theatrical inspect sessions list --site abc123 --date 2026-04-15
  * ```
  */
 
@@ -24,6 +24,8 @@ import { Command } from 'commander';
 import { printBanner } from './utils/output.js';
 import { resolveConfig } from './utils/config.js';
 import { createInitCommand } from './commands/init.js';
+import { createCodegenCommand } from './commands/codegen.js';
+import { createInspectCommand } from './commands/inspect.js';
 
 /** Package version — injected at build time, fallback for development */
 const VERSION = '0.1.0';
@@ -75,43 +77,12 @@ export function createProgram(): Command {
       }
     });
 
-  // Register subcommands
+  // Register all subcommands
   program.addCommand(createInitCommand());
-  registerPlaceholderCommands(program);
+  program.addCommand(createCodegenCommand());
+  program.addCommand(createInspectCommand());
 
   return program;
-}
-
-/**
- * Register placeholder commands that will be implemented in subsequent commits.
- * Each outputs a helpful "coming soon" message with expected functionality.
- */
-function registerPlaceholderCommands(program: Command): void {
-  program
-    .command('codegen')
-    .description('Generate TypeScript types and Zod schemas from OpenAPI specs')
-    .requiredOption('-s, --spec <path>', 'Path to OpenAPI specification file')
-    .option(
-      '-o, --output <dir>',
-      'Output directory for generated types',
-      './src/generated'
-    )
-    .option('--zod', 'Generate Zod schemas alongside TypeScript types', true)
-    .action(async () => {
-      console.log('🎬 theatrical codegen — generate types from OpenAPI');
-      console.log('   Implementation coming soon.');
-    });
-
-  program
-    .command('inspect <resource> <action>')
-    .description('Interactive API explorer with formatted output')
-    .option('--site <id>', 'Cinema site ID')
-    .option('--date <date>', 'Date filter (YYYY-MM-DD)')
-    .option('-o, --output <file>', 'Save response to file')
-    .action(async (resource: string, action: string) => {
-      console.log(`🎬 theatrical inspect ${resource} ${action}`);
-      console.log('   Implementation coming soon.');
-    });
 }
 
 /**
