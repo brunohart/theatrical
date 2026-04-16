@@ -8,7 +8,8 @@ export type { Film, FilmDetail, FilmFilter, FilmSearchFilter, Genre, FilmFormat,
 export { filmSchema, filmDetailSchema, filmSearchFilterSchema, castMemberSchema, crewMemberSchema, filmRatingSchema, ratingSchema, genreSchema, filmFormatSchema, filmLanguageSchema } from './film';
 export type { Order, OrderItem, Ticket, OrderStatus, OrderTransition, AddTicketsInput, AddItemsInput, ApplyLoyaltyInput, OrderHistoryFilter } from './order';
 export { orderSchema, orderItemSchema, ticketSchema, orderStatusSchema, orderHistoryFilterSchema, ORDER_TRANSITIONS } from './order';
-export type { LoyaltyMember, LoyaltyTier } from './loyalty';
+export type { LoyaltyMember, LoyaltyTier, LoyaltyTierName, PointsTransaction, RedemptionOption, RedeemPointsInput, PointsHistoryFilter } from './loyalty';
+export { loyaltyTierNameSchema, loyaltyTierSchema, loyaltyMemberSchema, pointsTransactionSchema, redemptionOptionSchema, redeemPointsInputSchema, pointsHistoryFilterSchema } from './loyalty';
 export type { Subscription, SubscriptionPlan } from './subscription';
 export type { PriceCalculation, TicketType } from './pricing';
 export type { MenuItem, MenuCategory } from './menu';
