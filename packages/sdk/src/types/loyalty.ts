@@ -1,3 +1,5 @@
+import { z } from 'zod';
+
 /** Loyalty tier levels available in Vista cinema programs. */
 export type LoyaltyTierName = 'Bronze' | 'Silver' | 'Gold' | 'Platinum';
 
@@ -82,3 +84,74 @@ export interface PointsHistoryFilter {
   limit?: number;
   offset?: number;
 }
+
+// ---------------------------------------------------------------------------
+// Zod schemas
+// ---------------------------------------------------------------------------
+
+/** Validates loyalty tier name strings from the Vista API. */
+export const loyaltyTierNameSchema = z.enum(['Bronze', 'Silver', 'Gold', 'Platinum']);
+
+/** Validates a loyalty tier object. */
+export const loyaltyTierSchema = z.object({
+  id: z.string(),
+  name: loyaltyTierNameSchema,
+  level: z.number().int().min(1).max(4),
+  benefits: z.array(z.string()),
+  pointsThreshold: z.number().int().nonnegative(),
+});
+
+/** Validates a full loyalty member record. */
+export const loyaltyMemberSchema = z.object({
+  id: z.string(),
+  email: z.string().email(),
+  firstName: z.string(),
+  lastName: z.string(),
+  tier: loyaltyTierSchema,
+  points: z.number().int().nonnegative(),
+  lifetimePoints: z.number().int().nonnegative(),
+  memberSince: z.string(),
+  subscriptionId: z.string().optional(),
+  lastActivityDate: z.string().optional(),
+  active: z.boolean(),
+});
+
+/** Validates a single loyalty transaction record. */
+export const pointsTransactionSchema = z.object({
+  id: z.string(),
+  memberId: z.string(),
+  type: z.enum(['earn', 'redeem', 'adjust', 'expire']),
+  points: z.number().int(),
+  balanceAfter: z.number().int(),
+  description: z.string(),
+  createdAt: z.string(),
+  orderId: z.string().optional(),
+  siteId: z.string().optional(),
+});
+
+/** Validates a redemption catalog option. */
+export const redemptionOptionSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  description: z.string(),
+  pointsCost: z.number().int().positive(),
+  category: z.enum(['ticket', 'concession', 'upgrade', 'merchandise']),
+  available: z.boolean(),
+  expiresAt: z.string().optional(),
+});
+
+/** Validates redemption request input. */
+export const redeemPointsInputSchema = z.object({
+  optionId: z.string(),
+  orderId: z.string().optional(),
+  quantity: z.number().int().positive().optional(),
+});
+
+/** Validates history filter query params. */
+export const pointsHistoryFilterSchema = z.object({
+  type: z.enum(['earn', 'redeem', 'adjust', 'expire']).optional(),
+  from: z.string().optional(),
+  to: z.string().optional(),
+  limit: z.number().int().positive().optional(),
+  offset: z.number().int().nonnegative().optional(),
+});
