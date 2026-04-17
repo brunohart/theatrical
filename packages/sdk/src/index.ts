@@ -25,7 +25,7 @@ export type { Site, Screen, SiteConfig } from './types/site';
 export type { Film, FilmFilter } from './types/film';
 export type { Order, OrderItem, Ticket, OrderStatus } from './types/order';
 export type { LoyaltyMember, LoyaltyTier } from './types/loyalty';
-export type { Subscription, SubscriptionPlan } from './types/subscription';
+export type { MemberSubscription, SubscriptionPlan, SubscriptionBenefit, SubscriptionUsage } from './types/subscription';
 export type { PriceCalculation, TicketType } from './types/pricing';
 export type { MenuItem, MenuCategory } from './types/menu';
 
