@@ -10,7 +10,8 @@ export type { Order, OrderItem, Ticket, OrderStatus, OrderTransition, AddTickets
 export { orderSchema, orderItemSchema, ticketSchema, orderStatusSchema, orderHistoryFilterSchema, ORDER_TRANSITIONS } from './order';
 export type { LoyaltyMember, LoyaltyTier, LoyaltyTierName, PointsTransaction, RedemptionOption, RedeemPointsInput, PointsHistoryFilter } from './loyalty';
 export { loyaltyTierNameSchema, loyaltyTierSchema, loyaltyMemberSchema, pointsTransactionSchema, redemptionOptionSchema, redeemPointsInputSchema, pointsHistoryFilterSchema } from './loyalty';
-export type { Subscription, SubscriptionPlan } from './subscription';
+export type { MemberSubscription, SubscriptionPlan, SubscriptionBenefit, SubscriptionUsage, SubscriptionInterval, SubscriptionStatus, BenefitCategory, SuspendSubscriptionInput, CancelSubscriptionInput } from './subscription';
+export { subscriptionIntervalSchema, subscriptionStatusSchema, benefitCategorySchema, subscriptionBenefitSchema, subscriptionPlanSchema, subscriptionUsageSchema, memberSubscriptionSchema, suspendSubscriptionInputSchema, cancelSubscriptionInputSchema } from './subscription';
 export type { PriceCalculation, TicketType } from './pricing';
 export type { MenuItem, MenuCategory } from './menu';
 export type { PaginatedResponse, PaginationParams, PaginationStrategy } from './pagination';
