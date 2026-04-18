@@ -89,6 +89,8 @@ export class FilmsResource {
   /**
    * Search films with basic filters.
    *
+   * @throws {TheatricalError} When the API returns an error response
+   * @throws {z.ZodError} When the response fails schema validation
    * @param filters - Genre, query string, site, and showing status filters
    * @returns Array of matching films
    */
