@@ -43,6 +43,29 @@ export {
   applyCouponsInputSchema,
   couponApplicationResultSchema,
 } from './pricing.schemas';
-export type { MenuItem, MenuCategory, DietaryFlag } from './menu';
+export type {
+  MenuItem,
+  MenuCategory,
+  MenuSectionType,
+  DietaryFlag,
+  ItemCustomisation,
+  ComboOffer,
+  FnbOrderLineItem,
+  AddToOrderInput,
+  FnbOrderConfirmation,
+  MenuFilter,
+} from './menu';
+export {
+  dietaryFlagSchema,
+  menuSectionTypeSchema,
+  menuCategorySchema,
+  itemCustomisationSchema,
+  menuItemSchema,
+  comboOfferSchema,
+  fnbOrderLineItemSchema,
+  addToOrderInputSchema,
+  fnbOrderConfirmationSchema,
+  menuFilterSchema,
+} from './menu.schemas';
 export type { PaginatedResponse, PaginationParams, PaginationStrategy } from './pagination';
 export { paginationParamsSchema, paginatedResponseSchema } from './pagination';
