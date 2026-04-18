@@ -12,7 +12,37 @@ export type { LoyaltyMember, LoyaltyTier, LoyaltyTierName, PointsTransaction, Re
 export { loyaltyTierNameSchema, loyaltyTierSchema, loyaltyMemberSchema, pointsTransactionSchema, redemptionOptionSchema, redeemPointsInputSchema, pointsHistoryFilterSchema } from './loyalty';
 export type { MemberSubscription, SubscriptionPlan, SubscriptionBenefit, SubscriptionUsage, SubscriptionInterval, SubscriptionStatus, BenefitCategory, SuspendSubscriptionInput, CancelSubscriptionInput } from './subscription';
 export { subscriptionIntervalSchema, subscriptionStatusSchema, benefitCategorySchema, subscriptionBenefitSchema, subscriptionPlanSchema, subscriptionUsageSchema, memberSubscriptionSchema, suspendSubscriptionInputSchema, cancelSubscriptionInputSchema } from './subscription';
-export type { PriceCalculation, TicketType } from './pricing';
-export type { MenuItem, MenuCategory } from './menu';
+export type {
+  PriceCalculation,
+  PriceBreakdown,
+  TicketType,
+  TicketTypeFilter,
+  TicketCategory,
+  TaxConfig,
+  Discount,
+  DiscountSource,
+  Surcharge,
+  SurchargeReason,
+  DayPart,
+  ApplyCouponsInput,
+  CouponApplicationResult,
+} from './pricing';
+export {
+  sessionFormatSchema as pricingSessionFormatSchema,
+  dayPartSchema,
+  ticketCategorySchema,
+  ticketTypeSchema,
+  ticketTypeFilterSchema,
+  taxConfigSchema,
+  discountSourceSchema,
+  discountSchema,
+  surchargeReasonSchema,
+  surchargeSchema,
+  priceBreakdownSchema,
+  priceCalculationSchema,
+  applyCouponsInputSchema,
+  couponApplicationResultSchema,
+} from './pricing.schemas';
+export type { MenuItem, MenuCategory, DietaryFlag } from './menu';
 export type { PaginatedResponse, PaginationParams, PaginationStrategy } from './pagination';
 export { paginationParamsSchema, paginatedResponseSchema } from './pagination';
