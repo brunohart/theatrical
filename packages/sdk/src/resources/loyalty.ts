@@ -23,6 +23,7 @@ export class LoyaltyResource {
    * @param memberId - Vista loyalty member identifier
    */
   async getMember(memberId: string): Promise<LoyaltyMember> {
+   * @throws {TheatricalError} When the API returns an error response
     return this.http.get<LoyaltyMember>(`/ocapi/v1/loyalty/members/${memberId}`);
   }
 
