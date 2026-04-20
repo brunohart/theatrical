@@ -1,0 +1,96 @@
+---
+title: Quickstart
+description: Make your first Theatrical API call in under five minutes.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+This guide walks through the complete path from installation to a live API call — sessions at a cinema site, returned as typed objects.
+
+## Before you start
+
+You need a Vista Group operator token. If you don't have one yet, see [Authentication](/guides/authentication/).
+
+<Steps>
+
+1. **Install the SDK**
+
+   ```bash
+   npm install @theatrical/sdk
+   ```
+
+2. **Create the client**
+
+   ```typescript
+   import { TheatricalClient } from '@theatrical/sdk';
+
+   const client = TheatricalClient.create({
+     apiKey: process.env.THEATRICAL_API_KEY,
+     baseUrl: 'https://your-vista-instance.example.com',
+   });
+   ```
+
+   Or use the singleton pattern for application-wide access:
+
+   ```typescript
+   // In your app entry point
+   TheatricalClient.init({
+     apiKey: process.env.THEATRICAL_API_KEY,
+     baseUrl: 'https://your-vista-instance.example.com',
+   });
+
+   // Anywhere in your app
+   const client = TheatricalClient.global();
+   ```
+
+3. **Fetch sessions**
+
+   ```typescript
+   const sessions = await client.sessions.list({
+     siteId: 'site-001',
+     date: '2026-04-20',
+   });
+
+   for (const session of sessions.data) {
+     console.log(`${session.film.title} — ${session.startTime} — ${session.screen.name}`);
+   }
+   ```
+
+   The response is fully typed. Your editor will autocomplete `session.film`, `session.screen`, `session.format`, and all nested fields.
+
+4. **Check seat availability**
+
+   ```typescript
+   const availability = await client.sessions.availability(sessions.data[0].id);
+
+   const availableSeats = availability.seats.filter(s => s.status === 'available');
+   console.log(`${availableSeats.length} seats available`);
+   ```
+
+5. **Create an order**
+
+   ```typescript
+   const order = await client.orders.create({
+     sessionId: sessions.data[0].id,
+     siteId: 'site-001',
+   });
+
+   await client.orders.addTickets(order.id, {
+     tickets: [
+       { seatId: availableSeats[0].id, ticketTypeId: 'adult' },
+       { seatId: availableSeats[1].id, ticketTypeId: 'adult' },
+     ],
+   });
+
+   const confirmed = await client.orders.confirm(order.id);
+   console.log(`Order confirmed: ${confirmed.id} — total ${confirmed.pricing.total}`);
+   ```
+
+</Steps>
+
+## What's next?
+
+- [Authentication guide](/guides/authentication/) — token-based vs cookie-based auth modes
+- [Error handling guide](/guides/error-handling/) — typed errors and retry strategies
+- [React components](/packages/react/) — drop-in SeatMap, SessionPicker, and OrderSummary
+- [Templates](/templates/overview/) — full booking apps ready to deploy
