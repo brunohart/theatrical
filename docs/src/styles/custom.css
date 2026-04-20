@@ -1,0 +1,20 @@
+/* Theatrical docs — cinema-inspired overrides */
+:root {
+  --sl-color-accent-low: #1a1008;
+  --sl-color-accent: #c9922a;
+  --sl-color-accent-high: #f0c060;
+  --sl-color-white: #ffffff;
+  --sl-color-gray-1: #f8f5ef;
+  --sl-color-gray-2: #ede8df;
+  --sl-color-gray-3: #bfb9ae;
+  --sl-color-gray-4: #7d756a;
+  --sl-color-gray-5: #3d3830;
+  --sl-color-gray-6: #1e1a15;
+  --sl-color-black: #0d0b08;
+}
+
+[data-theme='dark'] {
+  --sl-color-accent-low: #1a1008;
+  --sl-color-accent: #c9922a;
+  --sl-color-accent-high: #f0c060;
+}
