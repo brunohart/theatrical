@@ -1,0 +1,76 @@
+---
+title: Error Handling
+description: Typed error hierarchy, retry strategies, and rate limit handling.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+All errors thrown by Theatrical extend `TheatricalError`, which extends the native `Error` class. This means you can catch them with a standard `try/catch` and narrow to specific types with `instanceof`.
+
+## Error hierarchy
+
+```
+TheatricalError
+├── AuthenticationError    — 401 / invalid token
+├── AuthorizationError     — 403 / insufficient permissions
+├── NotFoundError          — 404 / resource doesn't exist
+├── ValidationError        — 400 / request failed validation
+│   └── .fields            — array of { field, message }
+├── RateLimitError         — 429 / request throttled
+│   └── .retryAfter        — seconds to wait before retrying
+├── ConflictError          — 409 / concurrent modification
+└── ServerError            — 5xx / Vista API error
+```
+
+## Catching specific errors
+
+```typescript
+import {
+  TheatricalClient,
+  AuthenticationError,
+  NotFoundError,
+  RateLimitError,
+  ValidationError,
+} from '@theatrical/sdk';
+
+try {
+  const session = await client.sessions.get('ses-unknown');
+} catch (err) {
+  if (err instanceof NotFoundError) {
+    console.error(`Session not found: ${err.resourceId}`);
+  } else if (err instanceof RateLimitError) {
+    const waitMs = err.retryAfter * 1000;
+    await new Promise(r => setTimeout(r, waitMs));
+    // retry...
+  } else if (err instanceof ValidationError) {
+    for (const field of err.fields) {
+      console.error(`${field.field}: ${field.message}`);
+    }
+  } else {
+    throw err; // re-throw unexpected errors
+  }
+}
+```
+
+## Automatic retry
+
+The SDK automatically retries `5xx` server errors and `429` rate limit responses using exponential backoff with jitter. Default config:
+
+```typescript
+const client = TheatricalClient.create({
+  apiKey: process.env.THEATRICAL_API_KEY,
+  baseUrl: process.env.THEATRICAL_BASE_URL,
+  retry: {
+    maxRetries: 3,
+    baseDelayMs: 500,
+    maxDelayMs: 10_000,
+    jitter: true,
+  },
+});
+```
+
+Set `retry: false` to disable automatic retry entirely.
+
+<Aside>
+`429` responses that include a `Retry-After` header use the server-specified wait time rather than the computed backoff delay.
+</Aside>

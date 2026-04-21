@@ -1,0 +1,63 @@
+---
+title: '@theatrical/react'
+description: Cinema-grade React components for booking flows.
+---
+
+A React component library with cinema-inspired design. Dark mode by default. Every component connects directly to `@theatrical/sdk`.
+
+## Install
+
+```bash
+npm install @theatrical/react @theatrical/sdk
+```
+
+## Setup
+
+Wrap your app in `TheatricalThemeProvider`:
+
+```tsx
+import { TheatricalThemeProvider } from '@theatrical/react';
+
+export default function App() {
+  return (
+    <TheatricalThemeProvider>
+      {/* your app */}
+    </TheatricalThemeProvider>
+  );
+}
+```
+
+## Components
+
+| Component | Purpose |
+|-----------|---------|
+| `SeatMap` | Interactive auditorium seat selection |
+| `SessionPicker` | Date-based showtime browser |
+| `OrderSummary` | Booking review with price breakdown |
+| `PaymentForm` | Payment shell with Adyen integration slot |
+| `LoyaltyBadge` | Compact tier + points display |
+| `MemberCard` | Full loyalty member card with tier progression |
+
+## SeatMap example
+
+```tsx
+import { SeatMap } from '@theatrical/react';
+
+<SeatMap
+  availability={sessionAvailability}
+  onSelectionChange={(seats) => setSelected(seats)}
+  maxSeats={4}
+/>
+```
+
+## SessionPicker example
+
+```tsx
+import { SessionPicker } from '@theatrical/react';
+
+<SessionPicker
+  sessions={sessions}
+  groupBy="time"
+  onSessionSelect={(session) => setSession(session)}
+/>
+```
