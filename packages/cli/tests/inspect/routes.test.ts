@@ -12,7 +12,7 @@ describe('resolveRoute', () => {
     const route = resolveRoute('sessions', 'list');
     expect(route).not.toBeNull();
     expect(route!.method).toBe('GET');
-    expect(route!.path).toBe('/v2/sessions');
+    expect(route!.path).toBe('/ocapi/v1/sessions');
   });
 
   it('resolves films get route', () => {
@@ -54,13 +54,13 @@ describe('buildRequestUrl', () => {
   it('builds a basic list URL', () => {
     const route = resolveRoute('sessions', 'list')!;
     const url = buildRequestUrl(route, baseUrl, {});
-    expect(url).toBe('https://api.vista.co/v2/sessions');
+    expect(url).toBe('https://api.vista.co/ocapi/v1/sessions');
   });
 
   it('substitutes :id parameter', () => {
     const route = resolveRoute('films', 'get')!;
     const url = buildRequestUrl(route, baseUrl, {}, 'film_12345');
-    expect(url).toBe('https://api.vista.co/v2/films/film_12345');
+    expect(url).toBe('https://api.vista.co/ocapi/v1/films/film_12345');
   });
 
   it('adds site query parameter', () => {

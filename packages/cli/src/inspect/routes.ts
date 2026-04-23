@@ -19,17 +19,17 @@ const ROUTES: Record<InspectResource, Record<InspectAction, ResourceRoute>> = {
   sessions: {
     list: {
       method: 'GET',
-      path: '/v2/sessions',
+      path: '/ocapi/v1/sessions',
       description: 'List sessions with optional site and date filters',
     },
     get: {
       method: 'GET',
-      path: '/v2/sessions/:id',
+      path: '/ocapi/v1/sessions/:id',
       description: 'Get a specific session by ID',
     },
     search: {
       method: 'GET',
-      path: '/v2/sessions',
+      path: '/ocapi/v1/sessions',
       description: 'Search sessions by film, site, or date',
     },
   },
@@ -37,17 +37,17 @@ const ROUTES: Record<InspectResource, Record<InspectAction, ResourceRoute>> = {
   sites: {
     list: {
       method: 'GET',
-      path: '/v2/sites',
+      path: '/ocapi/v1/sites',
       description: 'List all cinema sites',
     },
     get: {
       method: 'GET',
-      path: '/v2/sites/:id',
+      path: '/ocapi/v1/sites/:id',
       description: 'Get detailed site information',
     },
     search: {
       method: 'GET',
-      path: '/v2/sites',
+      path: '/ocapi/v1/sites',
       description: 'Search sites by name or location',
     },
   },
@@ -55,17 +55,17 @@ const ROUTES: Record<InspectResource, Record<InspectAction, ResourceRoute>> = {
   films: {
     list: {
       method: 'GET',
-      path: '/v2/films',
+      path: '/ocapi/v1/films',
       description: 'List films — now showing and coming soon',
     },
     get: {
       method: 'GET',
-      path: '/v2/films/:id',
+      path: '/ocapi/v1/films/:id',
       description: 'Get full film details with cast and crew',
     },
     search: {
       method: 'GET',
-      path: '/v2/films',
+      path: '/ocapi/v1/films',
       description: 'Search films by title, genre, or rating',
     },
   },
@@ -73,17 +73,17 @@ const ROUTES: Record<InspectResource, Record<InspectAction, ResourceRoute>> = {
   orders: {
     list: {
       method: 'GET',
-      path: '/v2/orders',
+      path: '/ocapi/v1/orders',
       description: 'List orders for a member or site',
     },
     get: {
       method: 'GET',
-      path: '/v2/orders/:id',
+      path: '/ocapi/v1/orders/:id',
       description: 'Get order details with line items',
     },
     search: {
       method: 'GET',
-      path: '/v2/orders',
+      path: '/ocapi/v1/orders',
       description: 'Search orders by date range or status',
     },
   },
@@ -91,17 +91,17 @@ const ROUTES: Record<InspectResource, Record<InspectAction, ResourceRoute>> = {
   loyalty: {
     list: {
       method: 'GET',
-      path: '/v2/loyalty/members',
+      path: '/ocapi/v1/loyalty/members',
       description: 'List loyalty members',
     },
     get: {
       method: 'GET',
-      path: '/v2/loyalty/members/:id',
+      path: '/ocapi/v1/loyalty/members/:id',
       description: 'Get loyalty member profile and points balance',
     },
     search: {
       method: 'GET',
-      path: '/v2/loyalty/members',
+      path: '/ocapi/v1/loyalty/members',
       description: 'Search loyalty members by name or email',
     },
   },
