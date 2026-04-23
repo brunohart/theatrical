@@ -87,4 +87,20 @@ describe('inspect command integration', () => {
     // If we get here without an unhandled crash, the test passes
     expect(true).toBe(true);
   });
+
+  it('exposes parent program options via command.parent.opts()', () => {
+    // Regression for cr-021: the action handler must reach the parent
+    // program's --api-url / --api-key through the Command instance, not
+    // via cmdOptions.parent (which is undefined — options objects have no
+    // .parent). If a subcommand loses the parent link, global flags like
+    // --api-url silently fall back to defaults.
+    const program = new Command()
+      .option('--api-url <url>', 'API base URL')
+      .option('--api-key <key>', 'API key');
+    const inspect = createInspectCommand();
+    program.addCommand(inspect);
+
+    expect(inspect.parent).toBe(program);
+    expect(inspect.parent?.opts()).toBeDefined();
+  });
 });

@@ -54,9 +54,16 @@ export function createInspectCommand(): Command {
     .option('-o, --output <file>', 'Save response to file (JSON)')
     .option('-n, --limit <count>', 'Maximum results to return', parseInt)
     .option('--table', 'Display results as a table (for list actions)')
-    .action(async (resource: string, action: string, id: string | undefined, cmdOptions: any) => {
+    .action(async function (
+      this: Command,
+      resource: string,
+      action: string,
+      id: string | undefined,
+      cmdOptions: Record<string, unknown>,
+      command: Command,
+    ) {
       try {
-        await runInspect(resource, action, id, cmdOptions);
+        await runInspect(resource, action, id, cmdOptions, command);
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         console.error(output.error(message));
@@ -75,7 +82,8 @@ async function runInspect(
   resource: string,
   action: string,
   id: string | undefined,
-  cmdOptions: Record<string, unknown>
+  cmdOptions: Record<string, unknown>,
+  command: Command,
 ): Promise<void> {
   // Validate resource
   if (!VALID_RESOURCES.includes(resource as any)) {
@@ -114,11 +122,11 @@ async function runInspect(
     noColor: cmdOptions.noColor as boolean | undefined,
   };
 
-  // Resolve API URL from parent command config or default
-  const parent = cmdOptions.parent as Record<string, unknown> | undefined;
-  const parentOptsFn = parent?.opts as (() => Record<string, unknown>) | undefined;
-  const parentOpts = parentOptsFn?.() ?? {};
-  const apiUrl = (parentOpts.apiUrl as string) ?? DEFAULT_API_URL;
+  // Resolve API URL from parent command config or default.
+  // Commander action callbacks receive the Command instance as the final arg —
+  // .parent on that instance is the Command we registered under (the program).
+  const parentOpts = command.parent?.opts() ?? {};
+  const apiUrl = (parentOpts.apiUrl as string | undefined) ?? DEFAULT_API_URL;
   const apiKey = parentOpts.apiKey as string | undefined;
 
   // Build request URL
