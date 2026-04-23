@@ -105,6 +105,14 @@ describe('buildRequestUrl', () => {
     const url = buildRequestUrl(route, baseUrl, {}, 'site with spaces');
     expect(url).toContain('site%20with%20spaces');
   });
+
+  it('throws when a :id route is called without an id', () => {
+    // Regression for cr-023: previously the literal ":id" was left in the
+    // URL, so the request silently hit /ocapi/v1/films/:id and came back
+    // as an opaque 404. Fail at build time instead.
+    const route = resolveRoute('films', 'get')!;
+    expect(() => buildRequestUrl(route, baseUrl, {})).toThrow(/requires an id/);
+  });
 });
 
 describe('constants', () => {

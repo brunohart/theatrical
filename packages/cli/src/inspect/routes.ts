@@ -146,9 +146,16 @@ export function buildRequestUrl(
   options: InspectOptions,
   id?: string
 ): string {
-  // Substitute path parameters
+  // Substitute path parameters. If the route declares :id but no id was
+  // supplied, fail loudly rather than emit a request to a literal ":id"
+  // path that the server will reject with an opaque 404.
   let path = route.path;
-  if (id && path.includes(':id')) {
+  if (path.includes(':id')) {
+    if (!id) {
+      throw new Error(
+        `Route ${route.method} ${route.path} requires an id argument`,
+      );
+    }
     path = path.replace(':id', encodeURIComponent(id));
   }
 
