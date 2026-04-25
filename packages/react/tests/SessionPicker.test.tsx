@@ -138,7 +138,7 @@ describe('SessionPicker', () => {
         dayCount={3}
       />,
     );
-    const dateButtons = screen.getAllByRole('option');
+    const dateButtons = screen.getAllByRole('tab');
     fireEvent.click(dateButtons[1]);
     expect(onDateChange).toHaveBeenCalled();
   });
