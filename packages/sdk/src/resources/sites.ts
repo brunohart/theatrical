@@ -38,9 +38,12 @@ export class SitesResource {
     longitude?: number;
     radius?: number;
   }): Promise<Site[]> {
-    const raw = await this.http.get<unknown>('/ocapi/v1/sites', {
-      params: filters as Record<string, string | number | boolean | undefined>,
-    });
+    const params: Record<string, string | number> = {};
+    if (filters?.query) params.query = filters.query;
+    if (filters?.latitude !== undefined) params.latitude = filters.latitude;
+    if (filters?.longitude !== undefined) params.longitude = filters.longitude;
+    if (filters?.radius !== undefined) params.radius = filters.radius;
+    const raw = await this.http.get<unknown>('/ocapi/v1/sites', { params });
     return siteListResponseSchema.parse(raw);
   }
 
