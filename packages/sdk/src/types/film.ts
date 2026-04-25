@@ -2,19 +2,19 @@ import { z } from 'zod';
 
 // ─── Enums & Primitives ────────────────────────────────────
 
-/**
- * Film genre classification. Includes standard MPAA/NZ Film Commission genres
- * plus a string fallback for distributor-specific categories.
- */
-export type Genre = 'action' | 'adventure' | 'animation' | 'comedy' | 'crime' | 'documentary' |
-  'drama' | 'family' | 'fantasy' | 'horror' | 'musical' | 'mystery' | 'romance' |
-  'sci-fi' | 'thriller' | 'war' | 'western' | string;
+/** Bounded genre enum. Unknown values from Vista's API indicate the schema needs updating. */
+export const GENRES = ['action', 'adventure', 'animation', 'comedy', 'crime', 'documentary',
+  'drama', 'family', 'fantasy', 'horror', 'musical', 'mystery', 'romance',
+  'sci-fi', 'thriller', 'war', 'western'] as const;
+export type Genre = typeof GENRES[number];
 
-/** Screening format a film is available in */
-export type FilmFormat = '2D' | '3D' | 'IMAX' | 'IMAX 3D' | '4DX' | 'Dolby Atmos' | 'ScreenX' | string;
+/** Bounded screening format enum. */
+export const FILM_FORMATS = ['2D', '3D', 'IMAX', 'IMAX 3D', '4DX', 'Dolby Atmos', 'ScreenX'] as const;
+export type FilmFormat = typeof FILM_FORMATS[number];
 
-/** Language availability for a film */
-export type FilmLanguage = 'en' | 'es' | 'fr' | 'de' | 'ja' | 'ko' | 'zh' | 'hi' | 'te' | 'mi' | string;
+/** Bounded language code enum (BCP-47 subset for NZ market). */
+export const FILM_LANGUAGES = ['en', 'es', 'fr', 'de', 'ja', 'ko', 'zh', 'hi', 'te', 'mi'] as const;
+export type FilmLanguage = typeof FILM_LANGUAGES[number];
 
 // ─── Interfaces ────────────────────────────────────────────
 
@@ -153,11 +153,11 @@ export interface FilmSearchFilter extends FilmFilter {
 
 // ─── Zod Schemas ───────────────────────────────────────────
 
-export const genreSchema = z.string();
+export const genreSchema = z.enum(GENRES);
 
-export const filmFormatSchema = z.string();
+export const filmFormatSchema = z.enum(FILM_FORMATS);
 
-export const filmLanguageSchema = z.string();
+export const filmLanguageSchema = z.enum(FILM_LANGUAGES);
 
 export const ratingSchema = z.object({
   classification: z.string(),
