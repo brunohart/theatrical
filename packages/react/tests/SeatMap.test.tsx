@@ -68,7 +68,7 @@ describe('SeatMap', () => {
       />,
     );
     const seat = screen.getByLabelText('Seat A1 — Selected');
-    expect(seat).toHaveAttribute('aria-checked', 'true');
+    expect(seat).toHaveAttribute('aria-selected', 'true');
   });
 
   it('enforces maxSelectable — does not call onSeatSelect when limit is reached', () => {

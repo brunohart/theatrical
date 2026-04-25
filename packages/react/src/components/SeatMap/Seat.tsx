@@ -47,8 +47,8 @@ export function Seat({ seat, isSelected, onSelect, disabled }: SeatProps) {
 
   return (
     <button
-      role="checkbox"
-      aria-checked={isSelected}
+      role="gridcell"
+      aria-selected={isSelected}
       aria-label={ariaLabel}
       aria-disabled={!isInteractive}
       tabIndex={isInteractive ? 0 : -1}
