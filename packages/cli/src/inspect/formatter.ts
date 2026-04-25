@@ -137,10 +137,11 @@ function colorize(value: unknown, depth: number, indent: number, maxStr: number)
   }
 
   if (typeof value === 'string') {
+    const truncated = value.length > maxStr ? value.slice(0, maxStr) : value;
     const display = value.length > maxStr
-      ? value.slice(0, maxStr) + chalk.dim('…')
-      : value;
-    return chalk.green(`"${display}"`);
+      ? JSON.stringify(truncated).slice(0, -1) + chalk.dim('…"')
+      : JSON.stringify(truncated);
+    return chalk.green(display);
   }
 
   if (typeof value === 'number') {
