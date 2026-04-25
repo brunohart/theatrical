@@ -7,10 +7,19 @@ export function useTheme(): Tokens {
   return useContext(ThemeContext);
 }
 
+type DeepPartialTokens = Partial<{
+  colors: Partial<Tokens['colors']>;
+  spacing: Partial<Tokens['spacing']>;
+  typography: Partial<Tokens['typography']>;
+  radii: Partial<Tokens['radii']>;
+  shadows: Partial<Tokens['shadows']>;
+  transitions: Partial<Tokens['transitions']>;
+}>;
+
 interface TheatricalThemeProviderProps {
   children: ReactNode;
-  /** Override specific token values. Deep-merged with defaults. */
-  overrides?: Partial<Tokens>;
+  /** Override specific token values. Deep-merged with defaults — partial overrides within each namespace are safe. */
+  overrides?: DeepPartialTokens;
 }
 
 /**
@@ -25,7 +34,17 @@ interface TheatricalThemeProviderProps {
  * ```
  */
 export function TheatricalThemeProvider({ children, overrides }: TheatricalThemeProviderProps) {
-  const theme: Tokens = overrides ? { ...tokens, ...overrides } : tokens;
+  const theme: Tokens = overrides
+    ? {
+        ...tokens,
+        colors: { ...tokens.colors, ...(overrides.colors ?? {}) },
+        spacing: { ...tokens.spacing, ...(overrides.spacing ?? {}) },
+        typography: { ...tokens.typography, ...(overrides.typography ?? {}) },
+        radii: { ...tokens.radii, ...(overrides.radii ?? {}) },
+        shadows: { ...tokens.shadows, ...(overrides.shadows ?? {}) },
+        transitions: { ...tokens.transitions, ...(overrides.transitions ?? {}) },
+      }
+    : tokens;
 
   const cssVars: React.CSSProperties = {
     // Colors
