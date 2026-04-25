@@ -43,9 +43,8 @@ export class FilmsResource {
    * @returns Array of films currently in cinemas
    */
   async nowShowing(filters?: { siteId?: string }): Promise<Film[]> {
-    const data = await this.http.get<unknown>('/ocapi/v1/films/now-showing', {
-      params: filters as Record<string, string | number | boolean | undefined>,
-    });
+    const params: Record<string, string> | undefined = filters?.siteId ? { siteId: filters.siteId } : undefined;
+    const data = await this.http.get<unknown>('/ocapi/v1/films/now-showing', { params });
     return this.parseFilms(data);
   }
 
@@ -56,9 +55,8 @@ export class FilmsResource {
    * @returns Array of upcoming films
    */
   async comingSoon(filters?: { siteId?: string }): Promise<Film[]> {
-    const data = await this.http.get<unknown>('/ocapi/v1/films/coming-soon', {
-      params: filters as Record<string, string | number | boolean | undefined>,
-    });
+    const params: Record<string, string> | undefined = filters?.siteId ? { siteId: filters.siteId } : undefined;
+    const data = await this.http.get<unknown>('/ocapi/v1/films/coming-soon', { params });
     return this.parseFilms(data);
   }
 
@@ -95,9 +93,13 @@ export class FilmsResource {
    * @returns Array of matching films
    */
   async search(filters: FilmFilter): Promise<Film[]> {
-    const data = await this.http.get<unknown>('/ocapi/v1/films', {
-      params: filters as Record<string, string | number | boolean | undefined>,
-    });
+    const params: Record<string, string | boolean> = {};
+    if (filters.siteId) params.siteId = filters.siteId;
+    if (filters.genre) params.genre = filters.genre;
+    if (filters.query) params.query = filters.query;
+    if (filters.nowShowing !== undefined) params.nowShowing = filters.nowShowing;
+    if (filters.comingSoon !== undefined) params.comingSoon = filters.comingSoon;
+    const data = await this.http.get<unknown>('/ocapi/v1/films', { params });
     return this.parseFilms(data);
   }
 
