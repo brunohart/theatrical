@@ -1,16 +1,12 @@
 import React, { useState } from 'react';
 import { tokens } from '../../tokens';
 
-type PaymentProvider = 'adyen' | 'stripe' | 'custom';
 type PaymentStatus = 'idle' | 'processing' | 'success' | 'error';
 
 interface PaymentFormProps {
   /** Total amount to charge, in minor currency units (e.g. cents) */
   amountMinor: number;
   currency?: string;
-  /** Adyen or Stripe session/client-secret for drop-in initialisation */
-  providerToken?: string;
-  provider?: PaymentProvider;
   /** Slot for provider-supplied drop-in UI (Adyen Drop-in, Stripe Elements, etc.) */
   paymentSlot?: React.ReactNode;
   onPaymentComplete?: (result: { success: boolean; reference?: string; error?: string }) => void;
@@ -33,7 +29,6 @@ function formatAmount(amountMinor: number, currency: string): string {
  * <PaymentForm
  *   amountMinor={4294}
  *   currency="NZD"
- *   provider="adyen"
  *   paymentSlot={<AdyenDropIn sessionData={sessionData} />}
  *   onPaymentComplete={handleComplete}
  * />
