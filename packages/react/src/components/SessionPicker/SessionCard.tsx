@@ -1,5 +1,6 @@
 import React from 'react';
 import { tokens } from '../../tokens';
+import { formatTimeOnly } from '../../utils/time';
 
 export interface SessionCardData {
   id: string;
@@ -19,13 +20,6 @@ interface SessionCardProps {
   onSelect: (id: string) => void;
 }
 
-function formatTime(isoOrTime: string): string {
-  if (isoOrTime.includes('T')) {
-    const d = new Date(isoOrTime);
-    return d.toLocaleTimeString('en-NZ', { hour: '2-digit', minute: '2-digit', hour12: true });
-  }
-  return isoOrTime;
-}
 
 export function SessionCard({ session, isSelected, onSelect }: SessionCardProps) {
   const isLowAvailability = session.availableSeats !== undefined && session.availableSeats <= 10;
@@ -34,7 +28,7 @@ export function SessionCard({ session, isSelected, onSelect }: SessionCardProps)
     <button
       onClick={() => onSelect(session.id)}
       aria-pressed={isSelected}
-      aria-label={`${formatTime(session.startTime)} — ${session.screenName} — ${session.format}`}
+      aria-label={`${formatTimeOnly(session.startTime)} — ${session.screenName} — ${session.format}`}
       style={{
         display: 'flex',
         flexDirection: 'column',
@@ -58,7 +52,7 @@ export function SessionCard({ session, isSelected, onSelect }: SessionCardProps)
           lineHeight: tokens.typography.lineHeights.tight,
         }}
       >
-        {formatTime(session.startTime)}
+        {formatTimeOnly(session.startTime)}
       </span>
       <span
         style={{

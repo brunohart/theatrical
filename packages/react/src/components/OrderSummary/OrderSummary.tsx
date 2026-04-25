@@ -3,21 +3,7 @@ import { tokens } from '../../tokens';
 import { LineItem } from './LineItem';
 import { PriceBreakdown } from './PriceBreakdown';
 import type { OrderSummaryProps } from './types';
-
-function formatTime(isoOrTime: string): string {
-  if (isoOrTime.includes('T')) {
-    const d = new Date(isoOrTime);
-    return d.toLocaleString('en-NZ', {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true,
-    });
-  }
-  return isoOrTime;
-}
+import { formatTime } from '../../utils/time';
 
 /**
  * Booking review panel. Displays session context, line items, and a full

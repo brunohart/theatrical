@@ -1,5 +1,6 @@
 import React from 'react';
 import { tokens } from '../../tokens';
+import { formatDateLabel } from '../../utils/time';
 
 interface DateSelectorProps {
   selectedDate: string;
@@ -8,14 +9,6 @@ interface DateSelectorProps {
   dayCount?: number;
 }
 
-function formatDateLabel(dateStr: string): { weekday: string; day: string; month: string } {
-  const d = new Date(dateStr + 'T00:00:00');
-  return {
-    weekday: d.toLocaleDateString('en-NZ', { weekday: 'short' }),
-    day: d.toLocaleDateString('en-NZ', { day: 'numeric' }),
-    month: d.toLocaleDateString('en-NZ', { month: 'short' }),
-  };
-}
 
 function generateDates(count: number): string[] {
   const dates: string[] = [];
@@ -40,7 +33,7 @@ export function DateSelector({ selectedDate, onDateSelect, dayCount = 14 }: Date
         paddingBottom: tokens.spacing.sm,
         scrollbarWidth: 'thin',
       }}
-      role="listbox"
+      role="tablist"
       aria-label="Select date"
     >
       {dates.map((date) => {
@@ -49,7 +42,7 @@ export function DateSelector({ selectedDate, onDateSelect, dayCount = 14 }: Date
         return (
           <button
             key={date}
-            role="option"
+            role="tab"
             aria-selected={isSelected}
             onClick={() => onDateSelect(date)}
             style={{
