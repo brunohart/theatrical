@@ -3,9 +3,9 @@ import {
   TheatricalError,
   AuthenticationError,
   RateLimitError,
-  NotFoundError,
   ServerError,
 } from '../errors';
+import { parseErrorResponse } from '../errors/parser';
 import { computeBackoffDelay, DEFAULT_RETRY_CONFIG, type RetryConfig } from './retry';
 import { RateLimiter } from './rate-limiter';
 import { runInterceptors, type RequestInterceptor, type RequestConfig, type ResponseInterceptor } from './interceptors';
@@ -142,46 +142,29 @@ export class TheatricalHTTPClient {
         return (await response.json()) as T;
       }
 
-      // Handle specific error codes
+      // 401 needs token invalidation before error parsing — handle first.
       if (response.status === 401) {
         this.config.tokenManager.invalidate();
         if (attempt <= 1) {
-          // Retry once with a fresh token
           return this.request<T>(options, path, attempt + 1);
         }
-        throw new AuthenticationError(undefined, undefined, requestId);
       }
 
-      if (response.status === 429) {
-        const retryAfter = parseInt(response.headers.get('Retry-After') ?? '60', 10);
-        if (attempt <= this.config.maxRetries) {
-          await this.delay(retryAfter * 1000);
-          return this.request<T>(options, path, attempt + 1);
-        }
-        throw new RateLimitError(retryAfter, requestId);
+      // Parse all other non-ok responses via the full error parser.
+      // Fixes: Vista error codes, field-level errors, HTTP-date Retry-After (cr-005, cr-006).
+      const error = await parseErrorResponse(response, requestConfig.url);
+
+      // Unified retry path for rate limits and server errors (cr-001).
+      if ((error instanceof RateLimitError || error instanceof ServerError) && attempt <= this.config.maxRetries) {
+        const retryConfig = this.config.retry ?? { ...DEFAULT_RETRY_CONFIG, maxRetries: this.config.maxRetries };
+        const delayMs = error instanceof RateLimitError
+          ? error.retryAfter * 1000
+          : computeBackoffDelay(attempt, retryConfig);
+        await this.delay(delayMs);
+        return this.request<T>(options, path, attempt + 1);
       }
 
-      if (response.status === 404) {
-        throw new NotFoundError('resource', path, requestId);
-      }
-
-      if (response.status >= 500) {
-        if (attempt <= this.config.maxRetries) {
-          const retryConfig = this.config.retry ?? { ...DEFAULT_RETRY_CONFIG, maxRetries: this.config.maxRetries };
-          await this.delay(computeBackoffDelay(attempt, retryConfig));
-          return this.request<T>(options, path, attempt + 1);
-        }
-        throw new ServerError(undefined, requestId);
-      }
-
-      // Generic error
-      const errorBody = await response.text();
-      throw new TheatricalError(
-        `Request failed: ${response.status} ${errorBody}`,
-        response.status,
-        undefined,
-        requestId,
-      );
+      throw error;
     } catch (error) {
       clearTimeout(timeoutId);
 
