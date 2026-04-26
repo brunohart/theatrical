@@ -1,0 +1,137 @@
+---
+title: Authentication
+description: Configure token-based operator auth and cookie-based loyalty member auth.
+---
+
+import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
+
+Theatrical supports two authentication modes. Most applications use both: operator tokens for transactional API calls, loyalty cookies for member-contextual calls (points balance, personal order history, subscription status).
+
+## Token-based auth (GAS)
+
+Vista Group's Global Authentication Service issues JWT operator tokens. These are short-lived (typically 1 hour) and are automatically refreshed by the SDK's `TokenManager` — your application code never handles token rotation.
+
+### Configuration
+
+```typescript
+import { TheatricalClient } from '@theatrical/sdk';
+
+const client = TheatricalClient.create({
+  apiKey: process.env.THEATRICAL_API_KEY,     // Your operator API key
+  apiSecret: process.env.THEATRICAL_SECRET,   // Your operator secret
+  baseUrl: 'https://your-vista-instance.example.com',
+});
+```
+
+The `apiKey` + `apiSecret` pair is exchanged for a bearer token on first request. Subsequent requests reuse the cached token until 60 seconds before expiry, at which point the SDK proactively refreshes it.
+
+### Environment variables
+
+```bash
+# .env
+THEATRICAL_API_KEY=op_live_xxxxxxxxxx
+THEATRICAL_SECRET=sk_live_xxxxxxxxxx
+THEATRICAL_BASE_URL=https://api.yourcinema.com
+```
+
+<Aside type="caution">
+Never commit your operator secret to version control. Use `.env` files (in `.gitignore`) and a secrets manager in production.
+</Aside>
+
+### Token lifecycle
+
+```
+First request
+    │
+    ▼
+GAS token request (apiKey + apiSecret)
+    │
+    ▼
+Bearer token cached in memory (TokenManager)
+    │
+    ▼  repeated for all requests
+HTTP calls with Authorization: Bearer <token>
+    │
+    ▼  60s before expiry
+Proactive token refresh (background)
+    │
+    ▼  on 401 response
+Immediate token refresh + one retry
+```
+
+## Cookie-based auth (loyalty members)
+
+Loyalty member endpoints require the Vista loyalty session cookie. This is obtained after a member authenticates through your cinema's loyalty portal.
+
+### Configuration
+
+```typescript
+const memberClient = TheatricalClient.create({
+  apiKey: process.env.THEATRICAL_API_KEY,
+  baseUrl: 'https://your-vista-instance.example.com',
+  loyaltyCookie: req.cookies['vista_session'], // From your auth flow
+});
+```
+
+### Member authentication flow
+
+<Tabs>
+  <TabItem label="Server-side (recommended)">
+    ```typescript
+    // After member logs in through your loyalty portal
+    const member = await client.loyalty.authenticate({
+      username: email,
+      password: hashedPassword, // Vista handles password hashing
+    });
+
+    // Store the session cookie in your own session
+    res.cookie('vista_session', member.sessionCookie, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'lax',
+    });
+    ```
+  </TabItem>
+  <TabItem label="Client-side (SSR)">
+    ```typescript
+    // In an API route or server component
+    const client = TheatricalClient.create({
+      apiKey: process.env.THEATRICAL_API_KEY,
+      baseUrl: process.env.THEATRICAL_BASE_URL,
+      loyaltyCookie: request.cookies.get('vista_session')?.value,
+    });
+
+    const member = await client.loyalty.getMember();
+    const balance = await client.loyalty.getPointsBalance(member.id);
+    ```
+  </TabItem>
+</Tabs>
+
+## Per-request overrides
+
+The client supports per-request auth overrides for multi-tenant scenarios:
+
+```typescript
+// Override loyalty cookie for a specific call
+const balance = await client.loyalty.getPointsBalance(memberId, {
+  loyaltyCookie: memberSession,
+});
+```
+
+## Verifying your setup
+
+```typescript
+try {
+  const sites = await client.sites.list();
+  console.log(`Auth OK — ${sites.data.length} sites accessible`);
+} catch (err) {
+  if (err instanceof AuthenticationError) {
+    console.error('Auth failed:', err.message);
+  }
+}
+```
+
+## Next steps
+
+- [Error handling](/guides/error-handling/) — how `AuthenticationError` and `RateLimitError` surface
+- [Quickstart](/getting-started/quickstart/) — make your first authenticated API call
