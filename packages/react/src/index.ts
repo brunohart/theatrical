@@ -16,3 +16,6 @@ export { OrderSummary, LineItem, PriceBreakdown } from './components/OrderSummar
 export type { OrderLineItem, PriceBreakdownData, OrderSummaryProps } from './components/OrderSummary';
 
 export { PaymentForm } from './components/PaymentForm';
+
+export { LoyaltyBadge, MemberCard, TierIndicator, PointsDisplay } from './components/Loyalty';
+export type { LoyaltyBadgeProps, MemberCardProps, TierIndicatorProps, PointsDisplayProps } from './components/Loyalty';
