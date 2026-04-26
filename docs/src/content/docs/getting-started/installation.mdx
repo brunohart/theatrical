@@ -1,0 +1,96 @@
+---
+title: Installation
+description: Install the Theatrical packages and configure your development environment.
+---
+
+import { Tabs, TabItem, Code } from '@astrojs/starlight/components';
+
+## Requirements
+
+- Node.js ≥ 20
+- A Vista Group API key (operator token) or Vista loyalty cookie
+
+## Install the SDK
+
+<Tabs>
+  <TabItem label="npm">
+    ```bash
+    npm install @theatrical/sdk
+    ```
+  </TabItem>
+  <TabItem label="pnpm">
+    ```bash
+    pnpm add @theatrical/sdk
+    ```
+  </TabItem>
+  <TabItem label="yarn">
+    ```bash
+    yarn add @theatrical/sdk
+    ```
+  </TabItem>
+</Tabs>
+
+## Install the CLI
+
+The CLI is a dev dependency — install it globally or per-project.
+
+<Tabs>
+  <TabItem label="global">
+    ```bash
+    npm install -g @theatrical/cli
+    theatrical --version
+    ```
+  </TabItem>
+  <TabItem label="project">
+    ```bash
+    npm install --save-dev @theatrical/cli
+    npx theatrical --version
+    ```
+  </TabItem>
+</Tabs>
+
+## Install React components
+
+<Tabs>
+  <TabItem label="npm">
+    ```bash
+    npm install @theatrical/react @theatrical/sdk
+    ```
+  </TabItem>
+  <TabItem label="pnpm">
+    ```bash
+    pnpm add @theatrical/react @theatrical/sdk
+    ```
+  </TabItem>
+</Tabs>
+
+## Optional packages
+
+| Package | Purpose |
+|---------|---------|
+| `@theatrical/analytics` | Query Vista Horizon data warehouses |
+| `@theatrical/events` | Real-time event bridge via polling |
+
+```bash
+npm install @theatrical/analytics @theatrical/events
+```
+
+## TypeScript
+
+Theatrical requires TypeScript 5.0+. Add `@theatrical/sdk` types to your `tsconfig.json`:
+
+```json
+{
+  "compilerOptions": {
+    "strict": true,
+    "moduleResolution": "bundler",
+    "target": "ES2022"
+  }
+}
+```
+
+All Theatrical packages ship with bundled `.d.ts` declarations — no `@types/` packages needed.
+
+## Next steps
+
+Head to the [Quickstart](/getting-started/quickstart/) to make your first API call in under five minutes.

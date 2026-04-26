@@ -1,0 +1,33 @@
+---
+title: Templates Overview
+description: Production-ready starter applications for common cinema deployment patterns.
+---
+
+Theatrical templates are complete, deployable applications scaffolded from `theatrical init`. Each template demonstrates the full SDK and React component library in a real use case.
+
+## Available templates
+
+| Template | Description | Deploy |
+|----------|-------------|--------|
+| `react-ticketing` | Full-stack booking app — film discovery, seat selection, order confirmation | [Vercel](https://vercel.com) |
+
+## Using a template
+
+```bash
+# Interactive setup
+theatrical init
+
+# Non-interactive
+theatrical init my-cinema --template react-ticketing --api-key op_live_xxx
+```
+
+## Template structure
+
+Each template ships with:
+- Complete source code and routing
+- Mock data layer for local development (no API key required to run locally)
+- Environment variable configuration (`.env.example`)
+- One-click deployment config (`vercel.json`)
+- Setup README with customization instructions
+
+See [React Ticketing](/templates/react-ticketing/) for a detailed walkthrough.

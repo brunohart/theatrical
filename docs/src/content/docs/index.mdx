@@ -1,0 +1,43 @@
+---
+title: Theatrical
+description: A developer toolkit for cinema management platforms — built on Vista Group APIs.
+template: splash
+hero:
+  tagline: Build cinema-native applications with a typed, open-source SDK for Vista Group APIs.
+  image:
+    file: ../../assets/logo-dark.svg
+  actions:
+    - text: Get Started
+      link: /getting-started/installation/
+      icon: right-arrow
+      variant: primary
+    - text: View on GitHub
+      link: https://github.com/brunohart/theatrical
+      icon: external
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## Six packages. One developer platform.
+
+<CardGrid stagger>
+  <Card title="@theatrical/sdk" icon="puzzle">
+    The core TypeScript client — sessions, films, orders, loyalty, pricing, F&B. Full Zod runtime validation and typed error hierarchy.
+  </Card>
+  <Card title="@theatrical/cli" icon="terminal">
+    Developer tools for your terminal — `theatrical init`, `theatrical codegen`, and `theatrical inspect` for live API exploration.
+  </Card>
+  <Card title="@theatrical/react" icon="seti:react">
+    Cinema-grade UI components: SeatMap, SessionPicker, OrderSummary, PaymentForm, and loyalty display widgets.
+  </Card>
+  <Card title="@theatrical/analytics" icon="bar-chart">
+    A typed query builder for Vista Horizon — fluent metric/dimension API with CSV, JSON, and chart export utilities.
+  </Card>
+  <Card title="@theatrical/events" icon="rss">
+    A polling-based event bridge that detects state changes and emits typed booking, session, and inventory events in real time.
+  </Card>
+  <Card title="Templates" icon="rocket">
+    Production-ready starter apps. Clone, configure, deploy. The `react-ticketing` template ships a complete booking flow in minutes.
+  </Card>
+</CardGrid>

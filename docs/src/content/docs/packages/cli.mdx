@@ -1,0 +1,44 @@
+---
+title: '@theatrical/cli'
+description: Developer tools for working with cinema platform APIs from the terminal.
+---
+
+The CLI provides three commands for common developer workflows: scaffolding new projects, generating TypeScript types from an OpenAPI spec, and inspecting live API responses.
+
+## Install
+
+```bash
+npm install -g @theatrical/cli
+```
+
+## Commands
+
+### `theatrical init`
+
+Scaffold a new project from a template.
+
+```bash
+theatrical init my-booking-app --template react-ticketing
+```
+
+Options:
+- `--template` — starter template (default: `react-ticketing`)
+- `--api-key` — pre-configure your Vista API key
+
+### `theatrical codegen`
+
+Generate TypeScript types and Zod schemas from a Vista OpenAPI spec.
+
+```bash
+theatrical codegen --spec ./vista-api.yaml --out ./src/types/generated
+```
+
+### `theatrical inspect`
+
+Explore live API responses with syntax highlighting and timing.
+
+```bash
+theatrical inspect sessions list --site site-001 --date 2026-04-20
+theatrical inspect films search "Dune"
+theatrical inspect sites get site-001
+```

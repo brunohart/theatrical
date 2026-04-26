@@ -1,0 +1,29 @@
+---
+title: '@theatrical/sdk'
+description: The core TypeScript client for Vista Group cinema platform APIs.
+---
+
+The SDK is the foundation of the Theatrical toolkit. It provides a typed client for all Vista Group API resources, with automatic authentication, Zod runtime validation, and a typed error hierarchy.
+
+## Install
+
+```bash
+npm install @theatrical/sdk
+```
+
+## Resources
+
+| Resource | Methods |
+|----------|---------|
+| `client.sessions` | `list`, `get`, `availability`, `listAll` |
+| `client.films` | `list`, `get`, `search`, `nowShowing`, `comingSoon` |
+| `client.sites` | `list`, `get`, `nearby`, `screens` |
+| `client.orders` | `create`, `addTickets`, `addItems`, `applyLoyalty`, `confirm`, `cancel`, `history` |
+| `client.loyalty` | `authenticate`, `getMember`, `getPointsBalance`, `getHistory`, `redeemPoints` |
+| `client.subscriptions` | `listPlans`, `getMemberSubscription`, `getUsage`, `checkBenefitEligibility` |
+| `client.pricing` | `calculate`, `ticketTypes`, `applyCoupons` |
+| `client.foodAndBeverage` | `menu`, `itemDetail`, `addToOrder`, `combos` |
+
+## Full API reference
+
+API reference pages are in progress. See the [Quickstart](/getting-started/quickstart/) for working examples.
