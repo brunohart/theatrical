@@ -1,146 +1,104 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MOCK_FILMS, type MockFilm } from '../data/mock';
 import { useBooking } from '../context/BookingContext';
+import type { Film } from '@theatrical/sdk';
 
-const GENRE_COLORS: Record<string, string> = {
-  Thriller: '#e53e3e',
-  'Neo-noir': '#805ad5',
-  'Sci-fi': '#3182ce',
-};
-
-function FilmCard({ film }: { film: MockFilm }) {
-  const { selectFilm } = useBooking();
+export function Home() {
+  const { client, dispatch } = useBooking();
   const navigate = useNavigate();
-  const accentColor = GENRE_COLORS[film.genre] ?? '#718096';
+  const [films, setFilms] = useState<Film[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  function handleSelect() {
-    selectFilm(film);
+  useEffect(() => {
+    client.films.nowShowing()
+      .then(setFilms)
+      .catch((e: Error) => setError(e.message))
+      .finally(() => setLoading(false));
+  }, [client]);
+
+  function selectFilm(film: Film) {
+    dispatch({ type: 'SELECT_FILM', film });
     navigate(`/film/${film.id}`);
   }
 
+  if (loading) return <LoadingScreen message="Loading now showing…" />;
+  if (error) return <ErrorScreen message={error} />;
+
   return (
-    <article
-      onClick={handleSelect}
-      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && handleSelect()}
-      tabIndex={0}
-      role="button"
-      aria-label={`Book tickets for ${film.title}`}
-      style={{
-        background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
-        border: `1px solid ${accentColor}33`,
-        borderRadius: 12,
-        padding: '1.5rem',
-        cursor: 'pointer',
-        transition: 'transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '0.75rem',
-        outline: 'none',
-      }}
-      onMouseEnter={(e) => {
-        (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)';
-        (e.currentTarget as HTMLElement).style.borderColor = accentColor;
-        (e.currentTarget as HTMLElement).style.boxShadow = `0 8px 24px ${accentColor}22`;
-      }}
-      onMouseLeave={(e) => {
-        (e.currentTarget as HTMLElement).style.transform = '';
-        (e.currentTarget as HTMLElement).style.borderColor = `${accentColor}33`;
-        (e.currentTarget as HTMLElement).style.boxShadow = '';
-      }}
-    >
-      <div
-        style={{
-          height: 180,
-          borderRadius: 8,
-          background: `linear-gradient(135deg, ${accentColor}33 0%, #0a0a0a 100%)`,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: '3rem',
-        }}
-      >
-        🎬
+    <div style={{ maxWidth: 1100, margin: '0 auto', padding: '48px 24px' }}>
+      <header style={{ marginBottom: 40 }}>
+        <h1 style={{ fontSize: 32, fontWeight: 700, color: '#f5f5f0', letterSpacing: '-0.02em' }}>
+          Now Showing
+        </h1>
+        <p style={{ color: '#8a8a85', marginTop: 8 }}>Roxy Cinema · Wellington</p>
+      </header>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 24 }}>
+        {films.map(film => (
+          <FilmCard key={film.id} film={film} onSelect={selectFilm} />
+        ))}
       </div>
-
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-        <span
-          style={{
-            fontSize: '0.7rem',
-            fontWeight: 600,
-            letterSpacing: '0.08em',
-            textTransform: 'uppercase',
-            color: accentColor,
-            background: `${accentColor}18`,
-            padding: '2px 8px',
-            borderRadius: 4,
-          }}
-        >
-          {film.genre}
-        </span>
-        <span style={{ fontSize: '0.7rem', color: '#718096' }}>
-          {film.classification} · {film.duration} min
-        </span>
-      </div>
-
-      <h2 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#f5f5f5', lineHeight: 1.3 }}>
-        {film.title}
-      </h2>
-
-      <p style={{ fontSize: '0.85rem', color: '#a0aec0', lineHeight: 1.6, flexGrow: 1 }}>
-        {film.synopsis.length > 120 ? film.synopsis.slice(0, 120) + '…' : film.synopsis}
-      </p>
-
-      <div
-        style={{
-          marginTop: 'auto',
-          padding: '0.6rem 1rem',
-          background: accentColor,
-          borderRadius: 6,
-          textAlign: 'center',
-          fontSize: '0.875rem',
-          fontWeight: 600,
-          color: '#fff',
-        }}
-      >
-        Book Now
-      </div>
-    </article>
+    </div>
   );
 }
 
-export function Home() {
+function FilmCard({ film, onSelect }: { film: Film; onSelect: (f: Film) => void }) {
   return (
-    <main style={{ maxWidth: 1100, margin: '0 auto', padding: '2rem 1rem' }}>
-      <header style={{ marginBottom: '2.5rem', textAlign: 'center' }}>
-        <h1
-          style={{
-            fontSize: 'clamp(1.75rem, 4vw, 2.75rem)',
-            fontWeight: 800,
-            background: 'linear-gradient(135deg, #f5f5f5 0%, #a0aec0 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            marginBottom: '0.5rem',
-          }}
-        >
-          Now Showing
-        </h1>
-        <p style={{ color: '#718096', fontSize: '0.95rem' }}>
-          Select a film to view sessions and book your seats
-        </p>
-      </header>
-
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-          gap: '1.5rem',
-        }}
-      >
-        {MOCK_FILMS.map((film) => (
-          <FilmCard key={film.id} film={film} />
-        ))}
+    <button
+      onClick={() => onSelect(film)}
+      style={{
+        background: '#16161a',
+        border: '1px solid #2a2a2f',
+        borderRadius: 12,
+        overflow: 'hidden',
+        cursor: 'pointer',
+        textAlign: 'left',
+        transition: 'transform 0.15s, border-color 0.15s',
+        width: '100%',
+      }}
+      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = '#c9a227'; }}
+      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = '#2a2a2f'; }}
+    >
+      <div style={{ height: 180, background: '#0f0f12', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        {film.posterUrl ? (
+          <img src={film.posterUrl} alt={film.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        ) : (
+          <span style={{ color: '#3a3a3f', fontSize: 48 }}>🎬</span>
+        )}
       </div>
-    </main>
+      <div style={{ padding: '16px 20px' }}>
+        <span style={{ fontSize: 11, color: '#c9a227', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 600 }}>
+          {film.rating.classification}
+        </span>
+        <h2 style={{ fontSize: 18, fontWeight: 600, color: '#f5f5f0', marginTop: 6, lineHeight: 1.3 }}>
+          {film.title}
+        </h2>
+        <p style={{ fontSize: 13, color: '#8a8a85', marginTop: 8, lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+          {film.synopsis}
+        </p>
+        <div style={{ display: 'flex', gap: 12, marginTop: 12, fontSize: 12, color: '#6a6a65' }}>
+          <span>{film.runtime} min</span>
+          <span>·</span>
+          <span>{film.genres.slice(0, 2).join(', ')}</span>
+        </div>
+      </div>
+    </button>
+  );
+}
+
+function LoadingScreen({ message }: { message: string }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', color: '#8a8a85' }}>
+      {message}
+    </div>
+  );
+}
+
+function ErrorScreen({ message }: { message: string }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', color: '#e05a5a' }}>
+      Error: {message}
+    </div>
   );
 }
