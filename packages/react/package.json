@@ -16,7 +16,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "tsup src/index.ts --format cjs,esm --dts --external react --external react-dom --tsconfig tsconfig.build.json",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit"
@@ -38,6 +38,7 @@
     "jsdom": "^24.0.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
+    "tsup": "^8.5.1",
     "typescript": "^5.4.0",
     "vitest": "^1.6.1"
   },
