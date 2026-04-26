@@ -123,20 +123,25 @@ export const DEFAULT_MOCK_RESPONSES: Record<string, unknown> = {
     priceFrom: 19.50,
     attributes: {},
   },
-  '/ocapi/v1/sessions/:id/availability': {
+  '/ocapi/v1/sessions/:id/seat-plan': {
     sessionId: 'ses_roxy_holdovers_20260427_1915',
-    seatMap: Array.from({ length: 10 }, (_, row) =>
+    screenName: 'Screen 3',
+    seats: Array.from({ length: 10 }, (_, row) =>
       Array.from({ length: 12 }, (_, col) => ({
-        id: `seat_${row}_${col}`,
+        id: `seat_${String.fromCharCode(65 + row)}${col + 1}`,
         row: String.fromCharCode(65 + row),
         number: col + 1,
-        status: row < 3 && col > 8 ? 'taken' : 'available',
+        status: (row < 3 && col > 8) ? 'taken' : 'available',
+        x: col,
+        y: row,
         type: row < 2 ? 'premium' : 'standard',
-        priceMultiplier: row < 2 ? 1.5 : 1.0,
+        isAccessible: false,
       }))
     ).flat(),
-    totalSeats: 120,
-    availableSeats: 74,
+    rowCount: 10,
+    screenPosition: 'top',
+    availableCount: 74,
+    totalCount: 120,
   },
   // Sites
   '/ocapi/v1/sites': [
