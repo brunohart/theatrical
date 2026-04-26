@@ -20,7 +20,7 @@ export { TheatricalClient } from './client';
 export type { TheatricalConfig, TheatricalEnvironment } from './types/config';
 
 // Resource types
-export type { Session, SessionFilter, SessionListResponse, SeatAvailability } from './types/session';
+export type { Session, SessionFilter, SessionListResponse, SeatAvailability, Seat, SeatStatus } from './types/session';
 export type { Site, Screen, SiteConfig } from './types/site';
 export type { Film, FilmFilter } from './types/film';
 export type { Order, OrderItem, Ticket, OrderStatus } from './types/order';
