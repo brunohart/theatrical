@@ -1,100 +1,68 @@
 # react-ticketing
 
-A complete cinema booking app starter template built with `@theatrical/sdk` and `@theatrical/react`.
+A complete cinema ticketing application built with `@theatrical/sdk` and `@theatrical/react`.
 
-## What's included
+Demonstrates the full booking flow: film discovery → session selection → seat map → order summary → payment.
 
-- **Home** — Film grid with now-showing titles
-- **Film** — Film details with `SessionPicker` component for date/time selection
-- **Booking** — Interactive `SeatMap` with real-time `OrderSummary` and pricing
-- **Confirmation** — Booking reference display
-
-## Quick start
+## Quick Start
 
 ```bash
-theatrical init --template react-ticketing my-cinema-app
-cd my-cinema-app
+# Clone
+git clone https://github.com/brunohart/theatrical.git
+cd theatrical/packages/templates/react-ticketing
+
+# Install
 npm install
+
+# Run in mock mode (no API key required)
 npm run dev
 ```
 
-## Configuration
+Open [http://localhost:5173](http://localhost:5173).
 
-Copy `.env.example` to `.env.local` and set your credentials:
+## Mock Mode
 
-```env
-VITE_THEATRICAL_API_KEY=your_api_key
-VITE_THEATRICAL_SITE_ID=your_site_id
-VITE_MOCK_MODE=false       # set to "true" to run with mock data (no API key needed)
+The template ships in mock mode by default (`VITE_THEATRICAL_MOCK=true`). This uses `TheatricalClient.createMock()` — a fully offline client with pre-loaded NZ cinema fixture data.
+
+To connect to a real Vista API:
+
+```bash
+cp .env.example .env
+# Edit .env: set VITE_THEATRICAL_MOCK=false and VITE_THEATRICAL_API_KEY=your_key
+npm run dev
 ```
 
-To get an API key, sign up at [theatrical.dev](https://theatrical.dev) and create a project.
-
-## Deploy to Vercel
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fbrunohart%2Ftheatrical%2Ftree%2Fmain%2Fpackages%2Ftemplates%2Freact-ticketing)
-
-Set the following environment variables in your Vercel project:
-
-| Variable | Description |
-|---|---|
-| `VITE_THEATRICAL_API_KEY` | Your Theatrical API key |
-| `VITE_THEATRICAL_SITE_ID` | The site/cinema ID to display |
-| `VITE_MOCK_MODE` | Set to `true` to use mock data |
-
-## Customization
-
-### Theming
-
-Wrap your app in `TheatricalThemeProvider` and override tokens:
-
-```tsx
-import { TheatricalThemeProvider } from '@theatrical/react';
-
-<TheatricalThemeProvider theme={{ colors: { primary: '#your-brand-color' } }}>
-  <App />
-</TheatricalThemeProvider>
-```
-
-### Connecting to a live API
-
-Replace calls in `src/data/mock.ts` with real SDK calls:
-
-```ts
-import { TheatricalClient } from '@theatrical/sdk';
-
-const client = new TheatricalClient({
-  apiKey: import.meta.env.VITE_THEATRICAL_API_KEY,
-  environment: 'production',
-});
-
-const films = await client.films.nowShowing({
-  siteId: import.meta.env.VITE_THEATRICAL_SITE_ID,
-});
-```
-
-### Adding payment processing
-
-Replace the mock confirmation in `Booking.tsx` with a real payment flow (Stripe, etc.) before
-calling `confirm()` on the booking context.
-
-## Project structure
+## Architecture
 
 ```
 src/
-  App.tsx              # Root — router, nav, TheatricalThemeProvider
-  main.tsx             # React entry point
-  context/
-    BookingContext.tsx  # useReducer state: film → session → seats → confirmation
-  data/
-    mock.ts            # Mock films, sessions, and seat maps
-  pages/
-    Home.tsx           # Film grid
-    Film.tsx           # SessionPicker
-    Booking.tsx        # SeatMap + OrderSummary
-    Confirmation.tsx   # Booking reference
+├── context/BookingContext.tsx  # useReducer state: film → session → seats → order → member
+├── pages/
+│   ├── Home.tsx           # Film grid (nowShowing)
+│   ├── Film.tsx           # SessionPicker for a film
+│   ├── Booking.tsx        # SeatMap + seat selection
+│   └── Confirmation.tsx   # OrderSummary + MemberCard + PaymentForm
+└── App.tsx                # Router, TheatricalThemeProvider, BookingProvider
 ```
 
-## License
+## Components Used
 
-BSL 1.1 — See [LICENSE-BSL.md](../../LICENSE-BSL.md)
+| Component | Package | Page |
+|-----------|---------|------|
+| `SessionPicker` | `@theatrical/react` | Film |
+| `SeatMap` | `@theatrical/react` | Booking |
+| `OrderSummary` | `@theatrical/react` | Confirmation |
+| `PaymentForm` | `@theatrical/react` | Confirmation |
+| `MemberCard` | `@theatrical/react` | Confirmation |
+| `LoyaltyBadge` | `@theatrical/react` | Confirmation |
+
+## Deploy to Vercel
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/brunohart/theatrical/tree/main/packages/templates/react-ticketing)
+
+Or via CLI from the repo root:
+
+```bash
+cd packages/templates/react-ticketing
+npx vercel --prod
+```

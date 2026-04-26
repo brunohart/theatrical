@@ -1,47 +1,46 @@
-import React, { createContext, useContext, useReducer, type ReactNode } from 'react';
-import type { SessionCardData } from '@theatrical/react';
-import type { MockFilm } from '../data/mock';
+import React, { createContext, useContext, useReducer } from 'react';
+import type { TheatricalClient } from '@theatrical/sdk';
+import type { Film } from '@theatrical/sdk';
+import type { Session } from '@theatrical/sdk';
+import type { Order } from '@theatrical/sdk';
+import type { LoyaltyMember } from '@theatrical/sdk';
 
-interface BookingState {
-  selectedFilm: MockFilm | null;
-  selectedSession: SessionCardData | null;
-  selectedSeatIds: Set<string>;
-  ticketCount: number;
-  confirmationRef: string | null;
+export interface BookingState {
+  film: Film | null;
+  session: Session | null;
+  selectedSeatIds: string[];
+  order: Order | null;
+  member: LoyaltyMember | null;
 }
 
 type BookingAction =
-  | { type: 'SELECT_FILM'; film: MockFilm }
-  | { type: 'SELECT_SESSION'; session: SessionCardData }
-  | { type: 'TOGGLE_SEAT'; seatId: string }
-  | { type: 'CONFIRM'; ref: string }
+  | { type: 'SELECT_FILM'; film: Film }
+  | { type: 'SELECT_SESSION'; session: Session }
+  | { type: 'SELECT_SEATS'; seatIds: string[] }
+  | { type: 'SET_ORDER'; order: Order }
+  | { type: 'SET_MEMBER'; member: LoyaltyMember }
   | { type: 'RESET' };
 
 const initialState: BookingState = {
-  selectedFilm: null,
-  selectedSession: null,
-  selectedSeatIds: new Set(),
-  ticketCount: 1,
-  confirmationRef: null,
+  film: null,
+  session: null,
+  selectedSeatIds: [],
+  order: null,
+  member: null,
 };
 
-function reducer(state: BookingState, action: BookingAction): BookingState {
+function bookingReducer(state: BookingState, action: BookingAction): BookingState {
   switch (action.type) {
     case 'SELECT_FILM':
-      return { ...initialState, selectedFilm: action.film };
+      return { ...initialState, film: action.film };
     case 'SELECT_SESSION':
-      return { ...state, selectedSession: action.session, selectedSeatIds: new Set() };
-    case 'TOGGLE_SEAT': {
-      const next = new Set(state.selectedSeatIds);
-      if (next.has(action.seatId)) {
-        next.delete(action.seatId);
-      } else {
-        next.add(action.seatId);
-      }
-      return { ...state, selectedSeatIds: next, ticketCount: next.size };
-    }
-    case 'CONFIRM':
-      return { ...state, confirmationRef: action.ref };
+      return { ...state, session: action.session, selectedSeatIds: [], order: null };
+    case 'SELECT_SEATS':
+      return { ...state, selectedSeatIds: action.seatIds };
+    case 'SET_ORDER':
+      return { ...state, order: action.order };
+    case 'SET_MEMBER':
+      return { ...state, member: action.member };
     case 'RESET':
       return initialState;
     default:
@@ -51,32 +50,29 @@ function reducer(state: BookingState, action: BookingAction): BookingState {
 
 interface BookingContextValue {
   state: BookingState;
-  selectFilm: (film: MockFilm) => void;
-  selectSession: (session: SessionCardData) => void;
-  toggleSeat: (seatId: string) => void;
-  confirm: (ref: string) => void;
-  reset: () => void;
+  dispatch: React.Dispatch<BookingAction>;
+  client: TheatricalClient;
 }
 
 const BookingContext = createContext<BookingContextValue | null>(null);
 
-export function BookingProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(reducer, initialState);
-
-  const value: BookingContextValue = {
-    state,
-    selectFilm: (film) => dispatch({ type: 'SELECT_FILM', film }),
-    selectSession: (session) => dispatch({ type: 'SELECT_SESSION', session }),
-    toggleSeat: (seatId) => dispatch({ type: 'TOGGLE_SEAT', seatId }),
-    confirm: (ref) => dispatch({ type: 'CONFIRM', ref }),
-    reset: () => dispatch({ type: 'RESET' }),
-  };
-
-  return <BookingContext.Provider value={value}>{children}</BookingContext.Provider>;
+export function BookingProvider({
+  children,
+  client,
+}: {
+  children: React.ReactNode;
+  client: TheatricalClient;
+}) {
+  const [state, dispatch] = useReducer(bookingReducer, initialState);
+  return (
+    <BookingContext.Provider value={{ state, dispatch, client }}>
+      {children}
+    </BookingContext.Provider>
+  );
 }
 
 export function useBooking(): BookingContextValue {
   const ctx = useContext(BookingContext);
-  if (!ctx) throw new Error('useBooking must be used within BookingProvider');
+  if (!ctx) throw new Error('useBooking must be used inside BookingProvider');
   return ctx;
 }
