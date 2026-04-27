@@ -1,0 +1,213 @@
+---
+title: Theming & Branding
+description: Customise Theatrical's cinema-dark design system to match your brand.
+---
+
+import { Aside, Tabs, TabItem, Code } from '@astrojs/starlight/components';
+
+`@theatrical/react` ships a cinema-dark design system as its default — near-black backgrounds, warm gold accents, generous spacing. Every visual value is a token in `TheatricalThemeProvider`. This guide shows how to adapt those tokens to your brand without touching component internals.
+
+## How the token system works
+
+`TheatricalThemeProvider` accepts a `theme` prop containing partial token overrides. Tokens are organised into namespaces (`colors`, `typography`, `spacing`, `radii`, `shadows`, `transitions`). A partial override **merges within each namespace** — passing `{ colors: { accent: '#e60026' } }` changes only the accent color; all other color tokens keep their default values.
+
+```tsx
+import { TheatricalThemeProvider } from '@theatrical/react';
+
+export function App() {
+  return (
+    <TheatricalThemeProvider theme={{ colors: { accent: '#e60026' } }}>
+      <YourApp />
+    </TheatricalThemeProvider>
+  );
+}
+```
+
+## Color tokens
+
+The full color palette with their default cinema-dark values:
+
+| Token | Default | Role |
+|-------|---------|------|
+| `colors.accent` | `#c9a227` | Warm gold — primary CTA, selection highlight, brand signal |
+| `colors.accentHover` | `#d4aa3a` | Hover state for accent elements |
+| `colors.bg` | `#0a0a0b` | Page background — near-black |
+| `colors.surface` | `#16161a` | Card and panel backgrounds |
+| `colors.surfaceHover` | `#1e1e23` | Interactive surface hover state |
+| `colors.border` | `#2a2a30` | Subtle dividers and outlines |
+| `colors.text` | `#f5f5f0` | Primary text — warm white |
+| `colors.textMuted` | `#8a8a85` | Secondary text, labels, metadata |
+| `colors.textDisabled` | `#4a4a4f` | Disabled state text |
+| `colors.success` | `#22c55e` | Confirmation states |
+| `colors.warning` | `#f59e0b` | Caution states |
+| `colors.error` | `#ef4444` | Error and destructive states |
+
+### Overriding for your brand
+
+<Tabs>
+  <TabItem label="Gold brand">
+    ```tsx
+    // Keep the cinema-dark base, swap to your gold
+    const theme = {
+      colors: {
+        accent: '#f5c842',
+        accentHover: '#f7d060',
+      },
+    };
+    ```
+  </TabItem>
+  <TabItem label="Red brand">
+    ```tsx
+    // Event cinema red accent on dark base
+    const theme = {
+      colors: {
+        accent: '#e60026',
+        accentHover: '#ff1a38',
+      },
+    };
+    ```
+  </TabItem>
+  <TabItem label="Light mode">
+    ```tsx
+    // Invert for a light-background deployment
+    const theme = {
+      colors: {
+        bg: '#ffffff',
+        surface: '#f5f5f5',
+        surfaceHover: '#ebebeb',
+        border: '#e0e0e0',
+        text: '#111111',
+        textMuted: '#555555',
+        textDisabled: '#aaaaaa',
+        accent: '#1a56db',
+        accentHover: '#1e40af',
+      },
+    };
+    ```
+  </TabItem>
+</Tabs>
+
+## Typography tokens
+
+| Token | Default | Description |
+|-------|---------|-------------|
+| `typography.fontFamily` | `'Inter, system-ui, -apple-system, sans-serif'` | Body and UI text |
+| `typography.fontFamilyHeading` | `'Inter, system-ui, -apple-system, sans-serif'` | Heading elements |
+| `typography.fontFamilyMono` | `'ui-monospace, monospace'` | Code and reference numbers |
+| `typography.fontSizeBase` | `'16px'` | Root font size |
+| `typography.lineHeightBase` | `'1.5'` | Body line height |
+
+To use a premium typeface pair (e.g. Playfair Display for headings, Inter for body):
+
+```tsx
+// 1. Load fonts — in your HTML <head> or via a CSS @import
+// @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter&display=swap');
+
+const theme = {
+  typography: {
+    fontFamily: '"Inter", system-ui, sans-serif',
+    fontFamilyHeading: '"Playfair Display", Georgia, serif',
+  },
+};
+```
+
+<Aside type="tip">
+Cinema brands often use editorial serifs for headings (Playfair Display, Cormorant Garamond) and neutral sans-serifs for UI text (Inter, DM Sans). This contrast signals premium positioning without sacrificing readability in seat maps and session cards.
+</Aside>
+
+## Spacing and radii
+
+The spacing scale uses `rem` values. All component layout is derived from `spacing.base`:
+
+| Token | Default |
+|-------|---------|
+| `spacing.xs` | `0.25rem` |
+| `spacing.sm` | `0.5rem` |
+| `spacing.md` | `1rem` |
+| `spacing.lg` | `1.5rem` |
+| `spacing.xl` | `2rem` |
+| `spacing.xxl` | `3rem` |
+
+Border radii control component roundness:
+
+| Token | Default | Used by |
+|-------|---------|---------|
+| `radii.sm` | `4px` | Badges, chips |
+| `radii.md` | `8px` | Cards, buttons |
+| `radii.lg` | `12px` | Modals, panels |
+| `radii.full` | `9999px` | Pill buttons, avatars |
+
+For a sharper, more geometric look (common in European arthouse cinemas):
+
+```tsx
+const theme = {
+  radii: {
+    sm: '2px',
+    md: '4px',
+    lg: '6px',
+    full: '4px',  // even pill buttons become slightly squared
+  },
+};
+```
+
+## Applying a complete brand theme
+
+This example wires a full custom theme in the `react-ticketing` template. Create `src/theme.ts`:
+
+```typescript
+import type { DeepPartialTokens } from '@theatrical/react';
+
+export const brandTheme: DeepPartialTokens = {
+  colors: {
+    accent: '#e60026',        // brand red
+    accentHover: '#cc001f',
+    bg: '#0d0b0b',            // warmer black
+    surface: '#1a1414',
+    border: '#2e2020',
+  },
+  typography: {
+    fontFamilyHeading: '"Playfair Display", Georgia, serif',
+  },
+  radii: {
+    md: '4px',
+    lg: '8px',
+  },
+};
+```
+
+Then pass it to the provider in `src/App.tsx`:
+
+```tsx
+import { brandTheme } from './theme';
+
+export default function App() {
+  return (
+    <TheatricalThemeProvider theme={brandTheme}>
+      {/* ... */}
+    </TheatricalThemeProvider>
+  );
+}
+```
+
+## Reading tokens in your own components
+
+The theme context is available via `useTheatricalTheme()`:
+
+```tsx
+import { useTheatricalTheme } from '@theatrical/react';
+
+function PriceTag({ amount }: { amount: number }) {
+  const { colors } = useTheatricalTheme();
+  return (
+    <span style={{ color: colors.accent, fontWeight: 700 }}>
+      {new Intl.NumberFormat('en-NZ', { style: 'currency', currency: 'NZD' }).format(amount)}
+    </span>
+  );
+}
+```
+
+This keeps custom components visually consistent with the token system — if you change the accent color in the provider, your component updates automatically.
+
+<Aside>
+`useTheatricalTheme()` must be called inside a component tree wrapped by `TheatricalThemeProvider`. It throws if called outside the provider.
+</Aside>

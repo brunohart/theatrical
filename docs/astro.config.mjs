@@ -27,6 +27,7 @@ export default defineConfig({
           items: [
             { label: 'Authentication', slug: 'guides/authentication' },
             { label: 'Error Handling', slug: 'guides/error-handling' },
+            { label: 'Theming & Branding', slug: 'guides/theming' },
           ],
         },
         {
