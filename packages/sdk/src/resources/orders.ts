@@ -94,12 +94,12 @@ export class OrdersResource {
   }
 
   /**
-   * Add tickets to a draft order. Each ticket specifies a seat and ticket type.
-   * This is additive — it appends to existing tickets, not replaces.
+   * Set tickets on a draft order. Each ticket specifies a seat and ticket type.
+   * The Vista OCAPI replaces all existing tickets — pass the full desired set in one call.
    *
    * @param orderId - The UUID of the draft order
-   * @param input - Tickets to add (type + seatId pairs)
-   * @returns The updated order with new tickets included
+   * @param input - Tickets to set (replaces any previously assigned tickets)
+   * @returns The updated order with the new ticket set
    */
   async addTickets(orderId: string, input: AddTicketsInput): Promise<Order> {
     const data = await this.http.post<unknown>(`/ocapi/v1/orders/${orderId}/tickets`, { body: input });

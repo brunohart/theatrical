@@ -104,18 +104,30 @@ export interface OrderTransition {
   /** The target state to transition to */
   to: OrderStatus;
   /** The API action that triggers this transition */
-  action: 'confirm' | 'complete' | 'cancel' | 'refund';
+  action: 'hold' | 'release' | 'confirm' | 'complete' | 'cancel' | 'refund';
 }
 
 /**
  * All valid order state transitions.
  * The Vista OCAPI enforces these server-side; this map enables
  * the SDK to fail fast with a descriptive error before making the request.
+ *
+ * State machine:
+ * | From      | To         | Action  |
+ * |-----------|------------|---------|
+ * | draft     | held       | hold    |
+ * | held      | pending    | release |
+ * | pending   | confirmed  | confirm |
+ * | confirmed | completed  | complete|
+ * | held      | cancelled  | cancel  |
+ * | pending   | cancelled  | cancel  |
+ * | confirmed | cancelled  | cancel  |
+ * | confirmed | refunded   | refund  |
+ * | completed | refunded   | refund  |
  */
 export const ORDER_TRANSITIONS: readonly OrderTransition[] = [
-  { from: 'draft', to: 'pending', action: 'confirm' },
-  { from: 'draft', to: 'held', action: 'confirm' },
-  { from: 'held', to: 'pending', action: 'confirm' },
+  { from: 'draft', to: 'held', action: 'hold' },
+  { from: 'held', to: 'pending', action: 'release' },
   { from: 'pending', to: 'confirmed', action: 'confirm' },
   { from: 'confirmed', to: 'completed', action: 'complete' },
   { from: 'pending', to: 'cancelled', action: 'cancel' },
@@ -173,11 +185,11 @@ export interface Order {
 }
 
 /**
- * Input for adding or replacing tickets on a draft order.
+ * Input for replacing tickets on a draft order.
  *
  * Call `orders.addTickets()` after creating a draft order to assign specific seats.
- * Replaces any previously assigned tickets on the order — include all desired tickets
- * in a single call to avoid partial state.
+ * The Vista OCAPI replaces all existing tickets on the order — include every desired
+ * ticket in a single call to avoid partial state.
  */
 export interface AddTicketsInput {
   tickets: Array<{
