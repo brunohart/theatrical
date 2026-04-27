@@ -34,6 +34,8 @@ export function MemberCard({ member, showBenefits = true, showProgress = true }:
   const tierBg = TIER_BACKGROUNDS[tierName];
   const initials = `${member.firstName[0]}${member.lastName[0]}`.toUpperCase();
 
+  const maskedId = `XXXX-XXXX-${member.id.replace(/\D/g, '').slice(-4).padStart(4, '0')}`;
+
   const nextTier = NEXT_TIER[tierName];
   const currentThreshold = TIER_THRESHOLDS[tierName];
   const nextThreshold = nextTier ? TIER_THRESHOLDS[nextTier] : null;
@@ -102,6 +104,18 @@ export function MemberCard({ member, showBenefits = true, showProgress = true }:
           </p>
           <p style={{ fontSize: tokens.typography.sizes.sm, color: tokens.colors.textMuted, marginTop: 2 }}>
             {member.email}
+          </p>
+          <p
+            style={{
+              fontSize: tokens.typography.sizes.xs,
+              color: tokens.colors.textDisabled,
+              marginTop: 3,
+              letterSpacing: '0.15em',
+              fontVariantNumeric: 'tabular-nums',
+            }}
+            aria-label={`Member ID ending in ${member.id.slice(-4)}`}
+          >
+            {maskedId}
           </p>
           {memberSinceYear && (
             <p style={{ fontSize: tokens.typography.sizes.xs, color: tokens.colors.textDisabled, marginTop: 2 }}>
