@@ -172,26 +172,48 @@ export interface Order {
   refundedAt?: string;
 }
 
-/** Input for adding tickets to a draft order */
+/**
+ * Input for adding or replacing tickets on a draft order.
+ *
+ * Call `orders.addTickets()` after creating a draft order to assign specific seats.
+ * Replaces any previously assigned tickets on the order — include all desired tickets
+ * in a single call to avoid partial state.
+ */
 export interface AddTicketsInput {
   tickets: Array<{
+    /** Ticket category — e.g. `'adult'`, `'child'`, `'senior'` */
     type: string;
+    /** Seat ID from the session availability response */
     seatId: string;
   }>;
 }
 
-/** Input for adding concession items to an order */
+/**
+ * Input for adding concession or merchandise items to an order.
+ *
+ * Items can be added at any point before the order is confirmed.
+ * Duplicate `menuItemId` entries are merged — quantities accumulate.
+ */
 export interface AddItemsInput {
   items: Array<{
+    /** Menu item ID from the F&B menu response */
     menuItemId: string;
+    /** Number of units to add (must be ≥ 1) */
     quantity: number;
   }>;
 }
 
-/** Input for applying a loyalty discount to an order */
+/**
+ * Input for applying a loyalty account to an order.
+ *
+ * Attaches a loyalty member to earn points on the purchase. Optionally redeems
+ * accumulated points to reduce the order total — Vista enforces per-transaction
+ * redemption limits based on the member's tier.
+ */
 export interface ApplyLoyaltyInput {
+  /** Loyalty member ID to attach to this order */
   memberId: string;
-  /** Number of loyalty points to redeem, if any */
+  /** Number of loyalty points to redeem — reduces order total at ~1pt = $0.01 NZD */
   pointsToRedeem?: number;
 }
 
