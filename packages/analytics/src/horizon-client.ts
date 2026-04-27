@@ -108,7 +108,7 @@ export class HorizonClient {
     let cursor: string | undefined;
 
     do {
-      const result = await this.query({ ...query, ...(cursor ? { cursor } as never : {}) });
+      const result = await this.query({ ...query, ...(cursor ? { cursor } : {}) });
 
       for (const row of result.rows) {
         yield row;
