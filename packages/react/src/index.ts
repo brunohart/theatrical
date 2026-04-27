@@ -18,4 +18,7 @@ export type { OrderLineItem, PriceBreakdownData, OrderSummaryProps } from './com
 export { PaymentForm } from './components/PaymentForm';
 
 export { LoyaltyBadge, MemberCard, TierIndicator, PointsDisplay } from './components/Loyalty';
-export type { LoyaltyBadgeProps, MemberCardProps, TierIndicatorProps, PointsDisplayProps } from './components/Loyalty';
+export type { LoyaltyBadgeProps, MemberCardProps, LoyaltyMemberData, TierIndicatorProps, PointsDisplayProps } from './components/Loyalty';
+
+// Hooks
+export { useCountUp } from './hooks';

@@ -5,6 +5,7 @@
     "rootDir": "./src",
     "jsx": "react-jsx",
     "composite": true,
+    "lib": ["ES2022", "DOM"],
     "types": ["node"]
   },
   "include": ["src/**/*"],
