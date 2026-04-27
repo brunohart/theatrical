@@ -30,18 +30,13 @@ export interface LoyaltyTierData {
   pointsThreshold: number;
 }
 
-/** Loyalty member shape used by React components. */
-export interface LoyaltyMemberData {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  tier: LoyaltyTierData;
-  points: number;
-  lifetimePoints: number;
-  memberSince: string;
-  active: boolean;
-}
+import type { LoyaltyMember } from '@theatrical/sdk';
+
+/** Loyalty member shape used by React components. Derived from SDK LoyaltyMember to prevent type drift. */
+export type LoyaltyMemberData = Pick<
+  LoyaltyMember,
+  'id' | 'email' | 'firstName' | 'lastName' | 'tier' | 'points' | 'lifetimePoints' | 'memberSince' | 'active'
+>;
 
 export interface LoyaltyBadgeProps {
   member: Pick<LoyaltyMemberData, 'tier' | 'points'>;
