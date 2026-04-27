@@ -65,20 +65,24 @@ export class SessionsResource {
     pagination?: PaginationParams,
   ): Promise<PaginatedResponse<Session>> {
     const limit = pagination?.limit ?? DEFAULT_PAGE_SIZE;
-    const offset = pagination?.offset ?? 0;
+
+    const useCursor = pagination?.cursor !== undefined;
 
     const response = await this.list({
       ...filters,
       limit,
-      offset,
+      ...(useCursor
+        ? { cursor: pagination!.cursor }
+        : { offset: pagination?.offset ?? 0 }),
     });
 
     return {
       data: response.sessions,
       total: response.total,
       hasMore: response.hasMore,
+      nextCursor: response.nextCursor,
       nextOffset: response.nextOffset,
-      strategy: 'offset',
+      strategy: useCursor ? 'cursor' : 'offset',
     };
   }
 

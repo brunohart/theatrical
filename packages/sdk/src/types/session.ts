@@ -120,6 +120,7 @@ export const sessionFilterSchema = z.object({
   bookableOnly: z.boolean().optional(),
   limit: z.number().int().positive().max(500).optional(),
   offset: z.number().int().nonnegative().optional(),
+  cursor: z.string().optional(),
 });
 
 /**
@@ -130,6 +131,7 @@ export const sessionListResponseSchema = z.object({
   total: z.number().int().nonnegative(),
   hasMore: z.boolean(),
   nextOffset: z.number().int().nonnegative().optional(),
+  nextCursor: z.string().optional(),
 });
 
 export interface SessionFilter {
@@ -157,8 +159,16 @@ export interface SessionFilter {
   /** Maximum results to return */
   limit?: number;
 
-  /** Pagination cursor or offset */
+  /** Numeric page offset — mutually exclusive with `cursor` */
   offset?: number;
+
+  /**
+   * Opaque cursor string from a previous response's `nextCursor` field.
+   * Preferred over `offset` for real-time session data — cursors are stable
+   * when new sessions are added between pages.
+   * Mutually exclusive with `offset`.
+   */
+  cursor?: string;
 }
 
 export interface SessionListResponse {
@@ -171,8 +181,11 @@ export interface SessionListResponse {
   /** Whether more results are available */
   hasMore: boolean;
 
-  /** Cursor for next page */
+  /** Numeric offset for the next page (offset-based pagination) */
   nextOffset?: number;
+
+  /** Opaque cursor for the next page (cursor-based pagination) */
+  nextCursor?: string;
 }
 
 /** Seat status in an availability map */
