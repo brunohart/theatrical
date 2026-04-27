@@ -38,3 +38,6 @@ export {
   NotFoundError,
   ServerError,
 } from './errors';
+
+// Mock utilities
+export { MockHTTPAdapter } from './mock';
