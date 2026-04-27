@@ -13,6 +13,7 @@ import { TheatricalHTTPClient } from './http/client';
 import { GASClient } from './auth/gas-client';
 import { TokenManager } from './auth/token-manager';
 import { RateLimiter, DEFAULT_RATE_LIMITER_CONFIG } from './http/rate-limiter';
+import { MockHTTPAdapter } from './mock';
 
 /**
  * API base URLs for each Vista environment
@@ -195,6 +196,35 @@ export class TheatricalClient {
    */
   static resetGlobal(): void {
     _globalInstance = undefined;
+  }
+
+  /**
+   * Creates an offline mock client that returns pre-defined NZ cinema fixture data.
+   *
+   * Ideal for demos, prototypes, and evaluators without a Vista API key.
+   * The mock covers films, sessions, sites, orders, and loyalty endpoints.
+   *
+   * @param fixtureOverrides - Optional URL-keyed fixture map to replace specific responses
+   *
+   * @example
+   * ```typescript
+   * const client = import.meta.env.VITE_THEATRICAL_MOCK
+   *   ? TheatricalClient.createMock()
+   *   : TheatricalClient.create({ apiKey: process.env.THEATRICAL_API_KEY! });
+   * ```
+   *
+   * @see https://developer.vista.co
+   */
+  static createMock(fixtureOverrides?: Record<string, unknown>): TheatricalClient {
+    // Bypass normal constructor: create an uninitialised instance and manually wire its internals.
+    const instance = Object.create(TheatricalClient.prototype) as TheatricalClient;
+    // @ts-expect-error — private field assignment for mock construction
+    instance.httpClient = new MockHTTPAdapter(fixtureOverrides);
+    // @ts-expect-error — private field assignment for mock construction
+    instance.config = { apiKey: 'mock', environment: 'sandbox', timeout: 10_000, maxRetries: 0, debug: false };
+    // @ts-expect-error — private field assignment for mock construction
+    instance.tokenManager = { getToken: async () => 'mock-token', invalidate: () => {} };
+    return instance;
   }
 
   /** Sessions — showtimes, availability, seat maps */
