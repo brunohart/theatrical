@@ -2,10 +2,15 @@ import { z } from 'zod';
 
 /**
  * Zod schema for order status — validates the lifecycle state string from the API.
+ *
+ * The `held` state is set by Vista when a hold-and-release promotion locks a block
+ * of seats for a limited window (e.g. group bookings, season-pass allocation).
+ * Orders in `held` transition to `pending` when the hold expires or is manually released.
  */
 export const orderStatusSchema = z.enum([
   'draft',
   'pending',
+  'held',
   'confirmed',
   'completed',
   'cancelled',
@@ -55,6 +60,8 @@ export const orderSchema = z.object({
   loyaltyPointsRedeemed: z.number().int().nonnegative().optional(),
   createdAt: z.string(),
   updatedAt: z.string().optional(),
+  heldAt: z.string().optional(),
+  heldUntil: z.string().optional(),
   confirmedAt: z.string().optional(),
   completedAt: z.string().optional(),
   cancelledAt: z.string().optional(),
@@ -78,11 +85,14 @@ export const orderHistoryFilterSchema = z.object({
  * State transitions follow a strict flow:
  * ```
  * draft → pending → confirmed → completed
- *                 ↘ cancelled
+ *       ↗ held ↗    ↘ cancelled
  *        confirmed → refunded
  * ```
+ *
+ * The `held` state is a Vista-specific pause: seats are reserved but payment not yet initiated.
+ * A held order transitions to `pending` when the hold window elapses or the caller invokes release.
  */
-export type OrderStatus = 'draft' | 'pending' | 'confirmed' | 'completed' | 'cancelled' | 'refunded';
+export type OrderStatus = 'draft' | 'pending' | 'held' | 'confirmed' | 'completed' | 'cancelled' | 'refunded';
 
 /**
  * Defines a valid state transition in the order lifecycle.
@@ -104,9 +114,12 @@ export interface OrderTransition {
  */
 export const ORDER_TRANSITIONS: readonly OrderTransition[] = [
   { from: 'draft', to: 'pending', action: 'confirm' },
+  { from: 'draft', to: 'held', action: 'confirm' },
+  { from: 'held', to: 'pending', action: 'confirm' },
   { from: 'pending', to: 'confirmed', action: 'confirm' },
   { from: 'confirmed', to: 'completed', action: 'complete' },
   { from: 'pending', to: 'cancelled', action: 'cancel' },
+  { from: 'held', to: 'cancelled', action: 'cancel' },
   { from: 'confirmed', to: 'cancelled', action: 'cancel' },
   { from: 'confirmed', to: 'refunded', action: 'refund' },
   { from: 'completed', to: 'refunded', action: 'refund' },
@@ -149,6 +162,10 @@ export interface Order {
   loyaltyPointsRedeemed?: number;
   createdAt: string;
   updatedAt?: string;
+  /** ISO timestamp when the order entered the `held` state */
+  heldAt?: string;
+  /** ISO timestamp when the hold expires — after this the order auto-transitions to `pending` */
+  heldUntil?: string;
   confirmedAt?: string;
   completedAt?: string;
   cancelledAt?: string;
