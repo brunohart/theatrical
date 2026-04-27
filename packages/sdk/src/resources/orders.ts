@@ -5,10 +5,38 @@ import type { PaginatedResponse } from '../types/pagination';
 import { paginatedResponseSchema } from '../types/pagination';
 import { z } from 'zod';
 
+/**
+ * Input for creating a new draft order.
+ *
+ * A draft order locks the requested seats for a short window (typically 10 minutes)
+ * while the customer completes checkout. If the order is not confirmed within that
+ * window, Vista automatically cancels it and releases the seats.
+ *
+ * @example
+ * ```typescript
+ * const order = await client.orders.create({
+ *   sessionId: 'sess_abc123',
+ *   tickets: [
+ *     { type: 'adult', seatId: 'seat_d5' },
+ *     { type: 'child', seatId: 'seat_d6' },
+ *   ],
+ *   loyaltyMemberId: 'mem_xyz',
+ * });
+ * ```
+ */
 export interface CreateOrderInput {
+  /** ID of the session (showtime) to book */
   sessionId: string;
-  tickets: Array<{ type: string; seatId: string }>;
+  /** Tickets to reserve — each entry specifies a ticket type and the seat to assign */
+  tickets: Array<{
+    /** Ticket category — e.g. `'adult'`, `'child'`, `'senior'`, `'concession'` */
+    type: string;
+    /** Seat ID from the availability response (e.g. `'seat_d5'`) */
+    seatId: string;
+  }>;
+  /** Optional concession or merchandise items to include at order creation time */
   items?: Array<{ menuItemId: string; quantity: number }>;
+  /** Loyalty member ID — attach to earn points on this booking */
   loyaltyMemberId?: string;
 }
 
