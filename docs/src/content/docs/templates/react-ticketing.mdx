@@ -1,0 +1,131 @@
+---
+title: React Ticketing Template
+description: A complete cinema booking application — film discovery through order confirmation.
+---
+
+import { Steps, Aside, FileTree } from '@astrojs/starlight/components';
+
+The `react-ticketing` template is a production-ready React + Vite application demonstrating the complete Theatrical stack. It ships four pages (Home, Film, Booking, Confirmation), a `BookingContext` state machine, and full integration with `@theatrical/react` components.
+
+## Quick start
+
+<Steps>
+
+1. **Scaffold the project**
+
+   ```bash
+   theatrical init my-cinema --template react-ticketing
+   cd my-cinema
+   ```
+
+2. **Configure your API key**
+
+   ```bash
+   cp .env.example .env
+   # Edit .env — add your VITE_THEATRICAL_API_KEY and VITE_THEATRICAL_BASE_URL
+   ```
+
+3. **Run locally**
+
+   ```bash
+   npm install
+   npm run dev
+   ```
+
+   The app runs in mock mode when no API key is configured — all data comes from the bundled mock layer, so you can explore the UI before connecting to a live Vista instance.
+
+4. **Deploy to Vercel**
+
+   ```bash
+   vercel deploy
+   ```
+
+   The included `vercel.json` sets up SPA routing for React Router. Add your environment variables in the Vercel dashboard before deploying.
+
+</Steps>
+
+## Application structure
+
+<FileTree>
+
+- src/
+  - App.tsx (router setup)
+  - context/
+    - BookingContext.tsx (useReducer state machine)
+  - pages/
+    - Home.tsx (now showing + coming soon)
+    - Film.tsx (detail, sessions, seat picker)
+    - Booking.tsx (order summary + payment)
+    - Confirmation.tsx (receipt, loyalty points earned)
+  - data/
+    - mock.ts (local mock data layer)
+- public/
+- vercel.json
+- .env.example
+
+</FileTree>
+
+## Booking flow
+
+The `BookingContext` state machine manages the full booking lifecycle:
+
+```
+idle → sessionSelected → seatsSelected → orderCreated → confirmed
+                                                      → cancelled
+```
+
+Each state transition is typed — you can't confirm an order that hasn't had seats selected.
+
+## Customisation
+
+### Theming
+
+Override cinema brand colors in `src/theme.ts`:
+
+```typescript
+export const theme = {
+  colors: {
+    accent: '#c9922a',      // warm gold — replace with your brand color
+    background: '#0d0b08',  // near-black
+    surface: '#1e1a15',     // card backgrounds
+  },
+  fonts: {
+    heading: '"Playfair Display", Georgia, serif',
+    body: '"Inter", system-ui, sans-serif',
+  },
+};
+```
+
+Pass `theme` to `TheatricalThemeProvider`:
+
+```tsx
+<TheatricalThemeProvider theme={theme}>
+  <App />
+</TheatricalThemeProvider>
+```
+
+### Adding loyalty sign-in
+
+The template ships with the loyalty UI components (`LoyaltyBadge`, `MemberCard`) but the auth flow is left as a connection point. To add loyalty sign-in:
+
+1. Add a `/login` route
+2. Call `client.loyalty.authenticate()` on form submit
+3. Store the returned session cookie
+4. Pass `loyaltyCookie` to `TheatricalClient.create()`
+
+### Mock data
+
+Edit `src/data/mock.ts` to add films, sessions, and site data for local development. The mock layer mirrors the real SDK response shape — all types are shared.
+
+<Aside>
+Set `VITE_USE_MOCK=true` in `.env` to force mock mode even when an API key is configured. Useful for UI development and testing.
+</Aside>
+
+## Environment variables
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `VITE_THEATRICAL_API_KEY` | Yes (live) | Vista operator API key |
+| `VITE_THEATRICAL_BASE_URL` | Yes (live) | Your Vista instance URL |
+| `VITE_USE_MOCK` | No | Force mock mode (`true`/`false`) |
+| `VITE_DEFAULT_SITE_ID` | No | Pre-select a cinema site on load |
