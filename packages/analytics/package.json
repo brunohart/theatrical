@@ -1,0 +1,56 @@
+{
+  "name": "@theatrical/analytics",
+  "version": "0.1.0",
+  "description": "Typed analytics client for Vista Horizon — cinema data warehouse queries with a fluent builder API",
+  "keywords": [
+    "cinema",
+    "analytics",
+    "horizon",
+    "theatrical",
+    "data-warehouse",
+    "query-builder"
+  ],
+  "author": "Bruno Hart <hello@theatrical.dev>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/brunohart/theatrical",
+    "directory": "packages/analytics"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm,cjs --dts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "dev": "tsup src/index.ts --format esm,cjs --dts --watch"
+  },
+  "dependencies": {
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsup": "^8.4.0",
+    "typescript": "^5.9.3",
+    "vitest": "^1.6.1"
+  },
+  "peerDependencies": {
+    "@theatrical/sdk": "*"
+  },
+  "peerDependenciesMeta": {
+    "@theatrical/sdk": {
+      "optional": true
+    }
+  }
+}
