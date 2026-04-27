@@ -114,6 +114,8 @@ export interface HorizonQuery {
   sortBy?: { field: string; direction: SortDirection };
   limit?: number;
   offset?: number;
+  /** Opaque pagination cursor from a previous result's `nextCursor`. Mutually exclusive with `offset`. */
+  cursor?: string;
 }
 
 /**

@@ -1,5 +1,4 @@
 export { HorizonClient } from './horizon-client';
-export { HorizonHTTPClient } from './client';
 export type {
   HorizonConfig,
   HorizonAuthMode,
