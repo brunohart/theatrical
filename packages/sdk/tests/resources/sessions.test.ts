@@ -535,3 +535,78 @@ describe('SessionsResource — error propagation', () => {
     await expect(gen.next()).rejects.toMatchObject({ retryAfter: 30 });
   });
 });
+
+// ---------------------------------------------------------------------------
+// listPaginated() — offset and cursor strategies
+// ---------------------------------------------------------------------------
+
+describe('SessionsResource.listPaginated()', () => {
+  let resource: SessionsResource;
+  let mockGet: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    ({ resource, mockGet } = createMockHTTPClient());
+  });
+
+  it('returns offset strategy when no cursor is provided', async () => {
+    mockGet.mockResolvedValueOnce(
+      createMockSessionListResponse([createMockSession()], { hasMore: false, nextOffset: undefined }),
+    );
+
+    const page = await resource.listPaginated({ siteId: 'site_roxy_wellington' }, { limit: 10 });
+
+    expect(page.strategy).toBe('offset');
+    expect(page.data).toHaveLength(1);
+    expect(page.hasMore).toBe(false);
+  });
+
+  it('passes offset as query param in offset mode', async () => {
+    mockGet.mockResolvedValueOnce(createMockSessionListResponse());
+
+    await resource.listPaginated(undefined, { limit: 5, offset: 15 });
+
+    expect(mockGet).toHaveBeenCalledWith(
+      '/ocapi/v1/sessions',
+      expect.objectContaining({ params: expect.objectContaining({ offset: 15, limit: 5 }) }),
+    );
+  });
+
+  it('returns cursor strategy when a cursor is provided', async () => {
+    mockGet.mockResolvedValueOnce(
+      createMockSessionListResponse([createMockSession()], {
+        hasMore: true,
+        nextCursor: 'cur_next_page',
+      }),
+    );
+
+    const page = await resource.listPaginated(undefined, { cursor: 'cur_page2' });
+
+    expect(page.strategy).toBe('cursor');
+    expect(page.nextCursor).toBe('cur_next_page');
+    expect(page.hasMore).toBe(true);
+  });
+
+  it('passes cursor as query param and not offset when cursor mode', async () => {
+    mockGet.mockResolvedValueOnce(createMockSessionListResponse());
+
+    await resource.listPaginated({ filmId: 'film_holdovers_2023' }, { cursor: 'cur_abc123', limit: 20 });
+
+    const [, callOptions] = mockGet.mock.calls[0];
+    expect(callOptions.params).toMatchObject({ cursor: 'cur_abc123', limit: 20, filmId: 'film_holdovers_2023' });
+    expect(callOptions.params.offset).toBeUndefined();
+  });
+
+  it('populates nextCursor from the API response envelope', async () => {
+    mockGet.mockResolvedValueOnce(
+      createMockSessionListResponse([createMockSession(), createMockSession({ id: 'ses_roxy_2' })], {
+        hasMore: true,
+        nextCursor: 'cur_page3_xyz',
+      }),
+    );
+
+    const page = await resource.listPaginated();
+
+    expect(page.nextCursor).toBe('cur_page3_xyz');
+    expect(page.data).toHaveLength(2);
+  });
+});
