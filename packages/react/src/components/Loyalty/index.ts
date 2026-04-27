@@ -4,6 +4,7 @@ export { TierIndicator } from './TierIndicator';
 export { PointsDisplay } from './PointsDisplay';
 export type {
   LoyaltyBadgeProps,
+  LoyaltyMemberData,
   MemberCardProps,
   TierIndicatorProps,
   PointsDisplayProps,
