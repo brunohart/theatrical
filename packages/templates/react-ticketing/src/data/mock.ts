@@ -30,7 +30,7 @@ export const MOCK_FILMS: MockFilm[] = [
     synopsis:
       'In a city that never sleeps, a jazz musician uncovers a conspiracy that stretches from the underground clubs to the highest floors of power.',
     duration: 132,
-    classification: 'MA15+',
+    classification: 'R16',
     genre: 'Neo-noir',
     posterUrl: '',
     releaseYear: 2026,
@@ -64,7 +64,7 @@ export function getMockSessions(filmId: string, dateStr: string): SessionCardDat
       screenName: `Screen ${i + 1}`,
       format: formats[i] ?? 'Standard',
       priceFrom: [18.5, 28.0, 18.5, 45.0][i],
-      currency: 'AUD',
+      currency: 'NZD',
       availableSeats: [84, 12, 143, 8][i],
     };
   });
