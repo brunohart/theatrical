@@ -1,5 +1,6 @@
 import { HorizonHTTPClient } from './client';
 import type { HorizonConfig, HorizonQuery, HorizonQueryResult } from './types';
+import type { QueryBuilder } from './query/query-builder';
 
 /**
  * The primary entry point for Theatrical's analytics package.
@@ -116,5 +117,29 @@ export class HorizonClient {
 
       cursor = result.nextCursor;
     } while (cursor);
+  }
+
+  /**
+   * Execute a `QueryBuilder` and return the first page of results.
+   *
+   * Convenience method — equivalent to `horizon.query(builder.build())`.
+   *
+   * @example
+   * ```typescript
+   * const result = await horizon.execute(
+   *   new QueryBuilder()
+   *     .metric('admissions')
+   *     .dimension('film')
+   *     .filter('date', 'gte', '2026-01-01')
+   *     .sort('admissions', 'desc')
+   *     .limit(10)
+   * );
+   * ```
+   */
+  async execute(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    builder: QueryBuilder<any>,
+  ): Promise<HorizonQueryResult> {
+    return this.query(builder.build());
   }
 }
