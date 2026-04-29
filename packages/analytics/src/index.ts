@@ -11,3 +11,6 @@ export type {
   SortDirection,
   ResultRow,
 } from './types';
+
+export { QueryBuilder, FilterBuilder } from './query/index';
+export type { ValidDimensionFor } from './query/index';
