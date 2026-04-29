@@ -1,6 +1,7 @@
 import { HorizonHTTPClient } from './client';
 import type { HorizonConfig, HorizonQuery, HorizonQueryResult } from './types';
 import type { QueryBuilder } from './query/query-builder';
+import type { AnalyticsProvider, TrackEvent, IdentifyEvent } from './providers/base';
 
 /**
  * The primary entry point for Theatrical's analytics package.
@@ -45,9 +46,83 @@ import type { QueryBuilder } from './query/query-builder';
  */
 export class HorizonClient {
   private readonly http: HorizonHTTPClient;
+  private readonly providers: AnalyticsProvider[];
 
-  constructor(config: HorizonConfig) {
+  constructor(config: HorizonConfig & { providers?: AnalyticsProvider[] }) {
     this.http = new HorizonHTTPClient(config);
+    this.providers = config.providers ?? [];
+  }
+
+  /**
+   * Fan an analytics event out to all registered providers.
+   *
+   * Uses `Promise.allSettled` — a failing provider never blocks others.
+   * Rejections are logged with the provider name but not re-thrown.
+   *
+   * @example
+   * ```typescript
+   * await horizon.track({
+   *   type: 'session_browsed',
+   *   userId: 'mem_hemi_walker_5528',
+   *   properties: { filmId: 'film_001', siteId: 'site_roxy_wellington' },
+   * });
+   * ```
+   */
+  async track(event: TrackEvent): Promise<void> {
+    const results = await Promise.allSettled(
+      this.providers.map((p) => p.track(event)),
+    );
+    results.forEach((result, i) => {
+      if (result.status === 'rejected') {
+        console.warn(
+          `[theatrical/analytics] provider "${this.providers[i].name}" failed to track event "${event.type}":`,
+          result.reason,
+        );
+      }
+    });
+  }
+
+  /**
+   * Fan an identify event out to all providers that support it.
+   *
+   * @example
+   * ```typescript
+   * await horizon.identify({
+   *   userId: 'mem_hemi_walker_5528',
+   *   traits: { tier: 'gold', pointsBalance: 4200 },
+   * });
+   * ```
+   */
+  async identify(user: IdentifyEvent): Promise<void> {
+    const results = await Promise.allSettled(
+      this.providers
+        .filter((p): p is AnalyticsProvider & Required<Pick<AnalyticsProvider, 'identify'>> =>
+          typeof p.identify === 'function',
+        )
+        .map((p) => p.identify(user)),
+    );
+    results.forEach((result, i) => {
+      if (result.status === 'rejected') {
+        console.warn(
+          `[theatrical/analytics] provider "${this.providers[i].name}" failed to identify user "${user.userId}":`,
+          result.reason,
+        );
+      }
+    });
+  }
+
+  /**
+   * Flush all providers that support buffering.
+   * Call before process exit to ensure no events are dropped.
+   */
+  async flush(): Promise<void> {
+    await Promise.allSettled(
+      this.providers
+        .filter((p): p is AnalyticsProvider & Required<Pick<AnalyticsProvider, 'flush'>> =>
+          typeof p.flush === 'function',
+        )
+        .map((p) => p.flush()),
+    );
   }
 
   /**
