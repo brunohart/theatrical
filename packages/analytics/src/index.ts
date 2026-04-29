@@ -14,3 +14,9 @@ export type {
 
 export { QueryBuilder, FilterBuilder } from './query/index';
 export type { ValidDimensionFor } from './query/index';
+
+export type { AnalyticsProvider, TrackEvent, IdentifyEvent } from './providers/base';
+export { SegmentProvider } from './providers/segment';
+export type { SegmentProviderConfig } from './providers/segment';
+export { WebhookProvider } from './providers/webhook';
+export type { WebhookProviderConfig } from './providers/webhook';
