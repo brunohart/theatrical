@@ -131,7 +131,7 @@ describe('FilmsResource', () => {
   });
 
   describe('nowShowing', () => {
-    it('should return a list of films currently in cinemas', async () => {
+    it('return a list of films currently in cinemas', async () => {
       const films = [createHoldoversFilm(), createBoyFilm({ isNowShowing: true })];
       mockGet.mockResolvedValueOnce(films);
 
@@ -143,7 +143,7 @@ describe('FilmsResource', () => {
       expect(mockGet).toHaveBeenCalledWith('/ocapi/v1/films/now-showing', { params: undefined });
     });
 
-    it('should pass site filter to API', async () => {
+    it('pass site filter to API', async () => {
       mockGet.mockResolvedValueOnce([createHoldoversFilm()]);
 
       await resource.nowShowing({ siteId: 'site_roxy_wellington' });
@@ -155,7 +155,7 @@ describe('FilmsResource', () => {
   });
 
   describe('comingSoon', () => {
-    it('should return upcoming films', async () => {
+    it('return upcoming films', async () => {
       mockGet.mockResolvedValueOnce([createWhaleRiderFilm()]);
 
       const result = await resource.comingSoon();
@@ -163,11 +163,22 @@ describe('FilmsResource', () => {
       expect(result).toHaveLength(1);
       expect(result[0].title).toBe('Whale Rider');
       expect(result[0].isComingSoon).toBe(true);
+      expect(mockGet).toHaveBeenCalledWith('/ocapi/v1/films/coming-soon', { params: undefined });
+    });
+
+    it('passes site filter to comingSoon endpoint', async () => {
+      mockGet.mockResolvedValueOnce([createWhaleRiderFilm()]);
+
+      await resource.comingSoon({ siteId: 'site_embassy_wellington' });
+
+      expect(mockGet).toHaveBeenCalledWith('/ocapi/v1/films/coming-soon', {
+        params: { siteId: 'site_embassy_wellington' },
+      });
     });
   });
 
   describe('get', () => {
-    it('should retrieve a film by ID', async () => {
+    it('retrieve a film by ID', async () => {
       mockGet.mockResolvedValueOnce(createHoldoversFilm());
 
       const result = await resource.get('film_holdovers_2024');
@@ -179,7 +190,7 @@ describe('FilmsResource', () => {
   });
 
   describe('getDetail', () => {
-    it('should return full film detail with cast, crew, and ratings', async () => {
+    it('return full film detail with cast, crew, and ratings', async () => {
       mockGet.mockResolvedValueOnce(createHoldoversDetail());
 
       const result = await resource.getDetail('film_holdovers_2024');
@@ -194,7 +205,7 @@ describe('FilmsResource', () => {
       expect(mockGet).toHaveBeenCalledWith('/ocapi/v1/films/film_holdovers_2024/detail');
     });
 
-    it('should include production metadata in detail response', async () => {
+    it('include production metadata in detail response', async () => {
       mockGet.mockResolvedValueOnce(createHoldoversDetail());
 
       const result = await resource.getDetail('film_holdovers_2024');
@@ -207,7 +218,7 @@ describe('FilmsResource', () => {
   });
 
   describe('search', () => {
-    it('should search with basic genre filter', async () => {
+    it('search with basic genre filter', async () => {
       mockGet.mockResolvedValueOnce([createHoldoversFilm(), createBoyFilm()]);
 
       const result = await resource.search({ genre: 'drama' });
@@ -218,16 +229,19 @@ describe('FilmsResource', () => {
       });
     });
 
-    it('should search with text query', async () => {
+    it('search with text query', async () => {
       mockGet.mockResolvedValueOnce([createHoldoversFilm()]);
 
       const result = await resource.search({ query: 'boarding school' });
 
       expect(result).toHaveLength(1);
       expect(result[0].title).toBe('The Holdovers');
+      expect(mockGet).toHaveBeenCalledWith('/ocapi/v1/films', {
+        params: { query: 'boarding school' },
+      });
     });
 
-    it('should filter by now showing status', async () => {
+    it('filter by now showing status', async () => {
       mockGet.mockResolvedValueOnce([createHoldoversFilm()]);
 
       await resource.search({ nowShowing: true });
@@ -239,7 +253,7 @@ describe('FilmsResource', () => {
   });
 
   describe('advancedSearch', () => {
-    it('should pass format filter to API', async () => {
+    it('pass format filter to API', async () => {
       mockGet.mockResolvedValueOnce([createHoldoversFilm()]);
 
       await resource.advancedSearch({ format: 'IMAX' });
@@ -249,7 +263,7 @@ describe('FilmsResource', () => {
       });
     });
 
-    it('should pass language filter to API', async () => {
+    it('pass language filter to API', async () => {
       mockGet.mockResolvedValueOnce([]);
 
       await resource.advancedSearch({ language: 'mi' });
@@ -259,7 +273,7 @@ describe('FilmsResource', () => {
       });
     });
 
-    it('should pass runtime range filters', async () => {
+    it('pass runtime range filters', async () => {
       mockGet.mockResolvedValueOnce([createBoyFilm()]);
 
       await resource.advancedSearch({ minRuntime: 60, maxRuntime: 100 });
@@ -269,7 +283,7 @@ describe('FilmsResource', () => {
       });
     });
 
-    it('should pass sort parameters', async () => {
+    it('pass sort parameters', async () => {
       mockGet.mockResolvedValueOnce([]);
 
       await resource.advancedSearch({ sortBy: 'releaseDate', sortOrder: 'desc' });
@@ -279,7 +293,7 @@ describe('FilmsResource', () => {
       });
     });
 
-    it('should pass rating classification filter', async () => {
+    it('pass rating classification filter', async () => {
       mockGet.mockResolvedValueOnce([createBoyFilm(), createWhaleRiderFilm()]);
 
       await resource.advancedSearch({ ratingClassification: 'PG' });
@@ -289,7 +303,7 @@ describe('FilmsResource', () => {
       });
     });
 
-    it('should pass date range filters', async () => {
+    it('pass date range filters', async () => {
       mockGet.mockResolvedValueOnce([createWhaleRiderFilm()]);
 
       await resource.advancedSearch({
@@ -305,7 +319,7 @@ describe('FilmsResource', () => {
       });
     });
 
-    it('should combine multiple filters', async () => {
+    it('combine multiple filters', async () => {
       mockGet.mockResolvedValueOnce([createHoldoversFilm()]);
 
       await resource.advancedSearch({
@@ -337,20 +351,20 @@ describe('FilmsResource', () => {
   // -------------------------------------------------------------------------
 
   describe('Zod validation', () => {
-    it('should reject a film missing required fields', async () => {
+    it('reject a film missing required fields', async () => {
       mockGet.mockResolvedValueOnce([{ id: 'film_broken', title: 'Missing Fields' }]);
 
       await expect(resource.nowShowing()).rejects.toThrow();
     });
 
-    it('should reject a detail response missing crew array', async () => {
+    it('reject a detail response missing crew array', async () => {
       const { crew, ...incomplete } = createHoldoversDetail();
       mockGet.mockResolvedValueOnce(incomplete);
 
       await expect(resource.getDetail('film_holdovers_2024')).rejects.toThrow();
     });
 
-    it('should accept a valid film with optional fields omitted', async () => {
+    it('accept a valid film with optional fields omitted', async () => {
       const minimalFilm = createHoldoversFilm();
       delete minimalFilm.posterUrl;
       delete minimalFilm.trailerUrl;
@@ -363,7 +377,7 @@ describe('FilmsResource', () => {
       expect(result[0].posterUrl).toBeUndefined();
     });
 
-    it('should accept a valid detail with optional production metadata omitted', async () => {
+    it('accept a valid detail with optional production metadata omitted', async () => {
       const detail = createHoldoversDetail();
       delete detail.originalTitle;
       delete detail.productionCountries;
@@ -384,25 +398,25 @@ describe('FilmsResource', () => {
   // -------------------------------------------------------------------------
 
   describe('error propagation', () => {
-    it('should propagate HTTP errors from get', async () => {
+    it('propagate HTTP errors from get', async () => {
       mockGet.mockRejectedValueOnce(new Error('Not Found'));
 
       await expect(resource.get('film_nonexistent')).rejects.toThrow('Not Found');
     });
 
-    it('should propagate HTTP errors from nowShowing', async () => {
+    it('propagate HTTP errors from nowShowing', async () => {
       mockGet.mockRejectedValueOnce(new Error('Service Unavailable'));
 
       await expect(resource.nowShowing()).rejects.toThrow('Service Unavailable');
     });
 
-    it('should propagate HTTP errors from advancedSearch', async () => {
+    it('propagate HTTP errors from advancedSearch', async () => {
       mockGet.mockRejectedValueOnce(new Error('Bad Request'));
 
       await expect(resource.advancedSearch({ genre: 'invalid' })).rejects.toThrow('Bad Request');
     });
 
-    it('should propagate HTTP errors from getDetail', async () => {
+    it('propagate HTTP errors from getDetail', async () => {
       mockGet.mockRejectedValueOnce(new Error('Internal Server Error'));
 
       await expect(resource.getDetail('film_broken')).rejects.toThrow('Internal Server Error');
