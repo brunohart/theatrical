@@ -18,3 +18,21 @@ export type {
   SessionUpdatedPayload,
   SessionSoldOutPayload,
 } from './session-watcher';
+
+export { FilmWatcher } from './film-watcher';
+export type {
+  FilmEvents,
+  FilmWatcherConfig,
+  FilmAddedPayload,
+  FilmRemovedPayload,
+  FilmUpdatedPayload,
+} from './film-watcher';
+
+export { InventoryWatcher } from './inventory-watcher';
+export type {
+  InventoryEvents,
+  InventoryWatcherConfig,
+  InventoryLowPayload,
+  InventoryRestockedPayload,
+  MenuUpdatedPayload,
+} from './inventory-watcher';
