@@ -8,6 +8,14 @@ export { StateStore } from './state-store';
 
 export { TypedEventEmitter } from './emitter';
 
+export { WebhookDeliveryEngine, computeSignature, verifySignature } from './webhook';
+export type {
+  WebhookEndpoint,
+  WebhookPayload,
+  WebhookDeliveryResult,
+  WebhookDeliveryConfig,
+} from './webhook';
+
 export { BookingWatcher, SessionWatcher, FilmWatcher, InventoryWatcher } from './watchers';
 export type {
   BookingEvents,
