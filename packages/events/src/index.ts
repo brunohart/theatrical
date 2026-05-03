@@ -8,7 +8,7 @@ export { StateStore } from './state-store';
 
 export { TypedEventEmitter } from './emitter';
 
-export { BookingWatcher, SessionWatcher } from './watchers';
+export { BookingWatcher, SessionWatcher, FilmWatcher, InventoryWatcher } from './watchers';
 export type {
   BookingEvents,
   BookingWatcherConfig,
@@ -20,4 +20,14 @@ export type {
   SessionAddedPayload,
   SessionUpdatedPayload,
   SessionSoldOutPayload,
+  FilmEvents,
+  FilmWatcherConfig,
+  FilmAddedPayload,
+  FilmRemovedPayload,
+  FilmUpdatedPayload,
+  InventoryEvents,
+  InventoryWatcherConfig,
+  InventoryLowPayload,
+  InventoryRestockedPayload,
+  MenuUpdatedPayload,
 } from './watchers';
