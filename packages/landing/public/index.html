@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Theatrical — A developer platform for cinema technology</title>
+  <meta name="description" content="Type-safe SDKs, CLI tools, and UI components for cinema platform APIs. TypeScript, C#, Python. Open source.">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Theatrical — Developer Platform for Cinema Technology">
+  <meta property="og:description" content="Type-safe SDKs in TypeScript, C#, and Python for cinema platform APIs. Auth, sessions, ticketing, loyalty, F&B. Open source.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://theatrical.dev">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Theatrical — Developer Platform for Cinema Technology">
+  <meta name="twitter:description" content="Type-safe SDKs for cinema platform APIs. Open source.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="container nav-inner">
+      <a href="/" class="nav-brand">theatrical</a>
+      <div class="nav-links">
+        <a href="#packages">Packages</a>
+        <a href="#install">Install</a>
+        <a href="#essays">Essays</a>
+        <a href="https://github.com/brunohart/theatrical" class="nav-github" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container">
+      <h1 class="hero-title">A developer platform for cinema technology</h1>
+      <p class="hero-subtitle">
+        Type-safe SDKs, CLI tools, and UI components for cinema platform APIs.
+        Sessions, ticketing, loyalty, F&B, analytics. TypeScript, C#, Python.
+      </p>
+      <div class="hero-actions">
+        <a href="#install" class="btn btn-primary">Get Started</a>
+        <a href="https://github.com/brunohart/theatrical" class="btn btn-secondary" target="_blank" rel="noopener">View on GitHub</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Architecture Diagram -->
+  <section class="architecture">
+    <div class="container">
+      <pre class="arch-diagram"><code>┌─────────────────────────────────────────────────────────────────────┐
+│                        Developer Application                        │
+├─────────────┬──────────────┬──────────────┬─────────────────────────┤
+│  @theatrical│  @theatrical │  @theatrical │      @theatrical        │
+│    /react   │  /templates  │  /analytics  │       /events           │
+│  Components │  Starters    │  Horizon     │  Real-time Bridge       │
+├─────────────┴──────┬───────┴──────────────┴─────────────────────────┤
+│                    │          @theatrical/cli                        │
+│                    │        Developer Tooling                        │
+├────────────────────┴────────────────────────────────────────────────┤
+│                        @theatrical/sdk                              │
+│              Type-safe Client · Auth · HTTP · Resources             │
+├─────────────────────────────────────────────────────────────────────┤
+│                Cinema Platform APIs (OCAPI / GAS / Horizon)         │
+└─────────────────────────────────────────────────────────────────────┘</code></pre>
+    </div>
+  </section>
+
+  <!-- Polyglot SDKs -->
+  <section id="packages" class="packages">
+    <div class="container">
+      <h2 class="section-title">Polyglot SDKs</h2>
+      <p class="section-subtitle">One API surface, multiple languages. Same types, same tests, same mock data.</p>
+
+      <div class="sdk-grid">
+        <div class="sdk-card">
+          <div class="sdk-lang">TypeScript</div>
+          <div class="sdk-status sdk-stable">Reference Implementation</div>
+          <code class="sdk-install">npm install @theatrical/sdk</code>
+          <ul class="sdk-features">
+            <li>Zod runtime validation</li>
+            <li>8 resource modules</li>
+            <li>228 tests</li>
+            <li>Mock mode</li>
+          </ul>
+        </div>
+
+        <div class="sdk-card">
+          <div class="sdk-lang">C# / .NET</div>
+          <div class="sdk-status sdk-alpha">Alpha</div>
+          <code class="sdk-install">dotnet add package Theatrical.Sdk</code>
+          <ul class="sdk-features">
+            <li>.NET 8.0 + netstandard2.1</li>
+            <li>async/await, IDisposable</li>
+            <li>System.Text.Json</li>
+            <li>17 tests</li>
+          </ul>
+        </div>
+
+        <div class="sdk-card">
+          <div class="sdk-lang">Python</div>
+          <div class="sdk-status sdk-alpha">Alpha</div>
+          <code class="sdk-install">pip install theatrical</code>
+          <ul class="sdk-features">
+            <li>Python 3.10+, async-first</li>
+            <li>httpx + pydantic v2</li>
+            <li>mypy strict clean</li>
+            <li>82 tests</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Full Package Matrix -->
+      <h3 class="subsection-title">Full Package Matrix</h3>
+      <div class="table-wrapper">
+        <table class="package-table">
+          <thead>
+            <tr>
+              <th>Package</th>
+              <th>Description</th>
+              <th>Tests</th>
+              <th>License</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>@theatrical/sdk</code></td>
+              <td>Type-safe client — auth, HTTP, 8 resource modules, Zod validation</td>
+              <td>228</td>
+              <td>MIT</td>
+            </tr>
+            <tr>
+              <td><code>@theatrical/cli</code></td>
+              <td>Developer tools — <code>init</code>, <code>codegen</code>, <code>inspect</code></td>
+              <td>163</td>
+              <td>MIT</td>
+            </tr>
+            <tr>
+              <td><code>@theatrical/react</code></td>
+              <td>Cinema UI — SeatMap, SessionPicker, OrderSummary, Loyalty</td>
+              <td>34</td>
+              <td>BSL 1.1</td>
+            </tr>
+            <tr>
+              <td><code>@theatrical/analytics</code></td>
+              <td>Horizon client, query builder, export utilities</td>
+              <td>35</td>
+              <td>BSL 1.1</td>
+            </tr>
+            <tr>
+              <td><code>@theatrical/events</code></td>
+              <td>Real-time event bridge — poll, diff, emit, webhook</td>
+              <td>71</td>
+              <td>BSL 1.1</td>
+            </tr>
+            <tr>
+              <td><code>@theatrical/templates</code></td>
+              <td>React ticketing starter — complete booking app</td>
+              <td>&mdash;</td>
+              <td>BSL 1.1</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Install -->
+  <section id="install" class="install">
+    <div class="container">
+      <h2 class="section-title">Get Started in 30 Seconds</h2>
+
+      <div class="install-tabs">
+        <div class="install-tab">
+          <h3>TypeScript</h3>
+          <pre class="code-block"><code>npm install @theatrical/sdk
+
+import { TheatricalClient } from '@theatrical/sdk';
+
+// No API key needed — returns NZ cinema fixture data
+const client = TheatricalClient.createMock();
+
+const { data: films } = await client.films.nowShowing();
+const { data: sessions } = await client.sessions.list({
+  siteId: 'roxy-wellington',
+});</code></pre>
+        </div>
+
+        <div class="install-tab">
+          <h3>Python</h3>
+          <pre class="code-block"><code>pip install theatrical
+
+from theatrical import TheatricalClient, TheatricalConfig
+
+async with TheatricalClient(TheatricalConfig(
+    api_key="your-api-key",
+)) as client:
+    sessions = await client.sessions.list()</code></pre>
+        </div>
+
+        <div class="install-tab">
+          <h3>C# / .NET</h3>
+          <pre class="code-block"><code>dotnet add package Theatrical.Sdk
+
+using Theatrical.Sdk;
+
+using var client = TheatricalClient.Create(
+    new TheatricalClientOptions {
+        ApiKey = "your-api-key",
+        Environment = TheatricalEnvironment.Sandbox,
+    });
+
+var sessions = await client.Sessions.ListAsync(
+    "roxy-wellington");</code></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Research Essays -->
+  <section id="essays" class="essays">
+    <div class="container">
+      <h2 class="section-title">Research</h2>
+      <p class="section-subtitle">
+        Five essays on the architecture, economics, and future of cinema platform technology.
+      </p>
+
+      <div class="essay-grid">
+        <a href="https://github.com/brunohart/theatrical/blob/main/research/cinema-platform-thesis.md" class="essay-card" target="_blank" rel="noopener">
+          <h3>The Cinema Platform Thesis</h3>
+          <p>Why cinema technology needs a developer ecosystem and what it takes to build one.</p>
+        </a>
+
+        <a href="https://github.com/brunohart/theatrical/blob/main/research/what-stripe-did-for-payments.md" class="essay-card" target="_blank" rel="noopener">
+          <h3>What Stripe Did for Payments</h3>
+          <p>Lessons from the platform that transformed payments infrastructure into a developer product.</p>
+        </a>
+
+        <a href="https://github.com/brunohart/theatrical/blob/main/research/cinema-as-protocol.md" class="essay-card" target="_blank" rel="noopener">
+          <h3>Cinema as Protocol</h3>
+          <p>The shared architectural patterns behind every cinema booking — and why they matter.</p>
+        </a>
+
+        <a href="https://github.com/brunohart/theatrical/blob/main/research/the-3.3-billion-api.md" class="essay-card" target="_blank" rel="noopener">
+          <h3>The $3.3 Billion API</h3>
+          <p>The scale, economics, and untapped potential of cinema platform transaction volume.</p>
+        </a>
+
+        <a href="https://github.com/brunohart/theatrical/blob/main/research/event-driven-cinema.md" class="essay-card" target="_blank" rel="noopener">
+          <h3>Event-Driven Cinema</h3>
+          <p>Real-time capabilities for platforms that were built for batch processing.</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <span class="nav-brand">theatrical</span>
+          <p class="footer-tagline">Developer platform for cinema technology</p>
+        </div>
+        <div class="footer-links">
+          <a href="https://github.com/brunohart/theatrical" target="_blank" rel="noopener">GitHub</a>
+          <a href="https://github.com/brunohart/theatrical/blob/main/VISION.md" target="_blank" rel="noopener">Vision</a>
+          <a href="https://github.com/brunohart/theatrical/blob/main/ARCHITECTURE.md" target="_blank" rel="noopener">Architecture</a>
+          <a href="https://github.com/brunohart/theatrical/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a>
+        </div>
+      </div>
+      <div class="footer-disclaimer">
+        <p>
+          This project is an independent, open-source developer toolkit for cinema platform APIs.
+          It is not affiliated with, endorsed by, or officially connected to Vista Group International Ltd
+          or any of its subsidiaries. All product names, trademarks, and registered trademarks are property
+          of their respective owners.
+        </p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
