@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;netstandard2.1</TargetFrameworks>
+    <LangVersion>12.0</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>Theatrical.Sdk</RootNamespace>
+    <AssemblyName>Theatrical.Sdk</AssemblyName>
+    <Version>0.1.0</Version>
+    <Authors>Bruno Hart</Authors>
+    <Description>C# SDK for cinema platform APIs. Type-safe client with authentication, rate limiting, retry logic, and mock mode for Vista's OCAPI platform.</Description>
+    <PackageId>Theatrical.Sdk</PackageId>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/brunohart/theatrical</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/brunohart/theatrical</RepositoryUrl>
+    <PackageTags>cinema;api;sdk;ocapi;ticketing</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Text.Json" Version="8.0.5" Condition="'$(TargetFramework)' == 'netstandard2.1'" />
+    <PackageReference Include="Polly" Version="8.4.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="../../README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+</Project>
