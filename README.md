@@ -3,7 +3,7 @@
 ### A developer platform for cinema technology
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](https://www.typescriptlang.org/)
-[![Tests](https://img.shields.io/badge/Tests-600%2B-brightgreen.svg)](#testing)
+[![Tests](https://img.shields.io/badge/Tests-439%20passing-brightgreen.svg)](#testing)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![License: BSL 1.1](https://img.shields.io/badge/License-BSL%201.1-orange.svg)](LICENSE-BSL.md)
 
@@ -49,6 +49,13 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for the full system design deep-dive.
 | [`@theatrical/analytics`](packages/analytics) | Horizon client, query builder, export utilities (CSV, JSON, DataFrame, Chart.js) | 35 | BSL 1.1 |
 | [`@theatrical/events`](packages/events) | Real-time event bridge — poll, diff, emit, webhook with HMAC-SHA256 | 71 | BSL 1.1 |
 | [`@theatrical/templates`](packages/templates) | React ticketing starter — complete 4-page booking app | — | BSL 1.1 |
+
+### Polyglot SDKs (Alpha)
+
+| SDK | Status | Install | Tests |
+|-----|--------|---------|-------|
+| [C# / .NET](packages/sdk-csharp) | Alpha | `dotnet add package Theatrical.Sdk` | 17 |
+| [Python](packages/sdk-py) | Alpha | `pip install theatrical` | 82 |
 
 ## Quick Start
 
@@ -172,7 +179,7 @@ npx tsx tests/benchmarks/sdk-performance.ts
 npx tsx tests/benchmarks/events-throughput.ts
 ```
 
-**600+ tests** across 45+ test files. All mock data uses real NZ cinema context: Embassy Theatre Wellington, Roxy Cinema, Rialto Auckland. NZD currency, en-NZ locale.
+**439 tests** across 27 test files (SDK: 274, CLI: 165). Polyglot SDKs add 82+ more (Python). All mock data uses real NZ cinema context: Embassy Theatre Wellington, Roxy Cinema, Rialto Auckland. NZD currency, en-NZ locale.
 
 ## Research
 
