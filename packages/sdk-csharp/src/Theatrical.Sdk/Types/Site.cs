@@ -9,8 +9,10 @@ public sealed record Site
     public string? Country { get; init; }
     public double? Latitude { get; init; }
     public double? Longitude { get; init; }
-    public string? TimeZone { get; init; }
-    public Screen[]? Screens { get; init; }
+    public string? Timezone { get; init; }
+    public bool IsActive { get; init; } = true;
+    public int? ScreenCount { get; init; }
+    public string[]? Features { get; init; }
 }
 
 public sealed record Screen
@@ -19,4 +21,5 @@ public sealed record Screen
     public required string Name { get; init; }
     public int? Capacity { get; init; }
     public string[]? Formats { get; init; }
+    public bool IsAccessible { get; init; }
 }

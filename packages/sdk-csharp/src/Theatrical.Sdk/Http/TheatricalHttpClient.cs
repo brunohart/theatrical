@@ -74,7 +74,7 @@ internal sealed class TheatricalHttpClient : ITheatricalHttpClient, IDisposable
         request.Headers.Add("X-Request-ID", requestId);
 
         if (body is not null)
-            request.Content = JsonContent.Create(body);
+            request.Content = JsonContent.Create(body, options: JsonDefaults.Options);
 
         HttpResponseMessage response;
         try
@@ -92,7 +92,7 @@ internal sealed class TheatricalHttpClient : ITheatricalHttpClient, IDisposable
 
         if (response.IsSuccessStatusCode)
         {
-            var result = await response.Content.ReadFromJsonAsync<T>(cancellationToken).ConfigureAwait(false);
+            var result = await response.Content.ReadFromJsonAsync<T>(JsonDefaults.Options, cancellationToken).ConfigureAwait(false);
             return result!;
         }
 
