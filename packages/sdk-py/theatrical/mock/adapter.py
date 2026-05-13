@@ -25,8 +25,10 @@ class MockHttpAdapter:
     async def get(self, path: str, params: dict[str, str] | None = None) -> Any:
         data = self._lookup(path)
         if data is None:
-            resource = path.split("/")[-1] if "/" in path else path
-            raise NotFoundError(f"Mock: no fixture for GET {path}", resource)
+            segments = [s for s in path.split("/") if s]
+            resource_id = segments[-1] if segments else path
+            resource = segments[-2].rstrip("s").capitalize() if len(segments) >= 2 else "Resource"
+            raise NotFoundError(resource, resource_id)
         return data
 
     async def post(self, path: str, body: Any | None = None) -> Any:
