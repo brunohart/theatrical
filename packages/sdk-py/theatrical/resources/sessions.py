@@ -13,13 +13,13 @@ from theatrical.types.session import (
 from theatrical.types.pagination import PaginatedResponse, PaginationParams
 
 if TYPE_CHECKING:
-    import httpx
+    from theatrical.http.client import TheatricalHttpProtocol
 
 DEFAULT_PAGE_SIZE = 50
 
 
 class SessionsResource:
-    def __init__(self, http: httpx.AsyncClient) -> None:
+    def __init__(self, http: TheatricalHttpProtocol) -> None:
         self._http = http
 
     async def list(self, filters: Optional[SessionFilter] = None) -> SessionListResponse:

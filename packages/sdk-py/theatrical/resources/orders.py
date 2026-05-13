@@ -13,11 +13,11 @@ from theatrical.types.order import (
 )
 
 if TYPE_CHECKING:
-    import httpx
+    from theatrical.http.client import TheatricalHttpProtocol
 
 
 class OrdersResource:
-    def __init__(self, http: httpx.AsyncClient) -> None:
+    def __init__(self, http: TheatricalHttpProtocol) -> None:
         self._http = http
 
     async def create(self, session_id: str) -> Order:
