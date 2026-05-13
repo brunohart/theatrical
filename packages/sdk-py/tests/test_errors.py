@@ -86,6 +86,11 @@ class TestServerError:
         assert str(err) == "Internal server error"
 
     def test_custom_message(self) -> None:
-        err = ServerError("Gateway timeout", "req-500")
+        err = ServerError("Gateway timeout", request_id="req-500")
         assert str(err) == "Gateway timeout"
         assert err.request_id == "req-500"
+
+    def test_with_vista_error_code(self) -> None:
+        err = ServerError("Service unavailable", vista_error_code="SERVICE_UNAVAILABLE", request_id="req-503")
+        assert err.vista_error_code == "SERVICE_UNAVAILABLE"
+        assert err.request_id == "req-503"
