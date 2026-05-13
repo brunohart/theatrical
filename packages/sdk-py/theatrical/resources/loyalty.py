@@ -13,11 +13,11 @@ from theatrical.types.loyalty import (
 )
 
 if TYPE_CHECKING:
-    import httpx
+    from theatrical.http.client import TheatricalHttpProtocol
 
 
 class LoyaltyResource:
-    def __init__(self, http: httpx.AsyncClient) -> None:
+    def __init__(self, http: TheatricalHttpProtocol) -> None:
         self._http = http
 
     async def get_member(self, member_id: str) -> LoyaltyMember:
