@@ -14,11 +14,11 @@ from theatrical.types.menu import (
 )
 
 if TYPE_CHECKING:
-    import httpx
+    from theatrical.http.client import TheatricalHttpProtocol
 
 
 class FoodAndBeverageResource:
-    def __init__(self, http: httpx.AsyncClient) -> None:
+    def __init__(self, http: TheatricalHttpProtocol) -> None:
         self._http = http
 
     async def categories(self, site_id: str) -> list[MenuCategory]:
