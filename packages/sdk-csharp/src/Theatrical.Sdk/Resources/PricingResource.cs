@@ -1,11 +1,12 @@
+using Theatrical.Sdk.Http;
 namespace Theatrical.Sdk.Resources;
 
 public sealed class PricingResource
 {
-    private readonly HttpClient _httpClient;
+    private readonly ITheatricalHttpClient _httpClient;
     private readonly TheatricalClientOptions _options;
 
-    internal PricingResource(HttpClient httpClient, TheatricalClientOptions options)
+    internal PricingResource(ITheatricalHttpClient httpClient, TheatricalClientOptions options)
     {
         _httpClient = httpClient;
         _options = options;
