@@ -13,11 +13,11 @@ from theatrical.types.pricing import (
 )
 
 if TYPE_CHECKING:
-    import httpx
+    from theatrical.http.client import TheatricalHttpProtocol
 
 
 class PricingResource:
-    def __init__(self, http: httpx.AsyncClient) -> None:
+    def __init__(self, http: TheatricalHttpProtocol) -> None:
         self._http = http
 
     async def ticket_types(self, filters: Optional[TicketTypeFilter] = None) -> list[TicketType]:
