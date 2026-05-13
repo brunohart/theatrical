@@ -72,6 +72,6 @@ public sealed class NotFoundException : TheatricalException
 
 public sealed class ServerException : TheatricalException
 {
-    public ServerException(string message = "Internal server error", string? requestId = null)
-        : base(message, 500, requestId: requestId) { }
+    public ServerException(string message = "Internal server error", string? vistaErrorCode = null, string? requestId = null)
+        : base(message, 500, vistaErrorCode, requestId) { }
 }
