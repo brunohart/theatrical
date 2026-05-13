@@ -87,6 +87,7 @@ class ServerError(TheatricalError):
     def __init__(
         self,
         message: str = "Internal server error",
+        vista_error_code: Optional[str] = None,
         request_id: Optional[str] = None,
     ) -> None:
-        super().__init__(message, 500, request_id=request_id)
+        super().__init__(message, 500, vista_error_code=vista_error_code, request_id=request_id)
