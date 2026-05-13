@@ -7,11 +7,11 @@ from typing import TYPE_CHECKING, Optional
 from theatrical.types.film import Film, FilmDetail, FilmFilter, FilmSearchFilter
 
 if TYPE_CHECKING:
-    import httpx
+    from theatrical.http.client import TheatricalHttpProtocol
 
 
 class FilmsResource:
-    def __init__(self, http: httpx.AsyncClient) -> None:
+    def __init__(self, http: TheatricalHttpProtocol) -> None:
         self._http = http
 
     async def now_showing(self, filters: Optional[FilmFilter] = None) -> list[Film]:

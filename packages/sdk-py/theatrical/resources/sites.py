@@ -7,11 +7,11 @@ from typing import TYPE_CHECKING
 from theatrical.types.site import Site
 
 if TYPE_CHECKING:
-    import httpx
+    from theatrical.http.client import TheatricalHttpProtocol
 
 
 class SitesResource:
-    def __init__(self, http: httpx.AsyncClient) -> None:
+    def __init__(self, http: TheatricalHttpProtocol) -> None:
         self._http = http
 
     async def list(self) -> list[Site]:

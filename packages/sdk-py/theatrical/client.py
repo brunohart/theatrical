@@ -2,19 +2,22 @@
 
 from __future__ import annotations
 
-from typing import Optional
+from typing import Any, Optional
 
-import httpx
-
+from theatrical.auth.gas_client import GasClient
+from theatrical.auth.token_manager import TokenManager
 from theatrical.config import TheatricalConfig, TheatricalEnvironment
+from theatrical.http.client import TheatricalHttpClient
+from theatrical.http.rate_limiter import RateLimiter
+from theatrical.mock.adapter import MockHttpAdapter
+from theatrical.resources.films import FilmsResource
+from theatrical.resources.food_and_beverage import FoodAndBeverageResource
+from theatrical.resources.loyalty import LoyaltyResource
+from theatrical.resources.orders import OrdersResource
+from theatrical.resources.pricing import PricingResource
 from theatrical.resources.sessions import SessionsResource
 from theatrical.resources.sites import SitesResource
-from theatrical.resources.films import FilmsResource
-from theatrical.resources.orders import OrdersResource
-from theatrical.resources.loyalty import LoyaltyResource
 from theatrical.resources.subscriptions import SubscriptionsResource
-from theatrical.resources.pricing import PricingResource
-from theatrical.resources.food_and_beverage import FoodAndBeverageResource
 
 _global_instance: Optional[TheatricalClient] = None
 
@@ -22,10 +25,25 @@ _global_instance: Optional[TheatricalClient] = None
 class TheatricalClient:
     def __init__(self, config: TheatricalConfig) -> None:
         self._config = config
-        self._http = httpx.AsyncClient(
-            base_url=config.resolved_base_url,
+        self._closed = False
+
+        base_url = config.resolved_base_url
+
+        gas_client = GasClient(api_key=config.api_key)
+        self._gas_client: GasClient | None = gas_client
+
+        token_manager = TokenManager(gas_client)
+        self._token_manager: TokenManager | None = token_manager
+
+        rate_limiter = RateLimiter()
+
+        self._http_client: TheatricalHttpClient | MockHttpAdapter = TheatricalHttpClient(
+            base_url=base_url,
             timeout=config.timeout,
-            headers={"Authorization": f"Bearer {config.api_key}"},
+            max_retries=config.max_retries,
+            token_manager=token_manager,
+            debug=config.debug,
+            rate_limiter=rate_limiter,
         )
 
         self._sessions: Optional[SessionsResource] = None
@@ -42,11 +60,14 @@ class TheatricalClient:
         return cls(config)
 
     @classmethod
-    def create_mock(cls) -> TheatricalClient:
+    def create_mock(cls, overrides: dict[str, Any] | None = None) -> TheatricalClient:
         mock_config = TheatricalConfig(api_key="mock", environment=TheatricalEnvironment.SANDBOX)
-        instance = cls.__new__(cls)
+        instance = object.__new__(cls)
         instance._config = mock_config
-        instance._http = httpx.AsyncClient(base_url=mock_config.resolved_base_url)
+        instance._closed = False
+        instance._gas_client = None
+        instance._token_manager = None
+        instance._http_client = MockHttpAdapter(overrides)
         instance._sessions = None
         instance._sites = None
         instance._films = None
@@ -76,8 +97,18 @@ class TheatricalClient:
         global _global_instance
         _global_instance = None
 
+    def _throw_if_closed(self) -> None:
+        if self._closed:
+            raise RuntimeError("TheatricalClient has been closed")
+
     async def close(self) -> None:
-        await self._http.aclose()
+        if self._closed:
+            return
+        self._closed = True
+        if isinstance(self._http_client, TheatricalHttpClient):
+            await self._http_client.close()
+        if self._gas_client is not None:
+            await self._gas_client.close()
 
     async def __aenter__(self) -> TheatricalClient:
         return self
@@ -87,48 +118,56 @@ class TheatricalClient:
 
     @property
     def sessions(self) -> SessionsResource:
+        self._throw_if_closed()
         if self._sessions is None:
-            self._sessions = SessionsResource(self._http)
+            self._sessions = SessionsResource(self._http_client)
         return self._sessions
 
     @property
     def sites(self) -> SitesResource:
+        self._throw_if_closed()
         if self._sites is None:
-            self._sites = SitesResource(self._http)
+            self._sites = SitesResource(self._http_client)
         return self._sites
 
     @property
     def films(self) -> FilmsResource:
+        self._throw_if_closed()
         if self._films is None:
-            self._films = FilmsResource(self._http)
+            self._films = FilmsResource(self._http_client)
         return self._films
 
     @property
     def orders(self) -> OrdersResource:
+        self._throw_if_closed()
         if self._orders is None:
-            self._orders = OrdersResource(self._http)
+            self._orders = OrdersResource(self._http_client)
         return self._orders
 
     @property
     def loyalty(self) -> LoyaltyResource:
+        self._throw_if_closed()
         if self._loyalty is None:
-            self._loyalty = LoyaltyResource(self._http)
+            self._loyalty = LoyaltyResource(self._http_client)
         return self._loyalty
 
     @property
     def subscriptions(self) -> SubscriptionsResource:
+        self._throw_if_closed()
         if self._subscriptions is None:
-            self._subscriptions = SubscriptionsResource(self._http)
+            self._subscriptions = SubscriptionsResource(self._http_client)
         return self._subscriptions
 
     @property
     def pricing(self) -> PricingResource:
+        self._throw_if_closed()
         if self._pricing is None:
-            self._pricing = PricingResource(self._http)
+            self._pricing = PricingResource(self._http_client)
         return self._pricing
 
     @property
     def fnb(self) -> FoodAndBeverageResource:
+        self._throw_if_closed()
         if self._fnb is None:
-            self._fnb = FoodAndBeverageResource(self._http)
+            self._fnb = FoodAndBeverageResource(self._http_client)
         return self._fnb
