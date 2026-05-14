@@ -5,7 +5,7 @@ from __future__ import annotations
 from enum import Enum
 from typing import Optional
 
-from pydantic import BaseModel
+from theatrical.types.base import ApiModel
 
 
 class DietaryFlag(str, Enum):
@@ -28,7 +28,7 @@ class MenuSectionType(str, Enum):
     ALCOHOL = "alcohol"
 
 
-class MenuCategory(BaseModel):
+class MenuCategory(ApiModel):
     id: str
     name: str
     section_type: MenuSectionType
@@ -36,20 +36,20 @@ class MenuCategory(BaseModel):
     is_active: bool
 
 
-class CustomisationOption(BaseModel):
+class CustomisationOption(ApiModel):
     id: str
     name: str
     price_delta: float
 
 
-class ItemCustomisation(BaseModel):
+class ItemCustomisation(ApiModel):
     id: str
     name: str
     required: bool
     options: list[CustomisationOption]
 
 
-class MenuItem(BaseModel):
+class MenuItem(ApiModel):
     id: str
     name: str
     description: Optional[str] = None
@@ -66,7 +66,7 @@ class MenuItem(BaseModel):
     customisations: Optional[list[ItemCustomisation]] = None
 
 
-class ComboOffer(BaseModel):
+class ComboOffer(ApiModel):
     id: str
     name: str
     description: Optional[str] = None
@@ -79,27 +79,27 @@ class ComboOffer(BaseModel):
     image_url: Optional[str] = None
 
 
-class FnbOrderLineItem(BaseModel):
+class FnbOrderLineItem(ApiModel):
     item_id: str
     quantity: int
     customisations: Optional[dict[str, str]] = None
     unit_price: float
 
 
-class AddToOrderInput(BaseModel):
+class AddToOrderInput(ApiModel):
     order_id: str
     items: list[FnbOrderLineItem]
     session_id: Optional[str] = None
 
 
-class FnbOrderConfirmation(BaseModel):
+class FnbOrderConfirmation(ApiModel):
     order_id: str
     added_items: list[FnbOrderLineItem]
     fnb_subtotal: float
     currency: str
 
 
-class MenuFilter(BaseModel):
+class MenuFilter(ApiModel):
     site_id: str
     category_id: Optional[str] = None
     dietary: Optional[list[DietaryFlag]] = None

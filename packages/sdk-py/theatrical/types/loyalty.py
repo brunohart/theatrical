@@ -5,7 +5,7 @@ from __future__ import annotations
 from enum import Enum
 from typing import Literal, Optional
 
-from pydantic import BaseModel
+from theatrical.types.base import ApiModel
 
 
 class LoyaltyTierName(str, Enum):
@@ -15,7 +15,7 @@ class LoyaltyTierName(str, Enum):
     PLATINUM = "Platinum"
 
 
-class LoyaltyTier(BaseModel):
+class LoyaltyTier(ApiModel):
     id: str
     name: LoyaltyTierName
     level: int
@@ -23,7 +23,7 @@ class LoyaltyTier(BaseModel):
     points_threshold: int
 
 
-class LoyaltyMember(BaseModel):
+class LoyaltyMember(ApiModel):
     id: str
     email: str
     first_name: str
@@ -37,7 +37,7 @@ class LoyaltyMember(BaseModel):
     active: bool
 
 
-class PointsTransaction(BaseModel):
+class PointsTransaction(ApiModel):
     id: str
     member_id: str
     type: Literal["earn", "redeem", "adjust", "expire"]
@@ -49,7 +49,7 @@ class PointsTransaction(BaseModel):
     site_id: Optional[str] = None
 
 
-class RedemptionOption(BaseModel):
+class RedemptionOption(ApiModel):
     id: str
     name: str
     description: str
@@ -59,13 +59,13 @@ class RedemptionOption(BaseModel):
     expires_at: Optional[str] = None
 
 
-class RedeemPointsInput(BaseModel):
+class RedeemPointsInput(ApiModel):
     option_id: str
     order_id: Optional[str] = None
     quantity: Optional[int] = None
 
 
-class PointsHistoryFilter(BaseModel):
+class PointsHistoryFilter(ApiModel):
     type: Optional[Literal["earn", "redeem", "adjust", "expire"]] = None
     from_date: Optional[str] = None
     to_date: Optional[str] = None

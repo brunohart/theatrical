@@ -5,7 +5,7 @@ from __future__ import annotations
 from enum import Enum
 from typing import Optional
 
-from pydantic import BaseModel
+from theatrical.types.base import ApiModel
 
 
 class SessionFormat(str, Enum):
@@ -28,7 +28,7 @@ class SeatStatus(str, Enum):
     BLOCKED = "blocked"
 
 
-class Session(BaseModel):
+class Session(ApiModel):
     id: str
     film_id: str
     film_title: str
@@ -47,7 +47,7 @@ class Session(BaseModel):
     attributes: dict[str, str] = {}
 
 
-class SessionFilter(BaseModel):
+class SessionFilter(ApiModel):
     site_id: Optional[str] = None
     film_id: Optional[str] = None
     date: Optional[str] = None
@@ -60,7 +60,7 @@ class SessionFilter(BaseModel):
     cursor: Optional[str] = None
 
 
-class SessionListResponse(BaseModel):
+class SessionListResponse(ApiModel):
     sessions: list[Session]
     total: int
     has_more: bool
@@ -68,7 +68,7 @@ class SessionListResponse(BaseModel):
     next_cursor: Optional[str] = None
 
 
-class Seat(BaseModel):
+class Seat(ApiModel):
     id: str
     row: str
     number: int
@@ -79,7 +79,7 @@ class Seat(BaseModel):
     is_accessible: bool
 
 
-class SeatAvailability(BaseModel):
+class SeatAvailability(ApiModel):
     session_id: str
     screen_name: str
     seats: list[Seat]

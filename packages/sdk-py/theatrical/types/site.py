@@ -4,15 +4,15 @@ from __future__ import annotations
 
 from typing import Optional
 
-from pydantic import BaseModel
+from theatrical.types.base import ApiModel
 
 
-class GeoLocation(BaseModel):
+class GeoLocation(ApiModel):
     latitude: float
     longitude: float
 
 
-class Address(BaseModel):
+class Address(ApiModel):
     line1: str
     line2: Optional[str] = None
     city: str
@@ -21,7 +21,7 @@ class Address(BaseModel):
     country: str
 
 
-class Screen(BaseModel):
+class Screen(ApiModel):
     id: str
     name: str
     seat_count: int
@@ -29,20 +29,20 @@ class Screen(BaseModel):
     is_accessible: bool
 
 
-class Amenity(BaseModel):
+class Amenity(ApiModel):
     id: str
     label: str
     icon: Optional[str] = None
 
 
-class SiteConfig(BaseModel):
+class SiteConfig(ApiModel):
     booking_lead_time: int
     max_tickets_per_order: int
     loyalty_enabled: bool
     fnb_enabled: bool
 
 
-class Site(BaseModel):
+class Site(ApiModel):
     id: str
     name: str
     address: Address
