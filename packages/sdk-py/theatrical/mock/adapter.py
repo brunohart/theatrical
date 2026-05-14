@@ -36,15 +36,63 @@ class MockHttpAdapter:
         if data is not None:
             return data
 
+        if "/orders" in path and "/fnb" in path:
+            return {
+                "orderId": path.split("/orders/")[1].split("/fnb")[0],
+                "addedItems": [],
+                "fnbSubtotal": 0,
+                "currency": "NZD",
+            }
+
         if "/orders" in path:
             return {
                 "id": f"ord_mock_{int(time.time() * 1000)}",
+                "sessionId": "ses_mock",
                 "status": "draft",
                 "tickets": [],
                 "items": [],
-                "pricing": {"subtotal": 0, "tax": 0, "discounts": 0, "total": 0},
-                "createdAt": "2026-05-13T00:00:00Z",
-                "updatedAt": "2026-05-13T00:00:00Z",
+                "subtotal": 0,
+                "tax": 0,
+                "discount": 0,
+                "total": 0,
+                "currency": "NZD",
+                "createdAt": "2026-05-14T00:00:00Z",
+                "updatedAt": "2026-05-14T00:00:00Z",
+            }
+
+        if "/subscriptions/members/" in path:
+            member_id = _extract_id_from_path(path, "/subscriptions/members/")
+            status = "active"
+            if "/suspend" in path:
+                status = "paused"
+            elif "/cancel" in path:
+                status = "cancelled"
+            return {
+                "id": "sub_mock",
+                "planId": "plan_mock",
+                "memberId": member_id,
+                "status": status,
+                "startDate": "2026-01-01",
+                "autoRenew": status == "active",
+            }
+
+        if "/loyalty/" in path:
+            return {
+                "id": "mem_mock",
+                "email": "mock@example.co.nz",
+                "firstName": "Mock",
+                "lastName": "Member",
+                "tier": {
+                    "id": "tier_bronze",
+                    "name": "Bronze",
+                    "level": 1,
+                    "benefits": [],
+                    "pointsThreshold": 0,
+                },
+                "points": 0,
+                "lifetimePoints": 0,
+                "memberSince": "2026-01-01",
+                "active": True,
             }
 
         return {}
@@ -67,3 +115,12 @@ class MockHttpAdapter:
                 return response
 
         return None
+
+
+def _extract_id_from_path(path: str, prefix: str) -> str:
+    idx = path.find(prefix)
+    if idx < 0:
+        return "unknown"
+    rest = path[idx + len(prefix):]
+    slash_idx = rest.find("/")
+    return rest[:slash_idx] if slash_idx >= 0 else rest
