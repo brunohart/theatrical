@@ -38,14 +38,14 @@ public class TheatricalClientTests : IDisposable
     [Fact]
     public void Create_WithEmptyApiKey_ThrowsValidationException()
     {
-        Assert.Throws<Errors.ValidationException>(() =>
+        Assert.Throws<Theatrical.Sdk.Errors.ValidationException>(() =>
             TheatricalClient.Create(new TheatricalClientOptions { ApiKey = "" }));
     }
 
     [Fact]
     public void Create_WithInvalidTimeout_ThrowsValidationException()
     {
-        Assert.Throws<Errors.ValidationException>(() =>
+        Assert.Throws<Theatrical.Sdk.Errors.ValidationException>(() =>
             TheatricalClient.Create(new TheatricalClientOptions
             {
                 ApiKey = "valid-key",
@@ -56,7 +56,7 @@ public class TheatricalClientTests : IDisposable
     [Fact]
     public void Create_WithInvalidMaxRetries_ThrowsValidationException()
     {
-        Assert.Throws<Errors.ValidationException>(() =>
+        Assert.Throws<Theatrical.Sdk.Errors.ValidationException>(() =>
             TheatricalClient.Create(new TheatricalClientOptions
             {
                 ApiKey = "valid-key",
@@ -69,6 +69,15 @@ public class TheatricalClientTests : IDisposable
     {
         using var client = TheatricalClient.CreateMock();
         Assert.NotNull(client);
+    }
+
+    [Fact]
+    public void CreateMock_ResourcesAreAccessible()
+    {
+        using var client = TheatricalClient.CreateMock();
+        Assert.NotNull(client.Sessions);
+        Assert.NotNull(client.Films);
+        Assert.NotNull(client.Sites);
     }
 
     [Fact]
@@ -113,5 +122,86 @@ public class TheatricalClientTests : IDisposable
         var sessions2 = client.Sessions;
 
         Assert.Same(sessions1, sessions2);
+    }
+
+    [Fact]
+    public void Dispose_PreventsResourceAccess()
+    {
+        var client = TheatricalClient.Create(new TheatricalClientOptions { ApiKey = "key" });
+        client.Dispose();
+
+        Assert.Throws<ObjectDisposedException>(() => client.Sessions);
+        Assert.Throws<ObjectDisposedException>(() => client.Films);
+        Assert.Throws<ObjectDisposedException>(() => client.Sites);
+        Assert.Throws<ObjectDisposedException>(() => client.Orders);
+        Assert.Throws<ObjectDisposedException>(() => client.Loyalty);
+        Assert.Throws<ObjectDisposedException>(() => client.Subscriptions);
+        Assert.Throws<ObjectDisposedException>(() => client.Pricing);
+        Assert.Throws<ObjectDisposedException>(() => client.FoodAndBeverage);
+    }
+
+    [Fact]
+    public void Dispose_IsIdempotent()
+    {
+        var client = TheatricalClient.Create(new TheatricalClientOptions { ApiKey = "key" });
+        client.Dispose();
+        client.Dispose();
+    }
+
+    [Fact]
+    public void SetGlobal_DisposePreviousInstance()
+    {
+        TheatricalClient.SetGlobal(new TheatricalClientOptions { ApiKey = "first" });
+        var first = TheatricalClient.Global();
+
+        TheatricalClient.SetGlobal(new TheatricalClientOptions { ApiKey = "second" });
+        var second = TheatricalClient.Global();
+
+        Assert.NotSame(first, second);
+        Assert.Throws<ObjectDisposedException>(() => first.Sessions);
+    }
+
+    [Fact]
+    public void Create_WithCustomBaseUrl_AcceptsValidUrl()
+    {
+        using var client = TheatricalClient.Create(new TheatricalClientOptions
+        {
+            ApiKey = "key",
+            BaseUrl = "https://custom-api.example.com",
+        });
+        Assert.NotNull(client);
+    }
+
+    [Fact]
+    public void Create_WithInvalidBaseUrl_ThrowsValidationException()
+    {
+        Assert.Throws<Theatrical.Sdk.Errors.ValidationException>(() =>
+            TheatricalClient.Create(new TheatricalClientOptions
+            {
+                ApiKey = "key",
+                BaseUrl = "not-a-url",
+            }));
+    }
+
+    [Fact]
+    public void Create_WithNegativeMaxRetries_ThrowsValidationException()
+    {
+        Assert.Throws<Theatrical.Sdk.Errors.ValidationException>(() =>
+            TheatricalClient.Create(new TheatricalClientOptions
+            {
+                ApiKey = "key",
+                MaxRetries = -1,
+            }));
+    }
+
+    [Fact]
+    public void Create_WithZeroTimeout_ThrowsValidationException()
+    {
+        Assert.Throws<Theatrical.Sdk.Errors.ValidationException>(() =>
+            TheatricalClient.Create(new TheatricalClientOptions
+            {
+                ApiKey = "key",
+                Timeout = TimeSpan.Zero,
+            }));
     }
 }
