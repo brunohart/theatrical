@@ -1,3 +1,6 @@
+using Theatrical.Sdk.Auth;
+using Theatrical.Sdk.Http;
+using Theatrical.Sdk.Mock;
 using Theatrical.Sdk.Resources;
 
 namespace Theatrical.Sdk;
@@ -5,24 +8,38 @@ namespace Theatrical.Sdk;
 public sealed class TheatricalClient : IDisposable
 {
     private readonly TheatricalClientOptions _options;
-    private readonly HttpClient _httpClient;
+    private readonly ITheatricalHttpClient _httpClient;
+    private readonly TokenManager? _tokenManager;
+    private readonly GasClient? _gasClient;
     private bool _disposed;
 
-    private SessionsResource? _sessions;
-    private SitesResource? _sites;
-    private FilmsResource? _films;
-    private OrdersResource? _orders;
-    private LoyaltyResource? _loyalty;
-    private SubscriptionsResource? _subscriptions;
-    private PricingResource? _pricing;
-    private FoodAndBeverageResource? _fnb;
+    private readonly Lazy<SessionsResource> _sessions;
+    private readonly Lazy<SitesResource> _sites;
+    private readonly Lazy<FilmsResource> _films;
+    private readonly Lazy<OrdersResource> _orders;
+    private readonly Lazy<LoyaltyResource> _loyalty;
+    private readonly Lazy<SubscriptionsResource> _subscriptions;
+    private readonly Lazy<PricingResource> _pricing;
+    private readonly Lazy<FoodAndBeverageResource> _fnb;
 
     private static TheatricalClient? _globalInstance;
+    private static readonly object GlobalLock = new();
 
-    private TheatricalClient(TheatricalClientOptions options, HttpClient httpClient)
+    private TheatricalClient(TheatricalClientOptions options, ITheatricalHttpClient httpClient, TokenManager? tokenManager, GasClient? gasClient)
     {
         _options = options;
         _httpClient = httpClient;
+        _tokenManager = tokenManager;
+        _gasClient = gasClient;
+
+        _sessions = new Lazy<SessionsResource>(() => new SessionsResource(_httpClient, _options));
+        _sites = new Lazy<SitesResource>(() => new SitesResource(_httpClient, _options));
+        _films = new Lazy<FilmsResource>(() => new FilmsResource(_httpClient, _options));
+        _orders = new Lazy<OrdersResource>(() => new OrdersResource(_httpClient, _options));
+        _loyalty = new Lazy<LoyaltyResource>(() => new LoyaltyResource(_httpClient, _options));
+        _subscriptions = new Lazy<SubscriptionsResource>(() => new SubscriptionsResource(_httpClient, _options));
+        _pricing = new Lazy<PricingResource>(() => new PricingResource(_httpClient, _options));
+        _fnb = new Lazy<FoodAndBeverageResource>(() => new FoodAndBeverageResource(_httpClient, _options));
     }
 
     public static TheatricalClient Create(TheatricalClientOptions options)
@@ -30,14 +47,20 @@ public sealed class TheatricalClient : IDisposable
         ArgumentNullException.ThrowIfNull(options);
         options.Validate();
 
-        var httpClient = new HttpClient
-        {
-            BaseAddress = new Uri(options.ResolvedBaseUrl),
-            Timeout = options.Timeout,
-        };
-        httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {options.ApiKey}");
+        var gasClient = new GasClient(options.ApiKey);
+        var tokenManager = new TokenManager(gasClient);
+        var rateLimiter = new RateLimiter();
+        var retryConfig = new RetryConfig { MaxRetries = options.MaxRetries };
 
-        return new TheatricalClient(options, httpClient);
+        var httpClient = new TheatricalHttpClient(
+            options.ResolvedBaseUrl,
+            options.Timeout,
+            tokenManager,
+            retryConfig,
+            rateLimiter,
+            options.Debug);
+
+        return new TheatricalClient(options, httpClient, tokenManager, gasClient);
     }
 
     public static TheatricalClient CreateMock()
@@ -49,41 +72,59 @@ public sealed class TheatricalClient : IDisposable
             Debug = false,
         };
 
-        return new TheatricalClient(options, new HttpClient());
+        return new TheatricalClient(options, new MockHttpAdapter(), tokenManager: null, gasClient: null);
     }
 
     public static TheatricalClient Global()
     {
-        return _globalInstance
-            ?? throw new InvalidOperationException(
-                "No global TheatricalClient configured. Call TheatricalClient.SetGlobal(options) first.");
+        lock (GlobalLock)
+        {
+            return _globalInstance
+                ?? throw new InvalidOperationException(
+                    "No global TheatricalClient configured. Call TheatricalClient.SetGlobal(options) first.");
+        }
     }
 
     public static void SetGlobal(TheatricalClientOptions options)
     {
-        _globalInstance = Create(options);
+        lock (GlobalLock)
+        {
+            var previous = _globalInstance;
+            _globalInstance = Create(options);
+            previous?.Dispose();
+        }
     }
 
     public static void ResetGlobal()
     {
-        _globalInstance?.Dispose();
-        _globalInstance = null;
+        lock (GlobalLock)
+        {
+            _globalInstance?.Dispose();
+            _globalInstance = null;
+        }
     }
 
-    public SessionsResource Sessions => _sessions ??= new SessionsResource(_httpClient, _options);
-    public SitesResource Sites => _sites ??= new SitesResource(_httpClient, _options);
-    public FilmsResource Films => _films ??= new FilmsResource(_httpClient, _options);
-    public OrdersResource Orders => _orders ??= new OrdersResource(_httpClient, _options);
-    public LoyaltyResource Loyalty => _loyalty ??= new LoyaltyResource(_httpClient, _options);
-    public SubscriptionsResource Subscriptions => _subscriptions ??= new SubscriptionsResource(_httpClient, _options);
-    public PricingResource Pricing => _pricing ??= new PricingResource(_httpClient, _options);
-    public FoodAndBeverageResource FoodAndBeverage => _fnb ??= new FoodAndBeverageResource(_httpClient, _options);
+    public SessionsResource Sessions { get { ThrowIfDisposed(); return _sessions.Value; } }
+    public SitesResource Sites { get { ThrowIfDisposed(); return _sites.Value; } }
+    public FilmsResource Films { get { ThrowIfDisposed(); return _films.Value; } }
+    public OrdersResource Orders { get { ThrowIfDisposed(); return _orders.Value; } }
+    public LoyaltyResource Loyalty { get { ThrowIfDisposed(); return _loyalty.Value; } }
+    public SubscriptionsResource Subscriptions { get { ThrowIfDisposed(); return _subscriptions.Value; } }
+    public PricingResource Pricing { get { ThrowIfDisposed(); return _pricing.Value; } }
+    public FoodAndBeverageResource FoodAndBeverage { get { ThrowIfDisposed(); return _fnb.Value; } }
+
+    private void ThrowIfDisposed()
+    {
+        ObjectDisposedException.ThrowIf(_disposed, this);
+    }
 
     public void Dispose()
     {
         if (!_disposed)
         {
-            _httpClient.Dispose();
+            (_httpClient as IDisposable)?.Dispose();
+            _tokenManager?.Dispose();
+            _gasClient?.Dispose();
             _disposed = true;
         }
     }

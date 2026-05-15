@@ -1,11 +1,12 @@
+using Theatrical.Sdk.Http;
 namespace Theatrical.Sdk.Resources;
 
 public sealed class FoodAndBeverageResource
 {
-    private readonly HttpClient _httpClient;
+    private readonly ITheatricalHttpClient _httpClient;
     private readonly TheatricalClientOptions _options;
 
-    internal FoodAndBeverageResource(HttpClient httpClient, TheatricalClientOptions options)
+    internal FoodAndBeverageResource(ITheatricalHttpClient httpClient, TheatricalClientOptions options)
     {
         _httpClient = httpClient;
         _options = options;

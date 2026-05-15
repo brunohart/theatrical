@@ -1,11 +1,12 @@
+using Theatrical.Sdk.Http;
 namespace Theatrical.Sdk.Resources;
 
 public sealed class SitesResource
 {
-    private readonly HttpClient _httpClient;
+    private readonly ITheatricalHttpClient _httpClient;
     private readonly TheatricalClientOptions _options;
 
-    internal SitesResource(HttpClient httpClient, TheatricalClientOptions options)
+    internal SitesResource(ITheatricalHttpClient httpClient, TheatricalClientOptions options)
     {
         _httpClient = httpClient;
         _options = options;
