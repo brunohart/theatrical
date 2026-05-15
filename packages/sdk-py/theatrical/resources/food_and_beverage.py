@@ -37,7 +37,9 @@ class FoodAndBeverageResource:
             d = filter.model_dump(exclude_none=True, exclude={"site_id"})
             for key, value in d.items():
                 if key == "dietary" and isinstance(value, list):
-                    params[key] = ",".join(str(v) for v in value)
+                    params[key] = ",".join(
+                        v.value if hasattr(v, "value") else str(v) for v in value
+                    )
                 else:
                     params[key] = str(value) if not isinstance(value, str) else value
         raw = await self._http.get(
