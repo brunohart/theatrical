@@ -38,9 +38,11 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/brunohart/theatrical"
+Homepage = "https://theatrical.dev"
 Repository = "https://github.com/brunohart/theatrical"
 Documentation = "https://github.com/brunohart/theatrical/tree/main/packages/sdk-py"
+Changelog = "https://github.com/brunohart/theatrical/blob/main/packages/sdk-py/CHANGELOG.md"
+"Bug Tracker" = "https://github.com/brunohart/theatrical/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["theatrical"]
