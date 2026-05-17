@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The 3.3 Billion Dollar API — Theatrical</title>
+  <meta name="description" content="Vista Group processes $3.3B in annual GTV. The developer ecosystem around it is effectively zero. This is the biggest untapped API economy in entertainment technology.">
+  <meta property="og:title" content="The 3.3 Billion Dollar API — Theatrical">
+  <meta property="og:description" content="The biggest untapped API economy in entertainment technology.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://theatrical.dev/essays/the-3.3-billion-api.html">
+  <meta name="twitter:card" content="summary">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="nav">
+    <div class="container nav-inner">
+      <a href="/" class="nav-brand">theatrical</a>
+      <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/#essays">Essays</a>
+        <a href="https://github.com/brunohart/theatrical" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </nav>
+
+  <article class="essay">
+    <header class="essay-header">
+      <h1 class="essay-title">The 3.3 Billion Dollar API</h1>
+      <p class="essay-subtitle">Vista Group processes $3.3B in annual gross transaction value. The developer ecosystem around it is effectively zero. This is the biggest untapped API economy in entertainment technology.</p>
+      <p class="essay-meta">Research Essay &middot; Theatrical SDK</p>
+    </header>
+
+    <div class="essay-body">
+      <h2>The Scale</h2>
+      <p>Vista Group Holdings (NZX: VGL) is a New Zealand-headquartered cinema technology company that powers cinema operations across more than 100 countries. Their platform processes an estimated NZ$3.3 billion in annual gross transaction value — every ticket sold, every concession ordered, every loyalty point earned and redeemed through their systems.</p>
+      <p>Their product suite spans the full cinema operation: Vista Cinema (core POS and ticketing), Veezi (cloud cinema management), Movio (customer data platform for cinema), Numero (film distribution analytics), and Horizon (business intelligence and analytics). Each product has APIs. Some are documented on developer.vista.co. The infrastructure is enterprise-grade, battle-tested across thousands of sites, and handles the concurrency challenges of real-time seat inventory management at global scale.</p>
+      <p>By any measure, this is a significant API platform. It processes more transaction volume than many well-known developer platforms. It handles domain-specific complexity — seat-level inventory, multi-format session scheduling, tiered loyalty programmes — that rivals the most sophisticated commerce APIs.</p>
+      <p>And yet, if you search npm for Vista cinema SDKs, you find nothing. If you look for typed TypeScript clients for cinema management APIs, you find nothing. If you search for React components designed for cinema booking interfaces, you find nothing.</p>
+      <p>This is not a gap in the platform. The APIs exist and work. This is a gap in the ecosystem — the developer tooling layer that turns a capable API into a productive development platform.</p>
+
+      <hr>
+
+      <h2>The Economics</h2>
+      <p>$3.3 billion in GTV means the cinema platform API economy is comparable in scale to:</p>
+      <ul>
+        <li><strong>Shopify at IPO (2015)</strong> — processing ~$7.7B GMV with a thriving developer ecosystem</li>
+        <li><strong>Square's early years</strong> — $3.9B GPV in 2013 when their SDK ecosystem was nascent</li>
+        <li><strong>Adyen's pre-growth phase</strong> — when developer adoption was still being built</li>
+      </ul>
+      <p>Each of these platforms eventually built (or attracted) a developer ecosystem. The question for cinema is not whether it will happen, but when — and who builds the reference implementation.</p>
+
+      <hr>
+
+      <h2>The Opportunity</h2>
+      <p>An untapped API economy at this scale is rare. Most platforms with $3B+ in transaction volume already have multiple SDK providers, open-source client libraries, and community-built developer tools.</p>
+      <p>Cinema's gap exists for understandable reasons: the industry has been focused on operational technology, the developer community around cinema is small, and the domain complexity (sessions, seat maps, multi-tier pricing, loyalty) creates a high barrier to entry for tooling builders.</p>
+      <p>But these barriers are exactly what make the opportunity valuable. When developer tooling does arrive for cinema, it needs to understand the domain deeply — not just wrap REST endpoints, but encode the operational reality of cinema into the developer experience.</p>
+      <p>That is what Theatrical builds: the developer ecosystem layer for cinema's $3.3 billion API platform.</p>
+    </div>
+
+    <nav class="essay-nav">
+      <a href="cinema-as-protocol.html">&larr; Cinema as Protocol</a>
+      <a href="event-driven-cinema.html">Next: Event-Driven Cinema &rarr;</a>
+    </nav>
+  </article>
+</body>
+</html>
