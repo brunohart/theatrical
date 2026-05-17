@@ -9,7 +9,7 @@
     <PackageId>Theatrical.Sdk</PackageId>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>cinema;api;sdk;ticketing;sessions;booking</PackageTags>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageReadmeFile>PACKAGE.md</PackageReadmeFile>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -29,7 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="../../README.md" Pack="true" PackagePath="\" />
+    <None Include="../../PACKAGE.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
 </Project>
