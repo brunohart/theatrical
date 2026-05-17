@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event-Driven Cinema — Theatrical</title>
+  <meta name="description" content="Why real-time events change everything for cinema operations — and how to build an event bridge when the platform API is request-response.">
+  <meta property="og:title" content="Event-Driven Cinema — Theatrical">
+  <meta property="og:description" content="Why real-time events change everything for cinema operations.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://theatrical.dev/essays/event-driven-cinema.html">
+  <meta name="twitter:card" content="summary">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="nav">
+    <div class="container nav-inner">
+      <a href="/" class="nav-brand">theatrical</a>
+      <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/#essays">Essays</a>
+        <a href="https://github.com/brunohart/theatrical" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </nav>
+
+  <article class="essay">
+    <header class="essay-header">
+      <h1 class="essay-title">Event-Driven Cinema</h1>
+      <p class="essay-subtitle">Why real-time events change everything for cinema operations — and how to build an event bridge when the platform API is request-response.</p>
+      <p class="essay-meta">Research Essay &middot; Theatrical SDK</p>
+    </header>
+
+    <div class="essay-body">
+      <h2>The Problem</h2>
+      <p>Cinema management platforms are request-response systems. You ask the API for the current state — available seats, order status, film catalogue — and it tells you. This works well for interactive applications where a human initiates each query.</p>
+      <p>But cinema operations need more than request-response. They need awareness of change.</p>
+      <p>A cinema manager needs to know when a popular session is about to sell out — not because they queried it, but because the system noticed. A concession team needs to know when a large group booking is confirmed — not because they checked the orders list, but because an alert fired. A marketing team needs to know when a new film appears in the catalogue — not because they refreshed the page, but because the event bridge detected the change and notified their systems.</p>
+      <p>The gap between what cinema operations need (real-time change awareness) and what the API provides (current-state snapshots) is where an event bridge creates the most value.</p>
+
+      <hr>
+
+      <h2>The Architecture</h2>
+      <p>An event bridge for cinema sits between the polling reality of the platform API and the event-driven expectations of modern applications. It has three layers:</p>
+      <ul>
+        <li><strong>Poll layer</strong> — Periodically queries the platform API for state changes. Smart diffing identifies what changed since the last poll. Adaptive polling intervals based on activity patterns (more frequent during peak booking hours).</li>
+        <li><strong>Event layer</strong> — Transforms state diffs into typed domain events. A seat that was available and is now occupied becomes a <code>SeatBooked</code> event. An order that transitions from pending to confirmed becomes an <code>OrderConfirmed</code> event. A session that drops below 10% availability becomes a <code>SessionNearSellout</code> event.</li>
+        <li><strong>Delivery layer</strong> — Routes events to subscribers. WebSocket connections for real-time UIs. Webhook delivery for server-to-server integrations. Message queue publication for event-sourced architectures.</li>
+      </ul>
+
+      <hr>
+
+      <h2>The Events That Matter</h2>
+      <p>Not all state changes are interesting. The event bridge must encode cinema domain knowledge about which changes matter:</p>
+      <ul>
+        <li><strong>Booking events</strong> — OrderCreated, OrderConfirmed, OrderCancelled, OrderRefunded. These drive concession preparation, staffing decisions, and revenue tracking.</li>
+        <li><strong>Availability events</strong> — SessionNearSellout (threshold-based), SeatReleased (cancellation freed seats), SessionSoldOut. These drive dynamic pricing and marketing automation.</li>
+        <li><strong>Catalogue events</strong> — FilmAdded, SessionScheduled, SessionCancelled. These drive content distribution and customer notification.</li>
+        <li><strong>Loyalty events</strong> — PointsEarned, TierUpgrade, RedemptionApplied. These drive personalisation engines and member engagement.</li>
+      </ul>
+      <p>Each event type carries the context needed for downstream processing — not just what changed, but enough domain context to act on the change without additional API calls.</p>
+
+      <hr>
+
+      <h2>Why This Is the Crown Jewel</h2>
+      <p>The event bridge is the most valuable component in the Theatrical ecosystem because it creates capability that does not exist in the platform today. The SDK makes existing APIs easier to use. The CLI makes development faster. The React components make UIs faster to build. But the event bridge creates new operational capability — real-time awareness that cinema operators currently lack.</p>
+      <p>This is where the Theatrical project goes from "nice developer tool" to "operational infrastructure that cinema businesses depend on."</p>
+    </div>
+
+    <nav class="essay-nav">
+      <a href="the-3.3-billion-api.html">&larr; The 3.3 Billion Dollar API</a>
+      <a href="/">&rarr; Back to Home</a>
+    </nav>
+  </article>
+</body>
+</html>
