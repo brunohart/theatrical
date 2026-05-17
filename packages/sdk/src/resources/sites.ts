@@ -26,6 +26,8 @@ export class SitesResource {
    *
    * @param filters - Optional filters: `query` (text search), `latitude`/`longitude`/`radius`
    * @returns Array of cinema sites
+   * @throws {TheatricalError} When the API returns an error response
+   * @throws {z.ZodError} When the response fails schema validation
    *
    * @example
    * ```typescript

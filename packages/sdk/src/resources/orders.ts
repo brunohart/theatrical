@@ -75,7 +75,9 @@ export class OrdersResource {
   /**
    * Create a new draft order for a session.
    *
-   * @param input - Session ID, initial tickets, optional F&B items, optional loyalty member
+   * @throws {TheatricalError} When the API returns an error response
+   * @throws {z.ZodError} When the response fails schema validation
+   * @param input - Session ID, initial tickets, optional F   * @param input - Session ID, initial tickets, optional F&B items, optional loyalty memberB items, optional loyalty member
    * @returns The newly created order in 'draft' status
    */
   async create(input: CreateOrderInput): Promise<Order> {

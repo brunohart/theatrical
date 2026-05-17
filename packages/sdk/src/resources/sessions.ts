@@ -32,6 +32,8 @@ export class SessionsResource {
   /**
    * List sessions (showtimes) with optional filters.
    * Response is validated at runtime using Zod — malformed API responses throw a parse error.
+   * @throws {TheatricalError} When the API returns an error response
+   * @throws {z.ZodError} When the response fails schema validation
    * @see https://developer.vista.co/digital-platform/sessions/
    */
   async list(filters?: SessionFilter): Promise<SessionListResponse> {

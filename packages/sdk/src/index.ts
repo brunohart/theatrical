@@ -41,3 +41,4 @@ export {
 
 // Mock utilities
 export { MockHTTPAdapter } from './mock';
+export { SDK_VERSION, SDK_USER_AGENT } from './version';
