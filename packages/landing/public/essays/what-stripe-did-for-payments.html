@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What Stripe Did for Payments — Theatrical</title>
+  <meta name="description" content="Draw the parallel: Stripe → payments :: Theatrical → cinema. A technical comparison with code examples.">
+  <meta property="og:title" content="What Stripe Did for Payments — Theatrical">
+  <meta property="og:description" content="Draw the parallel: Stripe → payments :: Theatrical → cinema. A technical comparison with code examples.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://theatrical.dev/essays/what-stripe-did-for-payments.html">
+  <meta name="twitter:card" content="summary">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="nav">
+    <div class="container nav-inner">
+      <a href="/" class="nav-brand">theatrical</a>
+      <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/#essays">Essays</a>
+        <a href="https://github.com/brunohart/theatrical" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </nav>
+
+  <article class="essay">
+    <header class="essay-header">
+      <h1 class="essay-title">What Stripe Did for Payments</h1>
+      <p class="essay-subtitle">Draw the parallel: Stripe &rarr; payments :: Theatrical &rarr; cinema. A technical comparison with code examples.</p>
+      <p class="essay-meta">Research Essay &middot; Theatrical SDK</p>
+    </header>
+
+    <div class="essay-body">
+      <h2>The Before</h2>
+      <p>In 2010, accepting a credit card payment online looked like this:</p>
+      <p>You registered for a merchant account. You received API documentation — typically 200+ pages of XML schema definitions. You built a SOAP client, managed card tokenisation manually, handled PCI compliance questionnaires, implemented webhook verification without signature libraries, and wrote retry logic for a gateway that returned different error formats for different failure modes.</p>
+      <p>It worked. Thousands of businesses processed payments this way. But each integration was a multi-week engineering project, and the result was fragile — tightly coupled to the gateway's idiosyncrasies, difficult to test, and expensive to maintain.</p>
+      <p>Then Stripe published seven lines of code:</p>
+      <pre><code>const stripe = require('stripe')('sk_test_...');
+const charge = await stripe.charges.create({
+  amount: 2000,
+  currency: 'usd',
+  source: 'tok_visa',
+});</code></pre>
+      <p>The payment gateway underneath was unchanged. The same card networks, the same settlement rails, the same compliance requirements. What changed was the surface area developers interacted with.</p>
+
+      <hr>
+
+      <h2>The Parallel</h2>
+      <p>Cinema technology today is where payments were in 2009. The platforms are capable. The APIs exist. The documentation is available. What's missing is the developer experience layer.</p>
+      <p>Compare the experience of integrating cinema booking today vs. what it looks like with Theatrical:</p>
+
+      <h3>Before: Raw API</h3>
+      <pre><code>// Manually construct auth headers
+const token = await fetch('https://auth.moviexchange.com/token', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ apiKey, secret }),
+}).then(r => r.json());
+
+// No types, no validation, no retry
+const sessions = await fetch(
+  `https://api.vista.co/ocapi/v1/sessions?siteId=${siteId}`,
+  { headers: { Authorization: `Bearer ${token.access_token}` } }
+).then(r => r.json());</code></pre>
+
+      <h3>After: Theatrical SDK</h3>
+      <pre><code>import { TheatricalClient } from '@theatrical/sdk';
+
+const client = new TheatricalClient({ apiKey: 'your-key' });
+const sessions = await client.sessions.list({
+  siteId: 'roxy-wellington',
+  date: '2026-04-10',
+});</code></pre>
+      <p>Auth handled. Types enforced. Retry built in. Rate limiting proactive. Mock mode available. The API underneath is unchanged — the developer experience layer is what's new.</p>
+
+      <hr>
+
+      <h2>What Stripe Actually Built</h2>
+      <p>Stripe's genius was not in the seven lines of code. It was in the ecosystem of developer tools around it:</p>
+      <ul>
+        <li><strong>Typed clients in every language</strong> — not generated stubs, but hand-tuned ergonomic APIs</li>
+        <li><strong>Test mode</strong> — realistic fixture data without touching real money</li>
+        <li><strong>CLI</strong> — local webhook forwarding, event replay, resource inspection</li>
+        <li><strong>Error taxonomy</strong> — predictable error types with actionable messages</li>
+        <li><strong>Idempotency</strong> — safe retries built into the protocol</li>
+      </ul>
+      <p>Theatrical builds the same layers for cinema: typed SDKs (TypeScript, C#, Python), mock mode with NZ cinema fixtures, a CLI for code generation and API inspection, a structured error hierarchy with Vista error codes, and proactive rate limiting.</p>
+    </div>
+
+    <nav class="essay-nav">
+      <a href="cinema-platform-thesis.html">&larr; The Cinema Platform Thesis</a>
+      <a href="cinema-as-protocol.html">Next: Cinema as Protocol &rarr;</a>
+    </nav>
+  </article>
+</body>
+</html>
