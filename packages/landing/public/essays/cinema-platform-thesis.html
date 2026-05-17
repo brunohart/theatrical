@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Cinema Platform Thesis — Theatrical</title>
+  <meta name="description" content="Why cinema technology needs a developer ecosystem — and what it looks like when it gets one.">
+  <meta property="og:title" content="The Cinema Platform Thesis — Theatrical">
+  <meta property="og:description" content="Why cinema technology needs a developer ecosystem — and what it looks like when it gets one.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://theatrical.dev/essays/cinema-platform-thesis.html">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="The Cinema Platform Thesis — Theatrical">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="nav">
+    <div class="container nav-inner">
+      <a href="/" class="nav-brand">theatrical</a>
+      <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/#essays">Essays</a>
+        <a href="https://github.com/brunohart/theatrical" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </nav>
+
+  <article class="essay">
+    <header class="essay-header">
+      <h1 class="essay-title">The Cinema Platform Thesis</h1>
+      <p class="essay-subtitle">Why cinema technology needs a developer ecosystem — and what it looks like when it gets one.</p>
+      <p class="essay-meta">Research Essay &middot; Theatrical SDK</p>
+    </header>
+
+    <div class="essay-body">
+      <h2>The Landscape</h2>
+      <p>Every industry that processes transactions at scale eventually develops a developer ecosystem. Payments have Stripe. Commerce has Shopify. Communications have Twilio. Hospitality has Mews. Each followed the same arc: a platform grew large enough that third parties wanted to build on it, and the gap between raw API documentation and productive developer tooling became the defining constraint on ecosystem growth.</p>
+      <p>Cinema technology is at exactly this inflection point.</p>
+      <p>The platforms that power the world's theatres are sophisticated systems. They handle seat-level inventory across thousands of screens. They process ticket sales, concession orders, loyalty programmes, and subscription management at global scale. They maintain real-time availability across multi-channel distribution — web, mobile, kiosk, POS, third-party integrators. The operational complexity rivals any enterprise SaaS platform.</p>
+      <p>And yet, the third-party developer ecosystem around cinema technology remains in its earliest stages.</p>
+      <p>This is not a criticism. It is an observation about timing. Cinema platforms have, correctly, spent the last decade building the operational infrastructure that cinema operators depend on. The APIs exist. The documentation exists. The developer portals are live. But the developer experience layer — the typed clients, the CLI tools, the component libraries, the event systems that turn API documentation into productive development — has not yet been built.</p>
+      <p>This essay argues that building it is the most valuable thing someone could do for cinema technology right now.</p>
+
+      <hr>
+
+      <h2>The Pattern</h2>
+      <p>Consider what happened in payments.</p>
+      <p>Before Stripe, accepting payments online meant reading hundreds of pages of gateway documentation, handling raw XML or SOAP requests, managing PCI compliance manually, and building retry logic, error handling, and webhook verification from scratch for every integration. Developers could do it — and they did, for years — but each integration was a bespoke engineering project.</p>
+      <p>Stripe did not invent payment processing. They built the developer experience layer on top of it. A typed client library. Predictable error handling. Webhook signatures. A CLI for local development. Test mode with fixture data. The payment gateway was unchanged underneath — the same card networks, the same settlement rails, the same compliance requirements. What changed was the surface area that developers interacted with.</p>
+      <p>The result was that the number of businesses accepting payments online exploded. Not because payments became possible — they were always possible — but because payments became easy.</p>
+      <p>The same pattern repeated in communications (Twilio turned telecom APIs into a few lines of code), commerce (Shopify's SDK turned storefront development from months to days), and infrastructure (AWS SDKs made cloud computing accessible to developers who had never configured a server).</p>
+      <p>In every case, the platform was already capable. What was missing was the translation layer between platform capability and developer productivity.</p>
+
+      <hr>
+
+      <h2>The Cinema Gap</h2>
+      <p>Cinema technology platforms process billions in transaction value. Their APIs expose session scheduling, seat-level inventory, multi-format pricing, loyalty tier management, subscription lifecycle, and F&B ordering. The operational sophistication is genuine.</p>
+      <p>But search npm for a typed cinema SDK. Search PyPI for cinema API clients. Search NuGet for cinema platform libraries. You will find nothing.</p>
+      <p>This gap is not about capability — it is about the developer experience layer that has not yet been built.</p>
+
+      <hr>
+
+      <h2>What Gets Built</h2>
+      <p>A cinema developer ecosystem looks like this:</p>
+      <ul>
+        <li><strong>Typed SDKs</strong> — Client libraries in TypeScript, C#, Python, Go that encode cinema domain knowledge into the type system. A session is not a generic event. An order has a lifecycle. A seat has spatial relationships.</li>
+        <li><strong>CLI tools</strong> — Code generation, local development, API inspection. The same patterns that make Stripe CLI and Vercel CLI productive.</li>
+        <li><strong>UI components</strong> — React components designed for cinema UIs: seat maps, session cards, loyalty badges, format selectors. Not generic components adapted for cinema — components that understand cinema from the start.</li>
+        <li><strong>Event systems</strong> — Real-time awareness of state changes (session selling out, order confirmed, film added) when the underlying API is request-response.</li>
+        <li><strong>Mock mode</strong> — Development against realistic cinema data (real cinema names, real film titles, realistic pricing) without needing API credentials.</li>
+      </ul>
+      <p>This is not a product that cinema platforms cannot build themselves. It is a product that demonstrates what their ecosystem <em>could</em> look like — and provides the reference implementation.</p>
+    </div>
+
+    <nav class="essay-nav">
+      <a href="/">&larr; Back to Home</a>
+      <a href="what-stripe-did-for-payments.html">Next: What Stripe Did for Payments &rarr;</a>
+    </nav>
+  </article>
+</body>
+</html>
