@@ -2,9 +2,15 @@
 
 Type-safe async-first Python client for cinema platform APIs. Part of the [Theatrical](https://github.com/brunohart/theatrical) polyglot SDK.
 
+## Install
+
+```bash
+pip install theatrical
+```
+
 ## Status
 
-**Alpha** — scaffold complete. Core client, error hierarchy, 8 domain type modules (full field fidelity with TS SDK), 8 resource stubs, and pytest suite are in place. Resource implementations (PORT-PYTHON-002 through PORT-PYTHON-005) are next.
+**Alpha** — all 8 resource modules implemented with full TS API parity. 332 pytest tests passing. mypy strict clean, ruff clean.
 
 ## Requirements
 
@@ -41,13 +47,21 @@ TheatricalClient.set_global(TheatricalConfig(api_key="key"))
 client = TheatricalClient.global_instance()
 ```
 
+## Features
+
+- Async-first design with `httpx` and context manager support
+- `pydantic` v2 models with automatic camelCase alias support
+- 8 resource modules: sessions, sites, films, orders, loyalty, subscriptions, pricing, F&B
+- Typed error hierarchy: `AuthenticationError`, `NotFoundError`, `RateLimitError`, `ValidationError`
+- Mock mode with NZ cinema fixture data for offline development
+- PEP 561 compliant — ships `py.typed` for downstream type checking
+- 332 tests, mypy strict, ruff clean
+
 ## Development
 
 ```bash
 pip install -e ".[dev]"
-pytest
-mypy theatrical
-ruff check theatrical
+make check  # runs typecheck, lint, test
 ```
 
 ## Disclaimer
