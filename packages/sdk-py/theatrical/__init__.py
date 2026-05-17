@@ -14,6 +14,7 @@ from theatrical.errors.exceptions import (
 from theatrical._version import __version__
 
 __all__ = [
+    "__version__",
     "TheatricalClient",
     "TheatricalConfig",
     "TheatricalEnvironment",
