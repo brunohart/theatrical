@@ -5,7 +5,7 @@ from __future__ import annotations
 from enum import Enum
 from typing import Optional
 
-from pydantic import BaseModel
+from theatrical.types.base import ApiModel
 
 
 class SubscriptionInterval(str, Enum):
@@ -29,7 +29,7 @@ class BenefitCategory(str, Enum):
     EXCLUSIVE = "exclusive"
 
 
-class SubscriptionBenefit(BaseModel):
+class SubscriptionBenefit(ApiModel):
     id: str
     category: BenefitCategory
     name: str
@@ -38,7 +38,7 @@ class SubscriptionBenefit(BaseModel):
     active: bool
 
 
-class SubscriptionPlan(BaseModel):
+class SubscriptionPlan(ApiModel):
     id: str
     name: str
     description: str
@@ -51,7 +51,7 @@ class SubscriptionPlan(BaseModel):
     minimum_term_months: Optional[int] = None
 
 
-class SubscriptionUsage(BaseModel):
+class SubscriptionUsage(ApiModel):
     subscription_id: str
     member_id: str
     period_start: str
@@ -62,7 +62,7 @@ class SubscriptionUsage(BaseModel):
     benefit_usage: dict[str, int] = {}
 
 
-class MemberSubscription(BaseModel):
+class MemberSubscription(ApiModel):
     id: str
     plan_id: str
     plan: Optional[SubscriptionPlan] = None
@@ -76,11 +76,17 @@ class MemberSubscription(BaseModel):
     usage: Optional[SubscriptionUsage] = None
 
 
-class SuspendSubscriptionInput(BaseModel):
+class BenefitEligibility(ApiModel):
+    eligible: bool
+    uses_remaining: Optional[int] = None
+    reason: Optional[str] = None
+
+
+class SuspendSubscriptionInput(ApiModel):
     resume_date: Optional[str] = None
     reason: Optional[str] = None
 
 
-class CancelSubscriptionInput(BaseModel):
+class CancelSubscriptionInput(ApiModel):
     immediate: Optional[bool] = None
     reason: Optional[str] = None
