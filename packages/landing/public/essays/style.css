@@ -1,0 +1,136 @@
+/* Essay typography — long-form reading optimised */
+
+.essay {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 4rem 1.5rem 6rem;
+}
+
+.essay-header {
+  margin-bottom: 3rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.essay-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 0.75rem;
+  color: var(--color-text);
+}
+
+.essay-subtitle {
+  font-size: 1.125rem;
+  font-style: italic;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+.essay-meta {
+  margin-top: 1rem;
+  font-size: 0.875rem;
+  color: var(--color-text-dim);
+}
+
+.essay-body h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-top: 3rem;
+  margin-bottom: 1rem;
+  color: var(--color-text);
+}
+
+.essay-body h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  color: var(--color-text);
+}
+
+.essay-body p {
+  font-size: 1.0625rem;
+  line-height: 1.8;
+  margin-bottom: 1.25rem;
+  color: var(--color-text-muted);
+}
+
+.essay-body blockquote {
+  border-left: 3px solid var(--color-accent);
+  padding-left: 1.25rem;
+  margin: 2rem 0;
+  font-style: italic;
+  color: var(--color-text-dim);
+}
+
+.essay-body code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  background: var(--color-surface);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  color: var(--color-accent);
+}
+
+.essay-body pre {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin: 1.5rem 0;
+  overflow-x: auto;
+}
+
+.essay-body pre code {
+  background: none;
+  padding: 0;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--color-text-muted);
+}
+
+.essay-body ul, .essay-body ol {
+  margin: 1rem 0 1.25rem 1.5rem;
+  color: var(--color-text-muted);
+}
+
+.essay-body li {
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
+}
+
+.essay-body hr {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  margin: 3rem 0;
+}
+
+.essay-body strong {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.essay-nav {
+  margin-top: 4rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.essay-nav a {
+  color: var(--color-accent);
+  text-decoration: none;
+  font-size: 0.875rem;
+}
+
+.essay-nav a:hover {
+  color: var(--color-accent-hover);
+}
+
+@media (max-width: 640px) {
+  .essay-title { font-size: 1.75rem; }
+  .essay { padding: 2rem 1rem 4rem; }
+}
