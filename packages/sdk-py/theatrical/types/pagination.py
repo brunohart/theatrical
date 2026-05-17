@@ -5,7 +5,7 @@ from __future__ import annotations
 from enum import Enum
 from typing import Generic, Optional, TypeVar
 
-from pydantic import BaseModel
+from theatrical.types.base import ApiModel
 
 
 T = TypeVar("T")
@@ -16,13 +16,13 @@ class PaginationStrategy(str, Enum):
     OFFSET = "offset"
 
 
-class PaginationParams(BaseModel):
+class PaginationParams(ApiModel):
     limit: Optional[int] = None
     cursor: Optional[str] = None
     offset: Optional[int] = None
 
 
-class PaginatedResponse(BaseModel, Generic[T]):
+class PaginatedResponse(ApiModel, Generic[T]):
     data: list[T]
     total: int
     has_more: bool

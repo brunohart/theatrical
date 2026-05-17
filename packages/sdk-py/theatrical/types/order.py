@@ -5,7 +5,7 @@ from __future__ import annotations
 from enum import Enum
 from typing import Literal, Optional
 
-from pydantic import BaseModel
+from theatrical.types.base import ApiModel
 
 
 class OrderStatus(str, Enum):
@@ -18,7 +18,7 @@ class OrderStatus(str, Enum):
     REFUNDED = "refunded"
 
 
-class Ticket(BaseModel):
+class Ticket(ApiModel):
     id: str
     type: str
     seat_id: str
@@ -27,7 +27,7 @@ class Ticket(BaseModel):
     discount: Optional[float] = None
 
 
-class OrderItem(BaseModel):
+class OrderItem(ApiModel):
     id: str
     name: str
     category: str
@@ -36,7 +36,7 @@ class OrderItem(BaseModel):
     total_price: float
 
 
-class Order(BaseModel):
+class Order(ApiModel):
     id: str
     session_id: str
     status: OrderStatus
@@ -60,7 +60,7 @@ class Order(BaseModel):
     refunded_at: Optional[str] = None
 
 
-class OrderTransition(BaseModel):
+class OrderTransition(ApiModel):
     from_status: OrderStatus
     to_status: OrderStatus
     action: Literal["hold", "release", "confirm", "complete", "cancel", "refund"]
@@ -79,30 +79,37 @@ ORDER_TRANSITIONS: list[OrderTransition] = [
 ]
 
 
-class TicketInput(BaseModel):
+class TicketInput(ApiModel):
     type: str
     seat_id: str
 
 
-class AddTicketsInput(BaseModel):
+class AddTicketsInput(ApiModel):
     tickets: list[TicketInput]
 
 
-class ItemInput(BaseModel):
+class ItemInput(ApiModel):
     menu_item_id: str
     quantity: int
 
 
-class AddItemsInput(BaseModel):
+class AddItemsInput(ApiModel):
     items: list[ItemInput]
 
 
-class ApplyLoyaltyInput(BaseModel):
+class ApplyLoyaltyInput(ApiModel):
     member_id: str
     points_to_redeem: Optional[int] = None
 
 
-class OrderHistoryFilter(BaseModel):
+class CreateOrderInput(ApiModel):
+    session_id: str
+    tickets: list[TicketInput]
+    items: Optional[list[ItemInput]] = None
+    loyalty_member_id: Optional[str] = None
+
+
+class OrderHistoryFilter(ApiModel):
     status: Optional[OrderStatus] = None
     since: Optional[str] = None
     until: Optional[str] = None

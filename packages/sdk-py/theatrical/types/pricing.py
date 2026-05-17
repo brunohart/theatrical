@@ -5,7 +5,7 @@ from __future__ import annotations
 from enum import Enum
 from typing import Optional
 
-from pydantic import BaseModel
+from theatrical.types.base import ApiModel
 
 
 class SessionPricingFormat(str, Enum):
@@ -35,7 +35,7 @@ class TicketCategory(str, Enum):
     LOYALTY_MEMBER = "loyalty-member"
 
 
-class TicketType(BaseModel):
+class TicketType(ApiModel):
     id: str
     name: str
     description: Optional[str] = None
@@ -49,13 +49,13 @@ class TicketType(BaseModel):
     is_available: bool
 
 
-class TicketTypeFilter(BaseModel):
+class TicketTypeFilter(ApiModel):
     session_id: str
     category: Optional[TicketCategory] = None
     available_only: Optional[bool] = None
 
 
-class TaxConfig(BaseModel):
+class TaxConfig(ApiModel):
     currency: str
     rate: float
     label: str
@@ -71,7 +71,7 @@ class DiscountSource(str, Enum):
     GROUP = "group"
 
 
-class Discount(BaseModel):
+class Discount(ApiModel):
     id: str
     source: DiscountSource
     label: str
@@ -88,14 +88,14 @@ class SurchargeReason(str, Enum):
     PEAK_SURCHARGE = "peak-surcharge"
 
 
-class Surcharge(BaseModel):
+class Surcharge(ApiModel):
     id: str
     reason: SurchargeReason
     label: str
     amount: float
 
 
-class PriceBreakdown(BaseModel):
+class PriceBreakdown(ApiModel):
     base_price: float
     discounts: list[Discount]
     surcharges: list[Surcharge]
@@ -109,7 +109,7 @@ class PriceBreakdown(BaseModel):
     tax_config: TaxConfig
 
 
-class PriceCalculation(BaseModel):
+class PriceCalculation(ApiModel):
     session_id: str
     ticket_type_id: str
     total_price: float
@@ -119,7 +119,7 @@ class PriceCalculation(BaseModel):
     valid_until: str
 
 
-class ApplyCouponsInput(BaseModel):
+class ApplyCouponsInput(ApiModel):
     session_id: str
     ticket_type_id: str
     quantity: int
@@ -127,12 +127,12 @@ class ApplyCouponsInput(BaseModel):
     membership_id: Optional[str] = None
 
 
-class RejectedCoupon(BaseModel):
+class RejectedCoupon(ApiModel):
     code: str
     reason: str
 
 
-class CouponApplicationResult(BaseModel):
+class CouponApplicationResult(ApiModel):
     applied: list[Discount]
     rejected: list[RejectedCoupon]
     updated_breakdown: PriceBreakdown

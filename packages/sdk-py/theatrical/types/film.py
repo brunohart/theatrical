@@ -5,7 +5,7 @@ from __future__ import annotations
 from enum import Enum
 from typing import Literal, Optional
 
-from pydantic import BaseModel
+from theatrical.types.base import ApiModel
 
 
 class Genre(str, Enum):
@@ -51,29 +51,29 @@ class FilmLanguage(str, Enum):
     MI = "mi"
 
 
-class Rating(BaseModel):
+class Rating(ApiModel):
     classification: str
     description: Optional[str] = None
 
 
-class CastMember(BaseModel):
+class CastMember(ApiModel):
     name: str
     role: Optional[str] = None
 
 
-class CrewMember(BaseModel):
+class CrewMember(ApiModel):
     name: str
     department: str
     job: str
 
 
-class FilmRating(BaseModel):
+class FilmRating(ApiModel):
     source: str
     score: str
     out_of: Optional[str] = None
 
 
-class Film(BaseModel):
+class Film(ApiModel):
     id: str
     title: str
     synopsis: str
@@ -102,7 +102,7 @@ class FilmDetail(Film):
     website: Optional[str] = None
 
 
-class FilmFilter(BaseModel):
+class FilmFilter(ApiModel):
     site_id: Optional[str] = None
     genre: Optional[Genre] = None
     query: Optional[str] = None
