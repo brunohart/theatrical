@@ -33,14 +33,19 @@ dependencies = [
 dev = [
     "pytest>=8.0.0",
     "pytest-asyncio>=0.24.0",
+    "pytest-cov>=5.0.0",
     "mypy>=1.10.0",
     "ruff>=0.5.0",
+    "build>=1.0.0",
+    "twine>=5.0.0",
 ]
 
 [project.urls]
-Homepage = "https://github.com/brunohart/theatrical"
+Homepage = "https://theatrical.dev"
 Repository = "https://github.com/brunohart/theatrical"
 Documentation = "https://github.com/brunohart/theatrical/tree/main/packages/sdk-py"
+Changelog = "https://github.com/brunohart/theatrical/blob/main/packages/sdk-py/CHANGELOG.md"
+"Bug Tracker" = "https://github.com/brunohart/theatrical/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["theatrical"]
@@ -48,11 +53,57 @@ packages = ["theatrical"]
 [tool.mypy]
 strict = true
 python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
 
+[tool.coverage.run]
+source = ["theatrical"]
+branch = true
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "if TYPE_CHECKING:",
+    "@overload",
+    "raise NotImplementedError",
+]
+show_missing = true
+fail_under = 80
+
 [tool.ruff]
 target-version = "py310"
 line-length = 100
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # isort
+    "N",    # pep8-naming
+    "UP",   # pyupgrade
+    "B",    # flake8-bugbear
+    "SIM",  # flake8-simplify
+    "TCH",  # flake8-type-checking
+    "RUF",  # ruff-specific
+]
+ignore = [
+    "E501",  # line length handled by formatter
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["theatrical"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
