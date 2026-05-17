@@ -11,9 +11,10 @@ from theatrical.errors.exceptions import (
     ServerError,
 )
 
-__version__ = "0.1.0"
+from theatrical._version import __version__
 
 __all__ = [
+    "__version__",
     "TheatricalClient",
     "TheatricalConfig",
     "TheatricalEnvironment",

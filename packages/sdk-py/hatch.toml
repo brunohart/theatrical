@@ -1,0 +1,25 @@
+[build.targets.sdist]
+include = [
+    "theatrical/",
+    "LICENSE",
+    "README.md",
+    "CHANGELOG.md",
+]
+
+[build.targets.wheel]
+packages = ["theatrical"]
+
+[envs.default]
+dependencies = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.24.0",
+    "pytest-cov>=5.0.0",
+    "mypy>=1.10.0",
+    "ruff>=0.5.0",
+]
+
+[envs.default.scripts]
+test = "pytest --cov=theatrical -v {args}"
+lint = "ruff check theatrical tests {args}"
+typecheck = "mypy theatrical {args}"
+check = ["typecheck", "lint", "test"]
