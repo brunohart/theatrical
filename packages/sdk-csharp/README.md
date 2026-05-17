@@ -2,9 +2,15 @@
 
 Type-safe C# client for cinema platform APIs. Part of the [Theatrical](https://github.com/brunohart/theatrical) polyglot SDK.
 
+## Install
+
+```bash
+dotnet add package Theatrical.Sdk
+```
+
 ## Status
 
-**Alpha** — scaffold complete. Core client, error hierarchy, 8 resource module stubs, and xUnit test project are in place. Resource implementations (PORT-CSHARP-002 through PORT-CSHARP-005) are next.
+**Alpha** — all 8 resource modules implemented with full TS API parity. 276 xUnit tests passing. Multi-targets net8.0 and netstandard2.1.
 
 ## Target Platforms
 
@@ -41,6 +47,16 @@ TheatricalClient.SetGlobal(new TheatricalClientOptions { ApiKey = "key" });
 // Anywhere:
 var client = TheatricalClient.Global();
 ```
+
+## Features
+
+- Type-safe client with API key authentication and automatic token refresh
+- 8 resource modules: Sessions, Sites, Films, Orders, Loyalty, Subscriptions, Pricing, F&B
+- Polly-based retry with exponential backoff and rate limit handling
+- Mock mode with NZ cinema fixture data for offline development
+- Typed error hierarchy: `AuthenticationError`, `NotFoundError`, `RateLimitError`, `ValidationError`
+- SourceLink enabled for NuGet debugging
+- Symbol packages (.snupkg) for source-level debugging
 
 ## Disclaimer
 

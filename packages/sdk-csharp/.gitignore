@@ -1,3 +1,24 @@
+## Build results
+[Dd]ebug/
+[Rr]elease/
+[Bb]in/
+[Oo]bj/
 
-bin/
-obj/
+## NuGet
+*.nupkg
+*.snupkg
+
+## Visual Studio
+.vs/
+*.suo
+*.user
+
+## Rider
+.idea/
+
+## Test results
+[Tt]est[Rr]esult*/
+TestResult.xml
+
+## OS
+.DS_Store

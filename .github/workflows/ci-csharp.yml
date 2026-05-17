@@ -1,0 +1,64 @@
+name: CI — C# SDK
+
+on:
+  push:
+    paths:
+      - 'packages/sdk-csharp/**'
+  pull_request:
+    paths:
+      - 'packages/sdk-csharp/**'
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/sdk-csharp
+
+    strategy:
+      matrix:
+        dotnet-version: ['8.0.x']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ matrix.dotnet-version }}
+
+      - name: Restore
+        run: dotnet restore Theatrical.sln
+
+      - name: Build
+        run: dotnet build Theatrical.sln --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test Theatrical.sln --configuration Release --no-build --verbosity normal
+
+  pack:
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    defaults:
+      run:
+        working-directory: packages/sdk-csharp
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore
+        run: dotnet restore Theatrical.sln
+
+      - name: Pack
+        run: dotnet pack src/Theatrical.Sdk/Theatrical.Sdk.csproj --configuration Release --output ./artifacts
+
+      - name: Upload NuGet package
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-package
+          path: packages/sdk-csharp/artifacts/*.nupkg
