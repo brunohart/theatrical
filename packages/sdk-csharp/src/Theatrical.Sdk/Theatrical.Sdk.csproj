@@ -29,10 +29,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="Theatrical.Sdk.Tests" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="../../README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
