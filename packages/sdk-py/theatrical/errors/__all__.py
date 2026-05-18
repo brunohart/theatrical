@@ -15,11 +15,20 @@ All errors carry:
     - vista_error_code: OCAPI error code (if present)
 """
 
+from theatrical.errors.exceptions import (
+    AuthenticationError,
+    NotFoundError,
+    RateLimitError,
+    ServerError,
+    TheatricalError,
+    ValidationError,
+)
+
 __all__ = [
-    "TheatricalError",
     "AuthenticationError",
     "NotFoundError",
     "RateLimitError",
     "ServerError",
+    "TheatricalError",
     "ValidationError",
 ]
