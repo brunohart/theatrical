@@ -276,7 +276,7 @@ public sealed class SessionsResourceSpyTests
         var result = await resource.GetAvailabilityAsync("ses_001");
 
         Assert.Equal(2, result.Seats.Count(s => s.Status == "available"));
-        Assert.Single(result.Seats.Where(s => s.Status == "taken"));
+        Assert.Single(result.Seats, s => s.Status == "taken");
     }
 
     [Fact]
