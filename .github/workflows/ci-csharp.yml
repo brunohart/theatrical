@@ -4,11 +4,9 @@ on:
   push:
     paths:
       - 'packages/sdk-csharp/**'
-      - '.github/workflows/ci-csharp.yml'
   pull_request:
     paths:
       - 'packages/sdk-csharp/**'
-      - '.github/workflows/ci-csharp.yml'
 
 jobs:
   build-and-test:
