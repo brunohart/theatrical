@@ -1,26 +1,16 @@
 """Tests for domain type models."""
 
-from theatrical.types.session import (
-    Session,
-    SessionFormat,
-    SessionFilter,
-    Seat,
-    SeatStatus,
-    SeatAvailability,
-)
-from theatrical.types.site import Site, GeoLocation, Address, Screen, Amenity, SiteConfig
 from theatrical.types.film import (
-    Film,
-    FilmDetail,
-    Genre,
-    FilmFormat,
-    FilmLanguage,
-    Rating,
     CastMember,
     CrewMember,
+    Film,
+    FilmDetail,
+    FilmFormat,
+    FilmLanguage,
     FilmRating,
+    Genre,
+    Rating,
 )
-from theatrical.types.order import Order, OrderStatus, Ticket, OrderItem, ORDER_TRANSITIONS
 from theatrical.types.loyalty import (
     LoyaltyMember,
     LoyaltyTier,
@@ -28,39 +18,49 @@ from theatrical.types.loyalty import (
     PointsTransaction,
     RedemptionOption,
 )
-from theatrical.types.subscription import (
-    SubscriptionPlan,
-    MemberSubscription,
-    SubscriptionUsage,
-    SubscriptionBenefit,
-    SubscriptionInterval,
-    SubscriptionStatus,
-    BenefitCategory,
+from theatrical.types.menu import (
+    ComboOffer,
+    CustomisationOption,
+    DietaryFlag,
+    FnbOrderLineItem,
+    ItemCustomisation,
+    MenuCategory,
+    MenuItem,
+    MenuSectionType,
 )
+from theatrical.types.order import ORDER_TRANSITIONS, Order, OrderItem, OrderStatus, Ticket
+from theatrical.types.pagination import PaginatedResponse, PaginationStrategy
 from theatrical.types.pricing import (
-    TicketType,
-    TicketCategory,
-    TaxConfig,
+    DayPart,
     Discount,
     DiscountSource,
-    Surcharge,
-    SurchargeReason,
     PriceBreakdown,
     PriceCalculation,
     SessionPricingFormat,
-    DayPart,
+    Surcharge,
+    SurchargeReason,
+    TaxConfig,
+    TicketCategory,
+    TicketType,
 )
-from theatrical.types.menu import (
-    MenuItem,
-    MenuCategory,
-    ComboOffer,
-    DietaryFlag,
-    MenuSectionType,
-    ItemCustomisation,
-    CustomisationOption,
-    FnbOrderLineItem,
+from theatrical.types.session import (
+    Seat,
+    SeatAvailability,
+    SeatStatus,
+    Session,
+    SessionFilter,
+    SessionFormat,
 )
-from theatrical.types.pagination import PaginatedResponse, PaginationStrategy
+from theatrical.types.site import Address, Amenity, GeoLocation, Screen, Site, SiteConfig
+from theatrical.types.subscription import (
+    BenefitCategory,
+    MemberSubscription,
+    SubscriptionBenefit,
+    SubscriptionInterval,
+    SubscriptionPlan,
+    SubscriptionStatus,
+    SubscriptionUsage,
+)
 
 
 class TestSessionTypes:
