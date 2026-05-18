@@ -7,7 +7,6 @@ from typing import Generic, Optional, TypeVar
 
 from theatrical.types.base import ApiModel
 
-
 T = TypeVar("T")
 
 
