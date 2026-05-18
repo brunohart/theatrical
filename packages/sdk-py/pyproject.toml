@@ -93,17 +93,21 @@ select = [
     "UP",   # pyupgrade
     "B",    # flake8-bugbear
     "SIM",  # flake8-simplify
-    "TCH",  # flake8-type-checking
+    "TC",   # flake8-type-checking
     "RUF",  # ruff-specific
 ]
 ignore = [
     "E501",   # line length handled by formatter
     "UP007",  # use X | Y for union types — existing code uses Optional[X]
+    "UP037",  # remove quotes from type annotations — forward refs needed
     "UP045",  # use X | None — existing code uses Optional[X]
-    "TCH001", # move import into TYPE_CHECKING block
-    "TCH002", # move import into TYPE_CHECKING block
-    "TCH003", # move import into TYPE_CHECKING block
+    "TC001",  # move import into TYPE_CHECKING block
+    "TC002",  # move import into TYPE_CHECKING block
+    "TC003",  # move import into TYPE_CHECKING block
 ]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["F401", "N802", "N803", "B018"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["theatrical"]
