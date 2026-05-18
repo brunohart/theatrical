@@ -97,7 +97,12 @@ select = [
     "RUF",  # ruff-specific
 ]
 ignore = [
-    "E501",  # line length handled by formatter
+    "E501",   # line length handled by formatter
+    "UP007",  # use X | Y for union types — existing code uses Optional[X]
+    "UP045",  # use X | None — existing code uses Optional[X]
+    "TCH001", # move import into TYPE_CHECKING block
+    "TCH002", # move import into TYPE_CHECKING block
+    "TCH003", # move import into TYPE_CHECKING block
 ]
 
 [tool.ruff.lint.isort]
