@@ -2,17 +2,18 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, AsyncIterator, Optional
+from collections.abc import AsyncIterator
+from typing import TYPE_CHECKING, Optional
 
 from pydantic import TypeAdapter
 
+from theatrical.types.pagination import PaginatedResponse, PaginationParams, PaginationStrategy
 from theatrical.types.session import (
     SeatAvailability,
     Session,
     SessionFilter,
     SessionListResponse,
 )
-from theatrical.types.pagination import PaginatedResponse, PaginationParams, PaginationStrategy
 
 if TYPE_CHECKING:
     from theatrical.http.client import TheatricalHttpProtocol
