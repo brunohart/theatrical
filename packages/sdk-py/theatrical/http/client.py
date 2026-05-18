@@ -120,12 +120,12 @@ class TheatricalHttpClient:
 
         except TheatricalError:
             raise
-        except httpx.TimeoutException:
-            raise TheatricalError("Request timed out", 408, request_id=request_id)
+        except httpx.TimeoutException as exc:
+            raise TheatricalError("Request timed out", 408, request_id=request_id) from exc
         except httpx.HTTPError as exc:
             raise TheatricalError(
                 f"Network error: {exc}", 0, request_id=request_id
-            )
+            ) from exc
 
     async def close(self) -> None:
         await self._http.aclose()
