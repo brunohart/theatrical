@@ -104,10 +104,11 @@ ignore = [
     "TC001",  # move import into TYPE_CHECKING block
     "TC002",  # move import into TYPE_CHECKING block
     "TC003",  # move import into TYPE_CHECKING block
+    "RUF012", # mutable class default — pydantic models use this legitimately
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**" = ["F401", "N802", "N803", "B018"]
+"tests/**" = ["F401", "N802", "N803", "B018", "RUF043"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["theatrical"]
