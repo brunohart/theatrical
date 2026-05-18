@@ -1,27 +1,26 @@
 """Theatrical — Python SDK for cinema platform APIs."""
 
+from theatrical._version import __version__
 from theatrical.client import TheatricalClient
 from theatrical.config import TheatricalConfig, TheatricalEnvironment
 from theatrical.errors.exceptions import (
-    TheatricalError,
     AuthenticationError,
-    RateLimitError,
-    ValidationError,
     NotFoundError,
+    RateLimitError,
     ServerError,
+    TheatricalError,
+    ValidationError,
 )
 
-from theatrical._version import __version__
-
 __all__ = [
-    "__version__",
+    "AuthenticationError",
+    "NotFoundError",
+    "RateLimitError",
+    "ServerError",
     "TheatricalClient",
     "TheatricalConfig",
     "TheatricalEnvironment",
     "TheatricalError",
-    "AuthenticationError",
-    "RateLimitError",
     "ValidationError",
-    "NotFoundError",
-    "ServerError",
+    "__version__",
 ]

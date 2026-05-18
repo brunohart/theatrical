@@ -3,20 +3,27 @@
 import pytest
 
 from theatrical.mock.adapter import MockHttpAdapter
+from theatrical.resources.films import FilmsResource
+from theatrical.resources.food_and_beverage import FoodAndBeverageResource
+from theatrical.resources.loyalty import LoyaltyResource
+from theatrical.resources.orders import OrdersResource
+from theatrical.resources.pricing import PricingResource
 from theatrical.resources.sessions import SessionsResource
 from theatrical.resources.sites import SitesResource
-from theatrical.resources.films import FilmsResource
-from theatrical.resources.orders import OrdersResource
-from theatrical.resources.loyalty import LoyaltyResource
 from theatrical.resources.subscriptions import SubscriptionsResource
-from theatrical.resources.pricing import PricingResource
-from theatrical.resources.food_and_beverage import FoodAndBeverageResource
-from theatrical.types.order import CreateOrderInput, TicketInput, AddTicketsInput, AddItemsInput, ItemInput, ApplyLoyaltyInput
-from theatrical.types.loyalty import RedeemPointsInput
-from theatrical.types.subscription import SuspendSubscriptionInput, CancelSubscriptionInput
-from theatrical.types.pricing import ApplyCouponsInput
-from theatrical.types.menu import AddToOrderInput, FnbOrderLineItem
 from theatrical.types.film import FilmFilter, FilmSearchFilter
+from theatrical.types.loyalty import RedeemPointsInput
+from theatrical.types.menu import AddToOrderInput, FnbOrderLineItem
+from theatrical.types.order import (
+    AddItemsInput,
+    AddTicketsInput,
+    ApplyLoyaltyInput,
+    CreateOrderInput,
+    ItemInput,
+    TicketInput,
+)
+from theatrical.types.pricing import ApplyCouponsInput
+from theatrical.types.subscription import CancelSubscriptionInput, SuspendSubscriptionInput
 
 
 @pytest.fixture
