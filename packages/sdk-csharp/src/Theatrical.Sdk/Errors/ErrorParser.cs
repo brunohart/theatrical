@@ -76,9 +76,10 @@ internal static class ErrorParser
         {
             var text = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             if (string.IsNullOrEmpty(text)) return null;
-            return JsonDocument.Parse(text).RootElement;
+            using var doc = JsonDocument.Parse(text);
+            return doc.RootElement.Clone();
         }
-        catch
+        catch (JsonException)
         {
             return null;
         }
