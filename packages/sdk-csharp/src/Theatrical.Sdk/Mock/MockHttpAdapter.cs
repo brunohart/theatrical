@@ -31,7 +31,12 @@ internal sealed class MockHttpAdapter : ITheatricalHttpClient
     {
         var data = Lookup(path);
         if (data is null)
-            throw new NotFoundException($"Mock: no fixture for GET {path}", path.Split('/').LastOrDefault() ?? path);
+        {
+            var segments = path.Split('/', StringSplitOptions.RemoveEmptyEntries);
+            var resource = segments.Length >= 2 ? segments[^2] : "MockFixture";
+            var resourceId = segments.Length >= 1 ? segments[^1] : path;
+            throw new NotFoundException(resource, resourceId);
+        }
         return Task.FromResult(data.Value.Deserialize<T>(JsonDefaults.Options)!);
     }
 
