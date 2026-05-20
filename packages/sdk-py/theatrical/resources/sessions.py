@@ -76,6 +76,8 @@ class SessionsResource:
             for session in response.sessions:
                 yield session
 
+            if not response.sessions:
+                break
             has_more = response.has_more
             offset = response.next_offset if response.next_offset is not None else offset + len(response.sessions)
 
