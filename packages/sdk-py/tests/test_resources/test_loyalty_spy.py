@@ -91,8 +91,8 @@ class TestGetPointsBalanceAsync:
         spy = SpyHttpProtocol().enqueue_response({"points": 1250, "lifetimePoints": 8500})
         res = LoyaltyResource(spy)
         result = await res.get_points_balance("mem_001")
-        assert result["points"] == 1250
-        assert result["lifetimePoints"] == 8500
+        assert result.points == 1250
+        assert result.lifetime_points == 8500
 
 
 class TestGetHistoryAsync:

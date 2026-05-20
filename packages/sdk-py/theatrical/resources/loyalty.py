@@ -8,6 +8,7 @@ from pydantic import TypeAdapter
 
 from theatrical.types.loyalty import (
     LoyaltyMember,
+    PointsBalance,
     PointsHistoryFilter,
     PointsTransaction,
     RedeemPointsInput,
@@ -19,7 +20,7 @@ if TYPE_CHECKING:
     from theatrical.http.client import TheatricalHttpProtocol
 
 _member_adapter = TypeAdapter(LoyaltyMember)
-_points_balance_adapter = TypeAdapter(dict[str, int])
+_points_balance_adapter = TypeAdapter(PointsBalance)
 _paginated_tx_adapter = TypeAdapter(PaginatedResponse[PointsTransaction])
 _redemption_list_adapter = TypeAdapter(list[RedemptionOption])
 _tx_adapter = TypeAdapter(PointsTransaction)
@@ -40,7 +41,7 @@ class LoyaltyResource:
         )
         return _member_adapter.validate_python(raw)
 
-    async def get_points_balance(self, member_id: str) -> dict[str, int]:
+    async def get_points_balance(self, member_id: str) -> PointsBalance:
         raw = await self._http.get(f"/ocapi/v1/loyalty/members/{member_id}/points")
         return _points_balance_adapter.validate_python(raw)
 

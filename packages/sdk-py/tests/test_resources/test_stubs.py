@@ -255,8 +255,8 @@ class TestLoyaltyResource:
     async def test_get_points_balance(self, mock: MockHttpAdapter) -> None:
         res = LoyaltyResource(mock)
         balance = await res.get_points_balance("mem_hemi_walker_5528")
-        assert balance["points"] == 2840
-        assert balance["lifetimePoints"] == 8640
+        assert balance.points == 2840
+        assert balance.lifetime_points == 8640
 
     @pytest.mark.asyncio
     async def test_get_history(self, mock: MockHttpAdapter) -> None:

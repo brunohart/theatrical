@@ -37,6 +37,11 @@ class LoyaltyMember(ApiModel):
     active: bool
 
 
+class PointsBalance(ApiModel):
+    points: int
+    lifetime_points: int
+
+
 class PointsTransaction(ApiModel):
     id: str
     member_id: str
