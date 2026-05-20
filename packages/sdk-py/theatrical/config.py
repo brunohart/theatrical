@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from enum import Enum
 from typing import Optional
 
@@ -38,6 +39,10 @@ class TheatricalConfig(BaseModel):
     def api_key_not_empty(cls, v: str) -> str:
         if not v.strip():
             raise ValueError("api_key must not be empty")
+        if not re.fullmatch(r"[A-Za-z0-9_-]+", v):
+            raise ValueError(
+                "api_key must contain only alphanumeric characters, hyphens, and underscores"
+            )
         return v
 
     @field_validator("timeout")

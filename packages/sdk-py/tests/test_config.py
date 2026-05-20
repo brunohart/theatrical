@@ -63,6 +63,14 @@ class TestTheatricalConfig:
         with pytest.raises(PydanticValidationError):
             TheatricalConfig(api_key="   ")
 
+    def test_api_key_with_special_chars_raises(self) -> None:
+        with pytest.raises(PydanticValidationError):
+            TheatricalConfig(api_key="key with spaces")
+
+    def test_api_key_with_injection_chars_raises(self) -> None:
+        with pytest.raises(PydanticValidationError):
+            TheatricalConfig(api_key="key;DROP TABLE")
+
     def test_negative_timeout_raises(self) -> None:
         with pytest.raises(PydanticValidationError):
             TheatricalConfig(api_key="key", timeout=-1)
