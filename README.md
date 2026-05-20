@@ -3,7 +3,7 @@
 ### A developer platform for cinema technology
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](https://www.typescriptlang.org/)
-[![Tests](https://img.shields.io/badge/Tests-439%20passing-brightgreen.svg)](#testing)
+[![Tests](https://img.shields.io/badge/Tests-1%2C048%20passing-brightgreen.svg)](#testing)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![License: BSL 1.1](https://img.shields.io/badge/License-BSL%201.1-orange.svg)](LICENSE-BSL.md)
 
@@ -30,8 +30,8 @@ Cinema management platforms process billions in annual transaction value across 
 │                    │          @theatrical/cli                        │
 │                    │        Developer Tooling                        │
 ├────────────────────┴────────────────────────────────────────────────┤
-│                        @theatrical/sdk                              │
-│              Type-safe Client · Auth · HTTP · Resources             │
+│  @theatrical/sdk (TS)  │  Theatrical.Sdk (C#)  │  theatrical (Py)  │
+│  Type-safe Client · Auth · HTTP · 8 Resource Modules per language   │
 ├─────────────────────────────────────────────────────────────────────┤
 │                     Vista OCAPI / GAS / Horizon                     │
 └─────────────────────────────────────────────────────────────────────┘
@@ -44,18 +44,18 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for the full system design deep-dive.
 | Package | Description | Tests | License |
 |---------|-------------|-------|---------|
 | [`@theatrical/sdk`](packages/sdk) | Type-safe TypeScript client — auth, HTTP, 8 resource modules, Zod validation | 274 | MIT |
-| [`@theatrical/cli`](packages/cli) | Developer tools — `init`, `codegen`, `inspect` | 163 | MIT |
+| [`@theatrical/cli`](packages/cli) | Developer tools — `init`, `codegen`, `inspect` | 165 | MIT |
 | [`@theatrical/react`](packages/react) | Cinema UI — SeatMap, SessionPicker, OrderSummary, PaymentForm, Loyalty | 34 | BSL 1.1 |
 | [`@theatrical/analytics`](packages/analytics) | Horizon client, query builder, export utilities (CSV, JSON, DataFrame, Chart.js) | 35 | BSL 1.1 |
 | [`@theatrical/events`](packages/events) | Real-time event bridge — poll, diff, emit, webhook with HMAC-SHA256 | 71 | BSL 1.1 |
 | [`@theatrical/templates`](packages/templates) | React ticketing starter — complete 4-page booking app | — | BSL 1.1 |
 
-### Polyglot SDKs (Alpha)
+### Polyglot SDKs
 
 | SDK | Status | Install | Tests |
 |-----|--------|---------|-------|
-| [C# / .NET](packages/sdk-csharp) | Alpha | `dotnet add package Theatrical.Sdk` | 17 |
-| [Python](packages/sdk-py) | Alpha | `pip install theatrical` | 82 |
+| [C# / .NET 8](packages/sdk-csharp) | Alpha | `dotnet add package Theatrical.Sdk` | 272 |
+| [Python 3.10+](packages/sdk-py) | Alpha | `pip install theatrical` | 337 |
 
 ## Quick Start
 
@@ -94,6 +94,37 @@ const order = await client.orders.create({
   tickets: [{ type: 'adult', seatId: 'H7' }],
 });
 await client.orders.confirm(order.id);
+```
+
+### C# / .NET
+
+```csharp
+using Theatrical.Sdk;
+
+// Zero-credential mock mode
+var client = TheatricalClient.CreateMock();
+
+var films = await client.Films.NowShowingAsync();
+Console.WriteLine(films[0].Title); // "The Last Projection"
+
+var sessions = await client.Sessions.ListAsync(new SessionFilter
+{
+    SiteId = "site_embassy_wellington"
+});
+```
+
+### Python
+
+```python
+from theatrical import TheatricalClient
+
+# Zero-credential mock mode
+client = TheatricalClient.create_mock()
+
+films = await client.films.now_showing()
+print(films[0].title)  # "The Last Projection"
+
+sessions = await client.sessions.list(site_id="site_embassy_wellington")
 ```
 
 ### Real-time events
@@ -159,27 +190,20 @@ npx theatrical codegen --spec openapi.yaml --output src/types
 ## Testing
 
 ```bash
-# Run all SDK tests
-cd packages/sdk && npx vitest run      # 274 tests
+# TypeScript
+cd packages/sdk && npx vitest run        # 274 tests
+cd packages/cli && npx vitest run        # 165 tests
+cd packages/events && npx vitest run     # 71 tests
+cd packages/analytics && npx vitest run  # 35 tests
 
-# Run events tests
-cd packages/events && npx vitest run   # 71 tests
+# C# / .NET
+cd packages/sdk-csharp && dotnet test    # 272 tests
 
-# Run CLI tests
-cd packages/cli && npx vitest run      # 163 tests
-
-# Run analytics tests
-cd packages/analytics && npx vitest run # 35 tests
-
-# Run integration tests
-npx vitest run tests/integration/      # Cross-package flows
-
-# Run benchmarks
-npx tsx tests/benchmarks/sdk-performance.ts
-npx tsx tests/benchmarks/events-throughput.ts
+# Python
+cd packages/sdk-py && pytest tests/ -q   # 337 tests
 ```
 
-**439 tests** across 27 test files (SDK: 274, CLI: 165). Polyglot SDKs add 82+ more (Python). All mock data uses real NZ cinema context: Embassy Theatre Wellington, Roxy Cinema, Rialto Auckland. NZD currency, en-NZ locale.
+**1,048 tests** across three languages. TypeScript: 439 (SDK 274, CLI 165). C# / .NET: 272 (xUnit). Python: 337 (pytest, mypy-strict, ruff clean). All mock data uses real NZ cinema context: Embassy Theatre Wellington, Roxy Cinema, Rialto Auckland. NZD currency, en-NZ locale.
 
 ## Research
 
@@ -197,17 +221,15 @@ npx tsx tests/benchmarks/events-throughput.ts
 git clone https://github.com/brunohart/theatrical.git
 cd theatrical
 
-# Install dependencies
-cd packages/sdk && npm install
-cd ../cli && npm install
-cd ../events && npm install
-cd ../analytics && npm install
+# TypeScript
+cd packages/sdk && npm install && npx vitest run
+cd ../cli && npm install && npx vitest run
 
-# Type check
-npx tsc --noEmit -p packages/sdk/tsconfig.json
+# C# (.NET 8 SDK required)
+cd packages/sdk-csharp && dotnet test
 
-# Run tests
-cd packages/sdk && npx vitest run
+# Python (3.10+ required)
+cd packages/sdk-py && pip install -e ".[dev]" && pytest tests/ -q
 ```
 
 ## Disclaimer
