@@ -45,12 +45,12 @@ class LoyaltyResource:
         return _points_balance_adapter.validate_python(raw)
 
     async def get_history(
-        self, member_id: str, filter: Optional[PointsHistoryFilter] = None
+        self, member_id: str, filters: Optional[PointsHistoryFilter] = None
     ) -> PaginatedResponse[PointsTransaction]:
         params: dict[str, str] | None = None
-        if filter:
+        if filters:
             params = {}
-            d = filter.model_dump(exclude_none=True)
+            d = filters.model_dump(exclude_none=True)
             for key, value in d.items():
                 params[key] = str(value) if not isinstance(value, str) else value
         raw = await self._http.get(

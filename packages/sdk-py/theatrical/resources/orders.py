@@ -73,12 +73,12 @@ class OrdersResource:
         return _order_adapter.validate_python(raw)
 
     async def history(
-        self, member_id: str, filter: Optional[OrderHistoryFilter] = None
+        self, member_id: str, filters: Optional[OrderHistoryFilter] = None
     ) -> PaginatedResponse[Order]:
         params: dict[str, str] | None = None
-        if filter:
+        if filters:
             params = {}
-            d = filter.model_dump(exclude_none=True)
+            d = filters.model_dump(exclude_none=True)
             for key, value in d.items():
                 params[key] = str(value) if not isinstance(value, str) else value
         raw = await self._http.get(f"/ocapi/v1/members/{member_id}/orders", params=params)

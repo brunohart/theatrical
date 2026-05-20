@@ -27,11 +27,11 @@ class PricingResource:
         self._http = http
 
     async def ticket_types(
-        self, session_id: str, filter: Optional[TicketTypeFilter] = None
+        self, session_id: str, filters: Optional[TicketTypeFilter] = None
     ) -> list[TicketType]:
         params: dict[str, str] = {}
-        if filter:
-            d = filter.model_dump(exclude_none=True, exclude={"session_id"})
+        if filters:
+            d = filters.model_dump(exclude_none=True, exclude={"session_id"})
             for key, value in d.items():
                 params[key] = str(value) if not isinstance(value, str) else value
         raw = await self._http.get(

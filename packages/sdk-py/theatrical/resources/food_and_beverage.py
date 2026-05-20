@@ -30,11 +30,11 @@ class FoodAndBeverageResource:
         self._http = http
 
     async def menu(
-        self, site_id: str, filter: Optional[MenuFilter] = None
+        self, site_id: str, filters: Optional[MenuFilter] = None
     ) -> list[MenuItem]:
         params: dict[str, str] = {}
-        if filter:
-            d = filter.model_dump(exclude_none=True, exclude={"site_id"})
+        if filters:
+            d = filters.model_dump(exclude_none=True, exclude={"site_id"})
             for key, value in d.items():
                 if key == "dietary" and isinstance(value, list):
                     params[key] = ",".join(
