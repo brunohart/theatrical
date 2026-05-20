@@ -32,14 +32,14 @@ public sealed class TheatricalClient : IDisposable
         _tokenManager = tokenManager;
         _gasClient = gasClient;
 
-        _sessions = new Lazy<SessionsResource>(() => new SessionsResource(_httpClient, _options));
-        _sites = new Lazy<SitesResource>(() => new SitesResource(_httpClient, _options));
-        _films = new Lazy<FilmsResource>(() => new FilmsResource(_httpClient, _options));
-        _orders = new Lazy<OrdersResource>(() => new OrdersResource(_httpClient, _options));
-        _loyalty = new Lazy<LoyaltyResource>(() => new LoyaltyResource(_httpClient, _options));
-        _subscriptions = new Lazy<SubscriptionsResource>(() => new SubscriptionsResource(_httpClient, _options));
-        _pricing = new Lazy<PricingResource>(() => new PricingResource(_httpClient, _options));
-        _fnb = new Lazy<FoodAndBeverageResource>(() => new FoodAndBeverageResource(_httpClient, _options));
+        _sessions = new Lazy<SessionsResource>(() => new SessionsResource(_httpClient));
+        _sites = new Lazy<SitesResource>(() => new SitesResource(_httpClient));
+        _films = new Lazy<FilmsResource>(() => new FilmsResource(_httpClient));
+        _orders = new Lazy<OrdersResource>(() => new OrdersResource(_httpClient));
+        _loyalty = new Lazy<LoyaltyResource>(() => new LoyaltyResource(_httpClient));
+        _subscriptions = new Lazy<SubscriptionsResource>(() => new SubscriptionsResource(_httpClient));
+        _pricing = new Lazy<PricingResource>(() => new PricingResource(_httpClient));
+        _fnb = new Lazy<FoodAndBeverageResource>(() => new FoodAndBeverageResource(_httpClient));
     }
 
     public static TheatricalClient Create(TheatricalClientOptions options)

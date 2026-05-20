@@ -7,7 +7,7 @@ public sealed class SitesResource
 {
     private readonly ITheatricalHttpClient _httpClient;
 
-    internal SitesResource(ITheatricalHttpClient httpClient, TheatricalClientOptions options)
+    internal SitesResource(ITheatricalHttpClient httpClient)
     {
         _httpClient = httpClient;
     }

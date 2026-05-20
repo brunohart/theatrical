@@ -7,7 +7,7 @@ public sealed class PricingResource
 {
     private readonly ITheatricalHttpClient _httpClient;
 
-    internal PricingResource(ITheatricalHttpClient httpClient, TheatricalClientOptions options)
+    internal PricingResource(ITheatricalHttpClient httpClient)
     {
         _httpClient = httpClient;
     }

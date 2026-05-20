@@ -7,7 +7,7 @@ public sealed class FilmsResource
 {
     private readonly ITheatricalHttpClient _httpClient;
 
-    internal FilmsResource(ITheatricalHttpClient httpClient, TheatricalClientOptions options)
+    internal FilmsResource(ITheatricalHttpClient httpClient)
     {
         _httpClient = httpClient;
     }

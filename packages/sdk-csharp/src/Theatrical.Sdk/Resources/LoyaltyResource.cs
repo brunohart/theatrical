@@ -7,7 +7,7 @@ public sealed class LoyaltyResource
 {
     private readonly ITheatricalHttpClient _httpClient;
 
-    internal LoyaltyResource(ITheatricalHttpClient httpClient, TheatricalClientOptions options)
+    internal LoyaltyResource(ITheatricalHttpClient httpClient)
     {
         _httpClient = httpClient;
     }

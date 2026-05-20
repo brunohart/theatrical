@@ -7,7 +7,7 @@ public sealed class SubscriptionsResource
 {
     private readonly ITheatricalHttpClient _httpClient;
 
-    internal SubscriptionsResource(ITheatricalHttpClient httpClient, TheatricalClientOptions options)
+    internal SubscriptionsResource(ITheatricalHttpClient httpClient)
     {
         _httpClient = httpClient;
     }

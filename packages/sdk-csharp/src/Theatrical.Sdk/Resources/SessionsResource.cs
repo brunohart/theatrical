@@ -9,7 +9,7 @@ public sealed class SessionsResource
     private readonly ITheatricalHttpClient _httpClient;
     private const int DefaultPageSize = 50;
 
-    internal SessionsResource(ITheatricalHttpClient httpClient, TheatricalClientOptions options)
+    internal SessionsResource(ITheatricalHttpClient httpClient)
     {
         _httpClient = httpClient;
     }

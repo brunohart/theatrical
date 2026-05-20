@@ -7,7 +7,7 @@ public sealed class FoodAndBeverageResource
 {
     private readonly ITheatricalHttpClient _httpClient;
 
-    internal FoodAndBeverageResource(ITheatricalHttpClient httpClient, TheatricalClientOptions options)
+    internal FoodAndBeverageResource(ITheatricalHttpClient httpClient)
     {
         _httpClient = httpClient;
     }

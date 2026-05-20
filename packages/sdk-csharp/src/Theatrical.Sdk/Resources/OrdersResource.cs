@@ -7,7 +7,7 @@ public sealed class OrdersResource
 {
     private readonly ITheatricalHttpClient _httpClient;
 
-    internal OrdersResource(ITheatricalHttpClient httpClient, TheatricalClientOptions options)
+    internal OrdersResource(ITheatricalHttpClient httpClient)
     {
         _httpClient = httpClient;
     }
