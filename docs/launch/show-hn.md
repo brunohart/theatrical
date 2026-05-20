@@ -12,9 +12,9 @@ Theatrical is the missing developer experience layer:
 
 - **TypeScript SDK** — Zod-validated, 8 resource modules, mock mode with NZ
   cinema fixture data. 274 tests.
-- **Python SDK** — async-first with httpx + pydantic v2, mypy strict clean. 332
+- **Python SDK** — async-first with httpx + pydantic v2, mypy strict clean. 337
   tests.
-- **C# SDK** — .NET 8, Polly retry, System.Text.Json. 276 tests.
+- **C# SDK** — .NET 8, exponential backoff retry, System.Text.Json. 272 tests.
 - **CLI** — `theatrical inspect sessions list --site roxy-wellington`
 - **React components** — SeatMap, SessionPicker, OrderSummary
 - **Event bridge** — poll-based real-time events from request-response APIs
