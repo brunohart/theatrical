@@ -25,15 +25,8 @@ public sealed class SessionsResource
         var pageSize = limit ?? DefaultPageSize;
         var useCursor = cursor is not null;
 
-        var mergedFilter = new SessionFilter
+        var mergedFilter = (filter ?? new SessionFilter()) with
         {
-            SiteId = filter?.SiteId,
-            FilmId = filter?.FilmId,
-            Date = filter?.Date,
-            DateFrom = filter?.DateFrom,
-            DateTo = filter?.DateTo,
-            Format = filter?.Format,
-            BookableOnly = filter?.BookableOnly,
             Limit = pageSize,
             Offset = useCursor ? null : (offset ?? 0),
             Cursor = cursor,
@@ -59,15 +52,8 @@ public sealed class SessionsResource
 
         while (hasMore)
         {
-            var mergedFilter = new SessionFilter
+            var mergedFilter = (filter ?? new SessionFilter()) with
             {
-                SiteId = filter?.SiteId,
-                FilmId = filter?.FilmId,
-                Date = filter?.Date,
-                DateFrom = filter?.DateFrom,
-                DateTo = filter?.DateTo,
-                Format = filter?.Format,
-                BookableOnly = filter?.BookableOnly,
                 Limit = pageSize,
                 Offset = currentOffset,
             };
