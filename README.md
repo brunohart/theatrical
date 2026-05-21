@@ -1,219 +1,228 @@
-# Theatrical
+<p align="center">
+  <img src="packages/landing/public/favicon.svg" width="64" alt="Theatrical" />
+</p>
 
-### A developer platform for cinema technology
+<h1 align="center">Theatrical</h1>
 
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](https://www.typescriptlang.org/)
-[![Tests](https://img.shields.io/badge/Tests-1%2C048%20passing-brightgreen.svg)](#testing)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![License: BSL 1.1](https://img.shields.io/badge/License-BSL%201.1-orange.svg)](LICENSE-BSL.md)
+<p align="center">
+  <strong>The developer platform for cinema technology</strong>
+</p>
+
+<p align="center">
+  Polyglot SDKs, CLI tools, UI components, real-time events, and analytics<br/>
+  for cinema platform APIs — in TypeScript, C#, and Python.
+</p>
+
+<p align="center">
+  <a href="#quick-start">Quick Start</a> &middot;
+  <a href="ARCHITECTURE.md">Architecture</a> &middot;
+  <a href="VISION.md">Vision</a> &middot;
+  <a href="#research">Research</a> &middot;
+  <a href="https://theatrical.dev">Website</a>
+</p>
+
+<p align="center">
+  <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-5.9-3178c6.svg?style=flat-square" alt="TypeScript" /></a>
+  <a href="https://dotnet.microsoft.com/"><img src="https://img.shields.io/badge/.NET-8.0-512bd4.svg?style=flat-square" alt=".NET" /></a>
+  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.10+-3776ab.svg?style=flat-square" alt="Python" /></a>
+  <a href="#testing"><img src="https://img.shields.io/badge/tests-1%2C048%20passing-22c55e.svg?style=flat-square" alt="Tests" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT%20%2F%20BSL%201.1-blue.svg?style=flat-square" alt="License" /></a>
+</p>
 
 ---
 
-Cinema management platforms process billions in annual transaction value across thousands of sites worldwide. The APIs are mature, the documentation exists, and the infrastructure is production-grade. But the developer experience layer — typed clients, component libraries, event systems, CLI tools — does not exist yet.
+Cinema platforms process billions in annual transaction value. The APIs are production-grade. The developer ecosystem around them is not. No typed clients. No component libraries. No event systems. Every integrator starts from scratch.
 
-**Theatrical is that layer.**
+**Theatrical is the missing developer experience layer.**
 
 > **Independent project.** Theatrical is not affiliated with or endorsed by any cinema platform vendor. See [VISION.md](VISION.md) for full context.
 
----
-
-## Architecture
-
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                        Developer Application                        │
-├─────────────┬──────────────┬──────────────┬─────────────────────────┤
-│  @theatrical│  @theatrical │  @theatrical │      @theatrical        │
-│    /react   │  /templates  │  /analytics  │       /events           │
-│  Components │  Starters    │  Horizon     │  Real-time Bridge       │
-├─────────────┴──────┬───────┴──────────────┴─────────────────────────┤
-│                    │          @theatrical/cli                        │
-│                    │        Developer Tooling                        │
-├────────────────────┴────────────────────────────────────────────────┤
-│  @theatrical/sdk (TS)  │  Theatrical.Sdk (C#)  │  theatrical (Py)  │
-│  Type-safe Client · Auth · HTTP · 8 Resource Modules per language   │
-├─────────────────────────────────────────────────────────────────────┤
-│                     Vista OCAPI / GAS / Horizon                     │
-└─────────────────────────────────────────────────────────────────────┘
-```
-
-See [ARCHITECTURE.md](ARCHITECTURE.md) for the full system design deep-dive.
-
-## Packages
-
-| Package | Description | Tests | License |
-|---------|-------------|-------|---------|
-| [`@theatrical/sdk`](packages/sdk) | Type-safe TypeScript client — auth, HTTP, 8 resource modules, Zod validation | 274 | MIT |
-| [`@theatrical/cli`](packages/cli) | Developer tools — `init`, `codegen`, `inspect` | 165 | MIT |
-| [`@theatrical/react`](packages/react) | Cinema UI — SeatMap, SessionPicker, OrderSummary, PaymentForm, Loyalty | 34 | BSL 1.1 |
-| [`@theatrical/analytics`](packages/analytics) | Horizon client, query builder, export utilities (CSV, JSON, DataFrame, Chart.js) | 35 | BSL 1.1 |
-| [`@theatrical/events`](packages/events) | Real-time event bridge — poll, diff, emit, webhook with HMAC-SHA256 | 71 | BSL 1.1 |
-| [`@theatrical/templates`](packages/templates) | React ticketing starter — complete 4-page booking app | — | BSL 1.1 |
-
-### Polyglot SDKs
-
-| SDK | Status | Install | Tests |
-|-----|--------|---------|-------|
-| [C# / .NET 8](packages/sdk-csharp) | Alpha | `dotnet add package Theatrical.Sdk` | 272 |
-| [Python 3.10+](packages/sdk-py) | Alpha | `pip install theatrical` | 337 |
-
 ## Quick Start
 
-### Zero-credential mode (recommended for exploration)
+Start building in 30 seconds — no API credentials required:
+
+<table>
+<tr><th>TypeScript</th><th>C#</th><th>Python</th></tr>
+<tr>
+<td>
 
 ```typescript
 import { TheatricalClient } from '@theatrical/sdk';
 
-// No API key needed — returns NZ cinema fixture data
 const client = TheatricalClient.createMock();
 
 const { data: films } = await client.films.nowShowing();
-console.log(films[0].title); // 'The Last Projection'
-
 const { data: sessions } = await client.sessions.list({
   siteId: 'site_embassy_wellington',
 });
-```
 
-### With API credentials
-
-```typescript
-const client = TheatricalClient.create({
-  apiKey: process.env.VISTA_API_KEY,
-});
-
-// Typed resources — autocomplete-driven development
-const { data: sessions } = await client.sessions.list({
-  siteId: 'roxy-wellington',
-  date: '2026-05-03',
-});
-
-// Full booking flow
 const order = await client.orders.create({
   sessionId: sessions[0].id,
   tickets: [{ type: 'adult', seatId: 'H7' }],
 });
-await client.orders.confirm(order.id);
 ```
 
-### C# / .NET
+</td>
+<td>
 
 ```csharp
 using Theatrical.Sdk;
 
-// Zero-credential mock mode
 var client = TheatricalClient.CreateMock();
 
 var films = await client.Films.NowShowingAsync();
-Console.WriteLine(films[0].Title); // "The Last Projection"
-
-var sessions = await client.Sessions.ListAsync(new SessionFilter
-{
-    SiteId = "site_embassy_wellington"
-});
+var sessions = await client.Sessions.ListAsync(
+    new SessionFilter
+    {
+        SiteId = "site_embassy_wellington"
+    });
 ```
 
-### Python
+</td>
+<td>
 
 ```python
 from theatrical import TheatricalClient
 
-# Zero-credential mock mode
 client = TheatricalClient.create_mock()
 
 films = await client.films.now_showing()
-print(films[0].title)  # "The Last Projection"
-
-sessions = await client.sessions.list(site_id="site_embassy_wellington")
+sessions = await client.sessions.list(
+    site_id="site_embassy_wellington"
+)
 ```
 
-### Real-time events
+</td>
+</tr>
+<tr>
+<td><code>npm install @theatrical/sdk</code></td>
+<td><code>dotnet add package Theatrical.Sdk</code></td>
+<td><code>pip install theatrical</code></td>
+</tr>
+</table>
+
+Mock mode returns real NZ cinema fixture data — Embassy Theatre Wellington, Roxy Cinema, Rialto Auckland — so you can build and test complete flows without API access.
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                         Your Application                                │
+├──────────────┬───────────────┬───────────────┬──────────────────────────┤
+│  @theatrical │  @theatrical  │  @theatrical  │      @theatrical         │
+│    /react    │  /templates   │  /analytics   │       /events            │
+│  Components  │  Starters     │  Horizon      │  Real-time Bridge        │
+├──────────────┴───────┬───────┴───────────────┴──────────────────────────┤
+│                      │         @theatrical/cli                          │
+│                      │    init · codegen · inspect                      │
+├──────────────────────┴──────────────────────────────────────────────────┤
+│  @theatrical/sdk (TS)  │  Theatrical.Sdk (C#)  │  theatrical (Python)  │
+│         Auth · HTTP · Retry · Rate Limiting · 8 Resources               │
+├─────────────────────────────────────────────────────────────────────────┤
+│                   Cinema Platform API Layer                              │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+Six packages. Three languages. One API surface. See [ARCHITECTURE.md](ARCHITECTURE.md) for the full design.
+
+## Packages
+
+### Core SDKs
+
+Every SDK provides the same capabilities: GAS authentication with token refresh, HTTP retry with exponential backoff, token-bucket rate limiting, typed error hierarchy, and mock mode for zero-credential development.
+
+| Package | Language | Tests | Install |
+|---------|----------|-------|---------|
+| [`@theatrical/sdk`](packages/sdk) | TypeScript 5.9 | 274 | `npm install @theatrical/sdk` |
+| [`Theatrical.Sdk`](packages/sdk-csharp) | C# / .NET 8 | 272 | `dotnet add package Theatrical.Sdk` |
+| [`theatrical`](packages/sdk-py) | Python 3.10+ | 337 | `pip install theatrical` |
+
+**8 resource modules** per SDK: Sessions, Sites, Films, Orders, Loyalty, Subscriptions, Pricing, F&B.
+
+### Developer Tools
+
+| Package | Description | Tests | License |
+|---------|-------------|-------|---------|
+| [`@theatrical/cli`](packages/cli) | Scaffold projects, generate types from OpenAPI, explore APIs interactively | 165 | MIT |
+| [`@theatrical/react`](packages/react) | SeatMap, SessionPicker, OrderSummary, PaymentForm, Loyalty — ARIA accessible, dark-mode-first | 34 | BSL 1.1 |
+| [`@theatrical/events`](packages/events) | Real-time event bridge: poll → diff → emit → webhook (HMAC-SHA256 signed) | 71 | BSL 1.1 |
+| [`@theatrical/analytics`](packages/analytics) | Horizon client, fluent query builder, export to CSV/JSON/DataFrame/Chart.js | 35 | BSL 1.1 |
+| [`@theatrical/templates`](packages/templates) | React ticketing starter — 4-page booking app, ready to deploy | — | BSL 1.1 |
+
+## What Makes This Different
+
+### Real-time events from request-response APIs
+
+Cinema platforms don't have webhooks. Theatrical builds them:
 
 ```typescript
-import { BookingWatcher, WebhookDeliveryEngine } from '@theatrical/events';
+import { BookingWatcher } from '@theatrical/events';
 
 const watcher = new BookingWatcher({
   fetch: (signal) => client.orders.list({}, signal),
 });
 
 watcher.on('booking.confirmed', async ({ order }) => {
-  console.log(`Order ${order.id} confirmed`);
-  // Trigger webhooks, update dashboards, notify staff
+  // Triggered when order state changes to 'confirmed'
+  await notifyStaff(order);
+  await updateDashboard(order);
 });
 
 watcher.start();
 ```
 
-### CLI
+The event bridge polls, diffs state changes, and delivers typed webhooks with HMAC-SHA256 signatures. One failing endpoint doesn't block the others (`Promise.allSettled` isolation).
+
+### CLI that teaches the platform
 
 ```bash
-# Scaffold a new project
+# Scaffold a new project with everything wired up
 npx theatrical init my-cinema-app --template react-ticketing
 
-# Explore API responses
+# Explore any API endpoint interactively
 npx theatrical inspect sessions list --site roxy-wellington
 
-# Generate types from OpenAPI spec
+# Generate types from an OpenAPI spec
 npx theatrical codegen --spec openapi.yaml --output src/types
 ```
 
-## Feature Overview
+### Components that know cinema
 
-### SDK (`@theatrical/sdk`)
-- **Authentication**: GAS client with automatic token refresh and concurrent deduplication
-- **HTTP Client**: Retry with exponential backoff, token bucket rate limiting, request/response interceptors
-- **8 Resource Modules**: Sessions, Sites, Films, Orders, Loyalty, Subscriptions, Pricing, F&B
-- **Error Hierarchy**: Typed errors mapped from HTTP status + Vista error codes
-- **Runtime Validation**: Zod schemas on every API response
-- **Mock Mode**: `TheatricalClient.createMock()` for zero-credential development
+Pre-built React components for the patterns every cinema app needs:
 
-### Events (`@theatrical/events`)
-- **Poller**: AbortController-based with setTimeout-after-completion
-- **DiffEngine**: Pure function change detection — added, removed, changed
-- **StateStore**: In-memory with TTL support
-- **4 Watchers**: Booking, Session, Film, Inventory — typed event payloads
-- **Webhook Delivery**: HMAC-SHA256 signatures, exponential backoff retry, `Promise.allSettled` endpoint isolation
+- **SeatMap** — interactive seat grid with ARIA keyboard navigation, wheelchair and companion markers
+- **SessionPicker** — date-grouped showtime browser
+- **OrderSummary** — line items, price breakdowns, loyalty points
+- **PaymentForm** — provider-agnostic shell with render slots
+- **Loyalty** — MemberCard, TierIndicator, PointsDisplay with animations
 
-### Analytics (`@theatrical/analytics`)
-- **HorizonClient**: OAuth-authenticated query execution with token refresh
-- **QueryBuilder**: Fluent API with compile-time metric/dimension validation
-- **Export Utilities**: `toCSV()`, `toJSON()`, `toDataFrame()`, `toChartData()` (Chart.js compatible)
-- **AnalyticsProvider**: Strategy pattern for fan-out to Segment, Movio CDP, custom backends
-
-### React (`@theatrical/react`)
-- **SeatMap**: Interactive seat grid with ARIA grid pattern and accessibility states
-- **SessionPicker**: Date-based showtime browser with grouping
-- **OrderSummary**: Line items + price breakdown
-- **PaymentForm**: Provider-agnostic payment shell with render slots
-- **Loyalty**: MemberCard, LoyaltyBadge, TierIndicator, PointsDisplay
+Dark-mode-first. Fully themeable via design tokens.
 
 ## Testing
 
-```bash
-# TypeScript
-cd packages/sdk && npx vitest run        # 274 tests
-cd packages/cli && npx vitest run        # 165 tests
-cd packages/events && npx vitest run     # 71 tests
-cd packages/analytics && npx vitest run  # 35 tests
+**1,048 tests** across three languages:
 
-# C# / .NET
-cd packages/sdk-csharp && dotnet test    # 272 tests
-
-# Python
-cd packages/sdk-py && pytest tests/ -q   # 337 tests
+```
+TypeScript    439 tests    SDK 274 · CLI 165
+C# / .NET     272 tests    xUnit
+Python        337 tests    pytest · mypy-strict · ruff
 ```
 
-**1,048 tests** across three languages. TypeScript: 439 (SDK 274, CLI 165). C# / .NET: 272 (xUnit). Python: 337 (pytest, mypy-strict, ruff clean). All mock data uses real NZ cinema context: Embassy Theatre Wellington, Roxy Cinema, Rialto Auckland. NZD currency, en-NZ locale.
+All mock data uses real NZ cinema context — Embassy Theatre Wellington, Roxy Cinema Wellington, Rialto Auckland. NZD currency, `en-NZ` locale. The fixture data tells a story, not `test-1` and `site-abc`.
 
 ## Research
 
-| Essay | Description |
-|-------|-------------|
-| [The Cinema Platform Thesis](research/cinema-platform-thesis.md) | Why cinema needs a developer ecosystem |
-| [What Stripe Did for Payments](research/what-stripe-did-for-payments.md) | The developer experience parallel |
-| [Cinema as Protocol](research/cinema-as-protocol.md) | Cinema-going as cultural infrastructure |
-| [The 3.3 Billion Dollar API](research/the-3.3-billion-api.md) | Vista's scale and the developer gap |
-| [Event-Driven Cinema](research/event-driven-cinema.md) | Real-time events for cinema operations |
+Five essays on the architecture and economics of cinema platform technology:
+
+| Essay | Question |
+|-------|----------|
+| [The Cinema Platform Thesis](research/cinema-platform-thesis.md) | Why does cinema need a developer ecosystem? |
+| [What Stripe Did for Payments](research/what-stripe-did-for-payments.md) | What can cinema learn from the Stripe playbook? |
+| [Cinema as Protocol](research/cinema-as-protocol.md) | What happens when we treat cinema-going as infrastructure? |
+| [The 3.3 Billion Dollar API](research/the-3.3-billion-api.md) | What's the developer opportunity in cinema's transaction volume? |
+| [Event-Driven Cinema](research/event-driven-cinema.md) | How do you build real-time on top of request-response? |
+
+Available as web pages at [theatrical.dev/essays](https://theatrical.dev/essays/) with RSS.
 
 ## Development
 
@@ -221,14 +230,14 @@ cd packages/sdk-py && pytest tests/ -q   # 337 tests
 git clone https://github.com/brunohart/theatrical.git
 cd theatrical
 
-# TypeScript
+# TypeScript — SDK + CLI
 cd packages/sdk && npm install && npx vitest run
 cd ../cli && npm install && npx vitest run
 
-# C# (.NET 8 SDK required)
+# C# — requires .NET 8 SDK
 cd packages/sdk-csharp && dotnet test
 
-# Python (3.10+ required)
+# Python — requires 3.10+
 cd packages/sdk-py && pip install -e ".[dev]" && pytest tests/ -q
 ```
 
@@ -238,7 +247,9 @@ Theatrical is not affiliated with, endorsed by, or officially connected to Vista
 
 ## License
 
-**MIT** — `@theatrical/sdk`, `@theatrical/cli` (maximum adoption)
-**BSL 1.1** — `@theatrical/events`, `@theatrical/analytics`, `@theatrical/react`, `@theatrical/templates` (commercial protection, converts to MIT after 3 years)
+| Packages | License | Why |
+|----------|---------|-----|
+| `@theatrical/sdk`, `@theatrical/cli`, `Theatrical.Sdk`, `theatrical` (Python) | **MIT** | Maximum adoption |
+| `@theatrical/events`, `@theatrical/analytics`, `@theatrical/react`, `@theatrical/templates` | **BSL 1.1** | Commercial protection, converts to MIT after 3 years |
 
 © 2026 [Bruno Hart](https://github.com/brunohart)
