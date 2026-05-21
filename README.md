@@ -1,11 +1,9 @@
 <p align="center">
-  <img src="packages/landing/public/favicon.svg" width="64" alt="Theatrical" />
-</p>
-
-<h1 align="center">Theatrical</h1>
-
-<p align="center">
-  <strong>The developer platform for cinema technology</strong>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/public/banner.svg">
+    <source media="(prefers-color-scheme: light)" srcset="docs/public/banner.svg">
+    <img src="docs/public/banner.svg" width="720" alt="Theatrical — the developer platform for cinema technology" />
+  </picture>
 </p>
 
 <p align="center">
@@ -22,14 +20,16 @@
 </p>
 
 <p align="center">
-  <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-5.9-3178c6.svg?style=flat-square" alt="TypeScript" /></a>
-  <a href="https://dotnet.microsoft.com/"><img src="https://img.shields.io/badge/.NET-8.0-512bd4.svg?style=flat-square" alt=".NET" /></a>
-  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.10+-3776ab.svg?style=flat-square" alt="Python" /></a>
-  <a href="#testing"><img src="https://img.shields.io/badge/tests-1%2C048%20passing-22c55e.svg?style=flat-square" alt="Tests" /></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT%20%2F%20BSL%201.1-blue.svg?style=flat-square" alt="License" /></a>
+  <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-5.9-c9922a.svg?style=flat-square&labelColor=1e1a15" alt="TypeScript" /></a>
+  <a href="https://dotnet.microsoft.com/"><img src="https://img.shields.io/badge/.NET-8.0-c9922a.svg?style=flat-square&labelColor=1e1a15" alt=".NET" /></a>
+  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.10+-c9922a.svg?style=flat-square&labelColor=1e1a15" alt="Python" /></a>
+  <a href="#testing"><img src="https://img.shields.io/badge/tests-1%2C048%20passing-e8b84b.svg?style=flat-square&labelColor=1e1a15" alt="Tests" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT%20%2F%20BSL%201.1-c9922a.svg?style=flat-square&labelColor=1e1a15" alt="License" /></a>
 </p>
 
----
+<br/>
+
+<p align="center"><img src="docs/public/divider.svg" width="480" alt="" /></p>
 
 Cinema platforms process billions in annual transaction value. The APIs are production-grade. The developer ecosystem around them is not. No typed clients. No component libraries. No event systems. Every integrator starts from scratch.
 
@@ -103,6 +103,8 @@ sessions = await client.sessions.list(
 
 Mock mode returns real NZ cinema fixture data — Embassy Theatre Wellington, Roxy Cinema, Rialto Auckland — so you can build and test complete flows without API access.
 
+<p align="center"><img src="docs/public/divider.svg" width="480" alt="" /></p>
+
 ## Architecture
 
 ```
@@ -124,6 +126,8 @@ Mock mode returns real NZ cinema fixture data — Embassy Theatre Wellington, Ro
 ```
 
 Six packages. Three languages. One API surface. See [ARCHITECTURE.md](ARCHITECTURE.md) for the full design.
+
+<p align="center"><img src="docs/public/divider.svg" width="480" alt="" /></p>
 
 ## Packages
 
@@ -148,6 +152,8 @@ Every SDK provides the same capabilities: GAS authentication with token refresh,
 | [`@theatrical/events`](packages/events) | Real-time event bridge: poll → diff → emit → webhook (HMAC-SHA256 signed) | 71 | BSL 1.1 |
 | [`@theatrical/analytics`](packages/analytics) | Horizon client, fluent query builder, export to CSV/JSON/DataFrame/Chart.js | 35 | BSL 1.1 |
 | [`@theatrical/templates`](packages/templates) | React ticketing starter — 4-page booking app, ready to deploy | — | BSL 1.1 |
+
+<p align="center"><img src="docs/public/divider.svg" width="480" alt="" /></p>
 
 ## What Makes This Different
 
@@ -198,6 +204,8 @@ Pre-built React components for the patterns every cinema app needs:
 
 Dark-mode-first. Fully themeable via design tokens.
 
+<p align="center"><img src="docs/public/divider.svg" width="480" alt="" /></p>
+
 ## Testing
 
 **1,048 tests** across three languages:
@@ -209,6 +217,8 @@ Python        337 tests    pytest · mypy-strict · ruff
 ```
 
 All mock data uses real NZ cinema context — Embassy Theatre Wellington, Roxy Cinema Wellington, Rialto Auckland. NZD currency, `en-NZ` locale. The fixture data tells a story, not `test-1` and `site-abc`.
+
+<p align="center"><img src="docs/public/divider.svg" width="480" alt="" /></p>
 
 ## Research
 

@@ -1,4 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 32" fill="none">
-  <rect x="0" y="8" width="16" height="16" rx="3" fill="#c9922a"/>
-  <text x="22" y="24" font-family="system-ui,sans-serif" font-size="18" font-weight="700" fill="#f8f5ef">theatrical</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 32" fill="none">
+  <defs>
+    <linearGradient id="g" x1="0" y1="8" x2="16" y2="24" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#e8b84b"/>
+      <stop offset="100%" stop-color="#c9922a"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="8" width="16" height="16" rx="3" fill="url(#g)"/>
+  <text x="22" y="24" font-family="Georgia, 'Times New Roman', serif" font-size="18" font-weight="700" fill="#f8f5ef" letter-spacing="0.5">theatrical</text>
 </svg>
