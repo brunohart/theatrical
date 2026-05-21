@@ -8,10 +8,8 @@ namespace Theatrical.Sdk.Tests.Resources;
 
 public sealed class PricingResourceSpyTests
 {
-    private static readonly TheatricalClientOptions DefaultOptions = new() { ApiKey = "test-key" };
-
     private static PricingResource CreateResource(SpyHttpClient spy)
-        => new(spy, DefaultOptions);
+        => new(spy);
 
     private static TicketType CreateTicketType(
         string? id = null,

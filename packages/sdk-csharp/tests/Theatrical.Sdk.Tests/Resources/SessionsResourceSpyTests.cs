@@ -8,10 +8,8 @@ namespace Theatrical.Sdk.Tests.Resources;
 
 public sealed class SessionsResourceSpyTests
 {
-    private static readonly TheatricalClientOptions DefaultOptions = new() { ApiKey = "test-key" };
-
     private static SessionsResource CreateResource(SpyHttpClient spy)
-        => new(spy, DefaultOptions);
+        => new(spy);
 
     private static SessionListResponse CreateSessionListResponse(
         Session[]? sessions = null,

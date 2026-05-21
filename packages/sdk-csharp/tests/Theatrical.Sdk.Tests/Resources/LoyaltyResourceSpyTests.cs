@@ -8,10 +8,8 @@ namespace Theatrical.Sdk.Tests.Resources;
 
 public sealed class LoyaltyResourceSpyTests
 {
-    private static readonly TheatricalClientOptions DefaultOptions = new() { ApiKey = "test-key" };
-
     private static LoyaltyResource CreateResource(SpyHttpClient spy)
-        => new(spy, DefaultOptions);
+        => new(spy);
 
     private static LoyaltyMember CreateMember(
         string? id = null,
