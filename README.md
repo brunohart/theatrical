@@ -20,11 +20,11 @@
 </p>
 
 <p align="center">
-  <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-5.9-c9922a.svg?style=flat-square&labelColor=1e1a15" alt="TypeScript" /></a>
-  <a href="https://dotnet.microsoft.com/"><img src="https://img.shields.io/badge/.NET-8.0-c9922a.svg?style=flat-square&labelColor=1e1a15" alt=".NET" /></a>
-  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.10+-c9922a.svg?style=flat-square&labelColor=1e1a15" alt="Python" /></a>
-  <a href="#testing"><img src="https://img.shields.io/badge/tests-1%2C048%20passing-e8b84b.svg?style=flat-square&labelColor=1e1a15" alt="Tests" /></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT%20%2F%20BSL%201.1-c9922a.svg?style=flat-square&labelColor=1e1a15" alt="License" /></a>
+  <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-5.9-D4622B.svg?style=flat-square&labelColor=1B2D4F" alt="TypeScript" /></a>
+  <a href="https://dotnet.microsoft.com/"><img src="https://img.shields.io/badge/.NET-8.0-D4622B.svg?style=flat-square&labelColor=1B2D4F" alt=".NET" /></a>
+  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.10+-D4622B.svg?style=flat-square&labelColor=1B2D4F" alt="Python" /></a>
+  <a href="#testing"><img src="https://img.shields.io/badge/tests-1%2C048%20passing-D4622B.svg?style=flat-square&labelColor=1B2D4F" alt="Tests" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT%20%2F%20BSL%201.1-D4622B.svg?style=flat-square&labelColor=1B2D4F" alt="License" /></a>
 </p>
 
 <br/>
