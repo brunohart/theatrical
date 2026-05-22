@@ -46,7 +46,7 @@ export function FilmPage() {
     <div style={{ maxWidth: 900, margin: '0 auto', padding: '48px 24px' }}>
       <button
         onClick={() => navigate('/')}
-        style={{ color: '#c9a227', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, marginBottom: 24 }}
+        style={{ color: '#D4622B', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, marginBottom: 24 }}
       >
         ← Back to films
       </button>
@@ -62,7 +62,7 @@ export function FilmPage() {
             <h1 style={{ fontSize: 28, fontWeight: 700, color: '#f5f5f0', letterSpacing: '-0.02em' }}>
               {film.title}
             </h1>
-            <div style={{ display: 'flex', gap: 12, marginTop: 8, fontSize: 13, color: '#8a8a85' }}>
+            <div style={{ display: 'flex', gap: 12, marginTop: 8, fontSize: 13, color: '#8A8578' }}>
               <span>{film.rating.classification}</span>
               <span>·</span>
               <span>{film.runtime} min</span>
@@ -79,9 +79,9 @@ export function FilmPage() {
       <h2 style={{ fontSize: 20, fontWeight: 600, color: '#f5f5f0', marginBottom: 20 }}>Choose a session</h2>
 
       {loading ? (
-        <p style={{ color: '#8a8a85' }}>Loading sessions…</p>
+        <p style={{ color: '#8A8578' }}>Loading sessions…</p>
       ) : sessions.length === 0 ? (
-        <p style={{ color: '#8a8a85' }}>No sessions available.</p>
+        <p style={{ color: '#8A8578' }}>No sessions available.</p>
       ) : (
         <SessionPicker
           sessions={sessions.map(toCardData)}

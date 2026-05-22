@@ -66,6 +66,7 @@ export function TheatricalThemeProvider({ children, overrides }: TheatricalTheme
     ['--theatrical-seat-premium' as string]: theme.colors.seatPremium,
     // Typography
     ['--theatrical-font' as string]: theme.typography.fontFamily,
+    ['--theatrical-font-heading' as string]: theme.typography.fontFamilyHeading,
     ['--theatrical-font-mono' as string]: theme.typography.fontFamilyMono,
     // Base
     backgroundColor: theme.colors.bg,

@@ -5,7 +5,7 @@ description: Customise Theatrical's cinema-dark design system to match your bran
 
 import { Aside, Tabs, TabItem, Code } from '@astrojs/starlight/components';
 
-`@theatrical/react` ships a cinema-dark design system as its default — near-black backgrounds, warm gold accents, generous spacing. Every visual value is a token in `TheatricalThemeProvider`. This guide shows how to adapt those tokens to your brand without touching component internals.
+`@theatrical/react` ships a warm parchment design system as its default — warm backgrounds, burnt orange accents, deep navy structure. Every visual value is a token in `TheatricalThemeProvider`. This guide shows how to adapt those tokens to your brand without touching component internals.
 
 ## How the token system works
 
@@ -25,62 +25,62 @@ export function App() {
 
 ## Color tokens
 
-The full color palette with their default cinema-dark values:
+The full color palette with their default values:
 
 | Token | Default | Role |
 |-------|---------|------|
-| `colors.accent` | `#c9a227` | Warm gold — primary CTA, selection highlight, brand signal |
-| `colors.accentHover` | `#d4aa3a` | Hover state for accent elements |
-| `colors.bg` | `#0a0a0b` | Page background — near-black |
-| `colors.surface` | `#16161a` | Card and panel backgrounds |
-| `colors.surfaceHover` | `#1e1e23` | Interactive surface hover state |
-| `colors.border` | `#2a2a30` | Subtle dividers and outlines |
-| `colors.text` | `#f5f5f0` | Primary text — warm white |
-| `colors.textMuted` | `#8a8a85` | Secondary text, labels, metadata |
-| `colors.textDisabled` | `#4a4a4f` | Disabled state text |
+| `colors.accent` | `#D4622B` | Burnt orange — primary CTA, selection highlight, brand signature |
+| `colors.accentMuted` | `#B8532A` | Muted accent for hover states |
+| `colors.bg` | `#F0EDE6` | Page background — warm parchment |
+| `colors.surface` | `#F5F0E1` | Card and panel backgrounds — cream |
+| `colors.surfaceRaised` | `#EBE6DA` | Interactive surface hover state |
+| `colors.border` | `#D6D0C4` | Subtle dividers and outlines |
+| `colors.text` | `#1A1A1A` | Primary text — ink, never pure black |
+| `colors.textMuted` | `#8A8578` | Secondary text, labels, metadata — warm grey |
+| `colors.textDisabled` | `#B8B3A8` | Disabled state text |
 | `colors.success` | `#22c55e` | Confirmation states |
-| `colors.warning` | `#f59e0b` | Caution states |
-| `colors.error` | `#ef4444` | Error and destructive states |
+| `colors.warning` | `#D4622B` | Caution states |
+| `colors.error` | `#C4391D` | Error and destructive states — rust |
 
 ### Overriding for your brand
 
 <Tabs>
-  <TabItem label="Gold brand">
+  <TabItem label="Navy accent">
     ```tsx
-    // Keep the cinema-dark base, swap to your gold
+    // Swap accent to deep navy for a structural tone
     const theme = {
       colors: {
-        accent: '#f5c842',
-        accentHover: '#f7d060',
+        accent: '#1B2D4F',
+        accentMuted: '#15243F',
       },
     };
     ```
   </TabItem>
   <TabItem label="Red brand">
     ```tsx
-    // Event cinema red accent on dark base
+    // Event cinema red accent — rust from the palette
     const theme = {
       colors: {
-        accent: '#e60026',
-        accentHover: '#ff1a38',
+        accent: '#C4391D',
+        accentMuted: '#A83018',
       },
     };
     ```
   </TabItem>
-  <TabItem label="Light mode">
+  <TabItem label="Dark mode">
     ```tsx
-    // Invert for a light-background deployment
+    // Invert for a dark-background deployment
     const theme = {
       colors: {
-        bg: '#ffffff',
-        surface: '#f5f5f5',
-        surfaceHover: '#ebebeb',
-        border: '#e0e0e0',
-        text: '#111111',
-        textMuted: '#555555',
-        textDisabled: '#aaaaaa',
-        accent: '#1a56db',
-        accentHover: '#1e40af',
+        bg: '#1A1A1A',
+        surface: '#242420',
+        surfaceRaised: '#2E2E28',
+        border: '#3D3830',
+        text: '#F0EDE6',
+        textMuted: '#8A8578',
+        textDisabled: '#4A4A4A',
+        accent: '#D4622B',
+        accentMuted: '#B8532A',
       },
     };
     ```
@@ -91,28 +91,26 @@ The full color palette with their default cinema-dark values:
 
 | Token | Default | Description |
 |-------|---------|-------------|
-| `typography.fontFamily` | `'Inter, system-ui, -apple-system, sans-serif'` | Body and UI text |
-| `typography.fontFamilyHeading` | `'Inter, system-ui, -apple-system, sans-serif'` | Heading elements |
-| `typography.fontFamilyMono` | `'ui-monospace, monospace'` | Code and reference numbers |
+| `typography.fontFamily` | `'Inter, -apple-system, sans-serif'` | Body and UI text — clean, stays out of the way |
+| `typography.fontFamilyHeading` | `'Space Grotesk, -apple-system, sans-serif'` | Headlines — tight tracking, poster energy |
+| `typography.fontFamilyMono` | `'JetBrains Mono, monospace'` | Labels, metadata, reference codes — archival, systematic |
 | `typography.fontSizeBase` | `'16px'` | Root font size |
 | `typography.lineHeightBase` | `'1.5'` | Body line height |
 
-To use a premium typeface pair (e.g. Playfair Display for headings, Inter for body):
+The default type stack pairs Space Grotesk for compressed, confident headings with Inter for clean body text and JetBrains Mono for systematic labels:
 
 ```tsx
-// 1. Load fonts — in your HTML <head> or via a CSS @import
-// @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter&display=swap');
-
+// Override with your own typeface pair
 const theme = {
   typography: {
-    fontFamily: '"Inter", system-ui, sans-serif',
-    fontFamilyHeading: '"Playfair Display", Georgia, serif',
+    fontFamily: '"DM Sans", system-ui, sans-serif',
+    fontFamilyHeading: '"DM Sans", system-ui, sans-serif',
   },
 };
 ```
 
 <Aside type="tip">
-Cinema brands often use editorial serifs for headings (Playfair Display, Cormorant Garamond) and neutral sans-serifs for UI text (Inter, DM Sans). This contrast signals premium positioning without sacrificing readability in seat maps and session cards.
+Headlines should feel like poster type — compress them, track them tight. Mono labels work well for section markers, dates, and reference codes to create an archival, systematic voice.
 </Aside>
 
 ## Spacing and radii
@@ -159,14 +157,14 @@ import type { DeepPartialTokens } from '@theatrical/react';
 
 export const brandTheme: DeepPartialTokens = {
   colors: {
-    accent: '#e60026',        // brand red
-    accentHover: '#cc001f',
-    bg: '#0d0b0b',            // warmer black
-    surface: '#1a1414',
-    border: '#2e2020',
+    accent: '#C4391D',
+    accentMuted: '#A83018',
+    bg: '#F0EDE6',
+    surface: '#F5F0E1',
+    border: '#D6D0C4',
   },
   typography: {
-    fontFamilyHeading: '"Playfair Display", Georgia, serif',
+    fontFamilyHeading: '"Space Grotesk", system-ui, sans-serif',
   },
   radii: {
     md: '4px',

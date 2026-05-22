@@ -1,42 +1,24 @@
-/** Cinema-inspired design tokens. Dark mode by default — the natural register of a darkened auditorium. */
+/** designedbybruno token system — parchment warmth, burnt orange signature, navy structure. */
 export const tokens = {
   colors: {
-    /** True black — the void before the film begins */
-    bg: '#0a0a0a',
-    /** Elevated surface — card backgrounds, panels */
-    surface: '#141414',
-    /** Raised surface — hover states, modals */
-    surfaceRaised: '#1e1e1e',
-    /** Subtle dividers and borders */
-    border: '#2a2a2a',
-    /** Warm gold — the marquee light, the curtain glow */
-    accent: '#c9a227',
-    /** Muted gold for hover states */
-    accentMuted: '#a8821c',
-    /** Primary text — high contrast */
-    text: '#f5f5f5',
-    /** Secondary text — captions, labels */
-    textMuted: '#9a9a9a',
-    /** Disabled state */
-    textDisabled: '#4a4a4a',
-    /** Seat: available to book */
-    seatAvailable: '#1a3a5c',
-    /** Seat: taken by another patron */
-    seatTaken: '#2d2d2d',
-    /** Seat: selected by current user */
-    seatSelected: '#c9a227',
-    /** Seat: wheelchair accessible */
+    bg: '#F0EDE6',
+    surface: '#F5F0E1',
+    surfaceRaised: '#EBE6DA',
+    border: '#D6D0C4',
+    accent: '#D4622B',
+    accentMuted: '#B8532A',
+    text: '#1A1A1A',
+    textMuted: '#8A8578',
+    textDisabled: '#B8B3A8',
+    seatAvailable: '#1B2D4F',
+    seatTaken: '#D6D0C4',
+    seatSelected: '#D4622B',
     seatWheelchair: '#2d6a4f',
-    /** Seat: companion seat (adjacent to wheelchair) */
     seatCompanion: '#40916c',
-    /** Seat: premium/recliner */
-    seatPremium: '#6a0572',
-    /** Success states */
+    seatPremium: '#1B2D4F',
     success: '#22c55e',
-    /** Error states */
-    error: '#ef4444',
-    /** Warning states */
-    warning: '#f59e0b',
+    error: '#C4391D',
+    warning: '#D4622B',
   },
   spacing: {
     xs: 4,
@@ -48,6 +30,7 @@ export const tokens = {
   },
   typography: {
     fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+    fontFamilyHeading: "'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
     fontFamilyMono: "'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace",
     sizes: {
       xs: '0.75rem',
@@ -77,10 +60,10 @@ export const tokens = {
     full: 9999,
   },
   shadows: {
-    sm: '0 1px 3px rgba(0,0,0,0.5)',
-    md: '0 4px 12px rgba(0,0,0,0.6)',
-    lg: '0 8px 24px rgba(0,0,0,0.7)',
-    glow: '0 0 12px rgba(201,162,39,0.3)',
+    sm: '0 1px 3px rgba(26,26,26,0.08)',
+    md: '0 4px 12px rgba(26,26,26,0.1)',
+    lg: '0 8px 24px rgba(26,26,26,0.12)',
+    glow: '0 0 12px rgba(212,98,43,0.2)',
   },
   transitions: {
     fast: '100ms ease',

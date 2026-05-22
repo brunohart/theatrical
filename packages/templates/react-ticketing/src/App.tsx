@@ -28,36 +28,36 @@ function Nav() {
         justifyContent: 'space-between',
         padding: '0 24px',
         height: 56,
-        borderBottom: '1px solid #1e1e23',
-        background: '#0a0a0b',
+        borderBottom: '1px solid #D6D0C4',
+        background: '#F0EDE6',
         position: 'sticky',
         top: 0,
         zIndex: 10,
       }}
     >
       <NavLink to="/" style={{ textDecoration: 'none' }}>
-        <span style={{ fontWeight: 700, fontSize: 18, color: '#c9a227', letterSpacing: '-0.01em' }}>
+        <span style={{ fontWeight: 700, fontSize: 18, color: '#1B2D4F', letterSpacing: '-0.03em', fontFamily: "'Space Grotesk', system-ui, sans-serif" }}>
           theatrical
         </span>
         {isMock && (
-          <span style={{ marginLeft: 8, fontSize: 10, color: '#6a6a65', background: '#1e1e23', padding: '2px 6px', borderRadius: 4 }}>
+          <span style={{ marginLeft: 8, fontSize: 10, color: '#8A8578', background: '#EBE6DA', padding: '2px 6px', borderRadius: 4, fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.05em', textTransform: 'uppercase' as const }}>
             MOCK
           </span>
         )}
       </NavLink>
       <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
         {state.film && (
-          <span style={{ fontSize: 13, color: '#8a8a85' }}>{state.film.title}</span>
+          <span style={{ fontSize: 13, color: '#1A1A1A' }}>{state.film.title}</span>
         )}
         {state.session && (
-          <span style={{ fontSize: 12, color: '#6a6a65' }}>
+          <span style={{ fontSize: 12, color: '#8A8578', fontFamily: "'JetBrains Mono', monospace" }}>
             {new Date(state.session.startTime).toLocaleTimeString('en-NZ', {
               hour: '2-digit', minute: '2-digit', hour12: true,
             })}
           </span>
         )}
         {state.selectedSeatIds.length > 0 && (
-          <span style={{ fontSize: 12, color: '#c9a227', fontWeight: 600 }}>
+          <span style={{ fontSize: 12, color: '#D4622B', fontWeight: 600 }}>
             {state.selectedSeatIds.length} seat{state.selectedSeatIds.length !== 1 ? 's' : ''}
           </span>
         )}
@@ -71,7 +71,7 @@ export default function App() {
     <TheatricalThemeProvider>
       <BrowserRouter>
         <BookingProvider client={client}>
-          <div style={{ minHeight: '100vh', background: '#0a0a0b' }}>
+          <div style={{ minHeight: '100vh', background: '#F0EDE6' }}>
             <Nav />
             <Routes>
               <Route path="/" element={<Home />} />

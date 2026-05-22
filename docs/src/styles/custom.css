@@ -1,20 +1,21 @@
-/* Theatrical docs — cinema-inspired overrides */
+/* Theatrical docs — designedbybruno palette */
 :root {
-  --sl-color-accent-low: #1a1008;
-  --sl-color-accent: #c9922a;
-  --sl-color-accent-high: #f0c060;
-  --sl-color-white: #ffffff;
-  --sl-color-gray-1: #f8f5ef;
-  --sl-color-gray-2: #ede8df;
-  --sl-color-gray-3: #bfb9ae;
-  --sl-color-gray-4: #7d756a;
-  --sl-color-gray-5: #3d3830;
-  --sl-color-gray-6: #1e1a15;
-  --sl-color-black: #0d0b08;
+  --sl-color-accent-low: #F5F0E1;
+  --sl-color-accent: #D4622B;
+  --sl-color-accent-high: #B8532A;
+  --sl-color-white: #F0EDE6;
+  --sl-color-gray-1: #F0EDE6;
+  --sl-color-gray-2: #EBE6DA;
+  --sl-color-gray-3: #D6D0C4;
+  --sl-color-gray-4: #8A8578;
+  --sl-color-gray-5: #1B2D4F;
+  --sl-color-gray-6: #1A1A1A;
+  --sl-color-black: #1A1A1A;
+  --sl-font-system: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 [data-theme='dark'] {
-  --sl-color-accent-low: #1a1008;
-  --sl-color-accent: #c9922a;
-  --sl-color-accent-high: #f0c060;
+  --sl-color-accent-low: #2A1A10;
+  --sl-color-accent: #D4622B;
+  --sl-color-accent-high: #E8844A;
 }

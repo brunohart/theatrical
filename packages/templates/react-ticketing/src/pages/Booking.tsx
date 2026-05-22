@@ -82,14 +82,14 @@ export function BookingPage() {
     <div style={{ maxWidth: 900, margin: '0 auto', padding: '48px 24px' }}>
       <button
         onClick={() => navigate(`/film/${session.filmId}`)}
-        style={{ color: '#c9a227', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, marginBottom: 24 }}
+        style={{ color: '#D4622B', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, marginBottom: 24 }}
       >
         ← Back to sessions
       </button>
 
       <div style={{ marginBottom: 32 }}>
         <h1 style={{ fontSize: 24, fontWeight: 700, color: '#f5f5f0' }}>{session.filmTitle}</h1>
-        <p style={{ color: '#8a8a85', marginTop: 6 }}>
+        <p style={{ color: '#8A8578', marginTop: 6 }}>
           {session.screenName} · {new Date(session.startTime).toLocaleString('en-NZ', {
             weekday: 'short', month: 'short', day: 'numeric',
             hour: '2-digit', minute: '2-digit', hour12: true,
@@ -98,7 +98,7 @@ export function BookingPage() {
       </div>
 
       {loading ? (
-        <p style={{ color: '#8a8a85' }}>Loading seat map…</p>
+        <p style={{ color: '#8A8578' }}>Loading seat map…</p>
       ) : (
         <SeatMap
           rows={rows}
@@ -110,15 +110,15 @@ export function BookingPage() {
       )}
 
       <div style={{ marginTop: 32, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 16 }}>
-        <span style={{ color: '#8a8a85', fontSize: 14 }}>
+        <span style={{ color: '#8A8578', fontSize: 14 }}>
           {selectedIds.size} seat{selectedIds.size !== 1 ? 's' : ''} selected
         </span>
         <button
           onClick={confirmSeats}
           disabled={selectedIds.size === 0 || confirming}
           style={{
-            background: selectedIds.size > 0 ? '#c9a227' : '#3a3a3f',
-            color: selectedIds.size > 0 ? '#0a0a0b' : '#6a6a65',
+            background: selectedIds.size > 0 ? '#D4622B' : '#D6D0C4',
+            color: selectedIds.size > 0 ? '#F0EDE6' : '#8A8578',
             border: 'none',
             borderRadius: 8,
             padding: '12px 28px',

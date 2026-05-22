@@ -1,9 +1,25 @@
-/* Essay typography — long-form reading optimised */
+/* Essay typography — designedbybruno reading experience */
+
+:root {
+  --color-bg: #F0EDE6;
+  --color-surface: #F5F0E1;
+  --color-border: #D6D0C4;
+  --color-accent: #D4622B;
+  --color-accent-hover: #B8532A;
+  --color-text: #1A1A1A;
+  --color-text-muted: #8A8578;
+  --color-text-dim: #8A8578;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-heading: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+}
 
 .essay {
   max-width: 720px;
   margin: 0 auto;
   padding: 4rem 1.5rem 6rem;
+  background: var(--color-bg);
+  font-family: var(--font-body);
 }
 
 .essay-header {
@@ -13,9 +29,11 @@
 }
 
 .essay-title {
+  font-family: var(--font-heading);
   font-size: 2.5rem;
   font-weight: 700;
   line-height: 1.2;
+  letter-spacing: -0.03em;
   margin-bottom: 0.75rem;
   color: var(--color-text);
 }
@@ -29,19 +47,25 @@
 
 .essay-meta {
   margin-top: 1rem;
-  font-size: 0.875rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   color: var(--color-text-dim);
 }
 
 .essay-body h2 {
+  font-family: var(--font-heading);
   font-size: 1.5rem;
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: -0.02em;
   margin-top: 3rem;
   margin-bottom: 1rem;
   color: var(--color-text);
 }
 
 .essay-body h3 {
+  font-family: var(--font-heading);
   font-size: 1.25rem;
   font-weight: 600;
   margin-top: 2rem;

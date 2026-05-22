@@ -31,7 +31,7 @@ export function Home() {
         <h1 style={{ fontSize: 32, fontWeight: 700, color: '#f5f5f0', letterSpacing: '-0.02em' }}>
           Now Showing
         </h1>
-        <p style={{ color: '#8a8a85', marginTop: 8 }}>Roxy Cinema · Wellington</p>
+        <p style={{ color: '#8A8578', marginTop: 8 }}>Roxy Cinema · Wellington</p>
       </header>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 24 }}>
@@ -57,27 +57,27 @@ function FilmCard({ film, onSelect }: { film: Film; onSelect: (f: Film) => void 
         transition: 'transform 0.15s, border-color 0.15s',
         width: '100%',
       }}
-      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = '#c9a227'; }}
+      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = '#D4622B'; }}
       onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = '#2a2a2f'; }}
     >
       <div style={{ height: 180, background: '#0f0f12', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         {film.posterUrl ? (
           <img src={film.posterUrl} alt={film.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         ) : (
-          <span style={{ color: '#3a3a3f', fontSize: 48 }}>🎬</span>
+          <span style={{ color: '#D6D0C4', fontSize: 48 }}>🎬</span>
         )}
       </div>
       <div style={{ padding: '16px 20px' }}>
-        <span style={{ fontSize: 11, color: '#c9a227', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 600 }}>
+        <span style={{ fontSize: 11, color: '#D4622B', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 600 }}>
           {film.rating.classification}
         </span>
         <h2 style={{ fontSize: 18, fontWeight: 600, color: '#f5f5f0', marginTop: 6, lineHeight: 1.3 }}>
           {film.title}
         </h2>
-        <p style={{ fontSize: 13, color: '#8a8a85', marginTop: 8, lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+        <p style={{ fontSize: 13, color: '#8A8578', marginTop: 8, lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
           {film.synopsis}
         </p>
-        <div style={{ display: 'flex', gap: 12, marginTop: 12, fontSize: 12, color: '#6a6a65' }}>
+        <div style={{ display: 'flex', gap: 12, marginTop: 12, fontSize: 12, color: '#8A8578' }}>
           <span>{film.runtime} min</span>
           <span>·</span>
           <span>{film.genres.slice(0, 2).join(', ')}</span>
@@ -89,7 +89,7 @@ function FilmCard({ film, onSelect }: { film: Film; onSelect: (f: Film) => void 
 
 function LoadingScreen({ message }: { message: string }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', color: '#8a8a85' }}>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', color: '#8A8578' }}>
       {message}
     </div>
   );

@@ -7,19 +7,18 @@ export const TIER_LEVELS: Record<LoyaltyTierName, number> = {
   Platinum: 4,
 };
 
-/** Cinema-palette colours for each loyalty tier. */
 export const TIER_COLORS: Record<LoyaltyTierName, string> = {
-  Bronze: '#cd7f32',
-  Silver: '#b0b7c3',
-  Gold: '#c9a227',
-  Platinum: '#e8e4f0',
+  Bronze: '#B8532A',
+  Silver: '#8A8578',
+  Gold: '#D4622B',
+  Platinum: '#1B2D4F',
 };
 
 export const TIER_BACKGROUNDS: Record<LoyaltyTierName, string> = {
-  Bronze: 'rgba(205,127,50,0.12)',
-  Silver: 'rgba(176,183,195,0.12)',
-  Gold: 'rgba(201,162,39,0.12)',
-  Platinum: 'rgba(232,228,240,0.12)',
+  Bronze: 'rgba(184,83,42,0.10)',
+  Silver: 'rgba(138,133,120,0.10)',
+  Gold: 'rgba(212,98,43,0.10)',
+  Platinum: 'rgba(27,45,79,0.10)',
 };
 
 /** Loyalty tier shape used by React components. */

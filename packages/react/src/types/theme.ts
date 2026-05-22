@@ -29,27 +29,32 @@ export interface TheatricalTheme {
   };
   fontFamily: {
     sans: string;
+    heading: string;
     mono: string;
   };
 }
 
 export const defaultTheme: TheatricalTheme = {
   colors: {
-    primary: '#6366f1',
-    secondary: '#8b5cf6',
-    accent: '#f59e0b',
-    background: '#0f0f23',
-    surface: '#1a1a2e',
-    text: '#e2e8f0',
-    textMuted: '#94a3b8',
-    success: '#10b981',
-    warning: '#f59e0b',
-    error: '#ef4444',
-    seatAvailable: '#10b981',
-    seatOccupied: '#4b5563',
-    seatSelected: '#6366f1',
+    primary: '#1B2D4F',
+    secondary: '#D4622B',
+    accent: '#D4622B',
+    background: '#F0EDE6',
+    surface: '#F5F0E1',
+    text: '#1A1A1A',
+    textMuted: '#8A8578',
+    success: '#22c55e',
+    warning: '#D4622B',
+    error: '#C4391D',
+    seatAvailable: '#1B2D4F',
+    seatOccupied: '#D6D0C4',
+    seatSelected: '#D4622B',
   },
   spacing: { xs: '0.25rem', sm: '0.5rem', md: '1rem', lg: '1.5rem', xl: '2rem' },
   borderRadius: { sm: '0.25rem', md: '0.5rem', lg: '1rem', full: '9999px' },
-  fontFamily: { sans: 'Inter, system-ui, sans-serif', mono: 'JetBrains Mono, monospace' },
+  fontFamily: {
+    sans: "'Inter', -apple-system, sans-serif",
+    heading: "'Space Grotesk', -apple-system, sans-serif",
+    mono: "'JetBrains Mono', monospace",
+  },
 };

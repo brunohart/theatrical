@@ -54,13 +54,13 @@ export function ConfirmationPage() {
       <div style={{ maxWidth: 600, margin: '80px auto', padding: '0 24px', textAlign: 'center' }}>
         <div style={{ fontSize: 64, marginBottom: 24 }}>🎬</div>
         <h1 style={{ fontSize: 28, fontWeight: 700, color: '#f5f5f0', marginBottom: 12 }}>You're booked!</h1>
-        <p style={{ color: '#8a8a85', marginBottom: 32 }}>
+        <p style={{ color: '#8A8578', marginBottom: 32 }}>
           Check your email for your tickets. Enjoy {session.filmTitle}.
         </p>
         <button
           onClick={() => { dispatch({ type: 'RESET' }); navigate('/'); }}
           style={{
-            background: '#c9a227', color: '#0a0a0b', border: 'none', borderRadius: 8,
+            background: '#D4622B', color: '#F0EDE6', border: 'none', borderRadius: 8,
             padding: '12px 28px', fontSize: 15, fontWeight: 600, cursor: 'pointer',
           }}
         >
@@ -74,7 +74,7 @@ export function ConfirmationPage() {
     <div style={{ maxWidth: 900, margin: '0 auto', padding: '48px 24px' }}>
       <button
         onClick={() => navigate('/booking')}
-        style={{ color: '#c9a227', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, marginBottom: 24 }}
+        style={{ color: '#D4622B', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, marginBottom: 24 }}
       >
         ← Back to seats
       </button>
