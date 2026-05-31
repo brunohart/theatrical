@@ -1,0 +1,126 @@
+/* ════════════════════════════════════════════════
+   Cinema — grain, vignette, marquee, film accents
+   ════════════════════════════════════════════════ */
+
+/* ─── Film grain overlay (canvas painted by grain.js) ─── */
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-grain);
+  pointer-events: none;
+  opacity: var(--grain-opacity);
+  mix-blend-mode: multiply;
+}
+
+/* Static SVG grain fallback (used when JS/canvas unavailable).
+   Shown by default; .has-grain (set by JS) hides it in favour of the canvas. */
+.grain-static {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-grain);
+  pointer-events: none;
+  opacity: var(--grain-opacity);
+  mix-blend-mode: multiply;
+  background-image: url("/textures/grain.svg");
+  background-size: 220px 220px;
+}
+html.has-grain .grain-static { display: none; }
+
+/* ─── Vignette — darkened edges, projector falloff ─── */
+.vignette {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay);
+  pointer-events: none;
+  background: radial-gradient(ellipse at center,
+    transparent 58%,
+    rgba(26, 26, 26, 0.06) 86%,
+    rgba(26, 26, 26, 0.13) 100%);
+}
+
+/* ─── Marquee strip — "NOW SHOWING" ─── */
+.marquee {
+  position: relative;
+  overflow: hidden;
+  border-block: 1px solid var(--color-border);
+  background: var(--cream);
+  padding-block: 0.7rem;
+}
+.marquee__track {
+  display: inline-flex;
+  gap: 2.5rem;
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--grey);
+  animation: marquee 38s linear infinite;
+  will-change: transform;
+}
+.marquee__track span { display: inline-flex; align-items: center; gap: 2.5rem; }
+.marquee__track span::after { content: "✦"; color: var(--orange); }
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee__track { animation: none; }
+}
+
+/* ─── Frame-crop corners on hover (cards) ─── */
+.framed { position: relative; }
+.framed::after {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  pointer-events: none;
+  /* corner crop marks via gradients */
+  background:
+    linear-gradient(var(--orange), var(--orange)) 0 0 / 12px 1px no-repeat,
+    linear-gradient(var(--orange), var(--orange)) 0 0 / 1px 12px no-repeat,
+    linear-gradient(var(--orange), var(--orange)) 100% 0 / 12px 1px no-repeat,
+    linear-gradient(var(--orange), var(--orange)) 100% 0 / 1px 12px no-repeat,
+    linear-gradient(var(--orange), var(--orange)) 0 100% / 12px 1px no-repeat,
+    linear-gradient(var(--orange), var(--orange)) 0 100% / 1px 12px no-repeat,
+    linear-gradient(var(--orange), var(--orange)) 100% 100% / 12px 1px no-repeat,
+    linear-gradient(var(--orange), var(--orange)) 100% 100% / 1px 12px no-repeat;
+  opacity: 0;
+  transition: opacity var(--duration-normal) var(--ease-out);
+}
+.framed:hover::after { opacity: 0.8; }
+
+/* ─── Letterbox section divider (in-flow, between acts) ─── */
+.reel-divider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  color: var(--grey);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+.reel-divider::before, .reel-divider::after {
+  content: "";
+  height: 1px;
+  background: var(--color-border);
+  flex: 1;
+}
+
+/* ─── Reveal gating ───
+   Default = visible (no-JS, reduced-motion, or CDN failure → content always shows).
+   Only when .has-motion is set (synchronously, pre-paint) do we hide for animation.
+   GSAP's immediateRender then takes over the inline opacity. */
+[data-reveal] { opacity: 1; }
+html.has-motion [data-reveal] { opacity: 0; transform: translateY(30px); }
+
+/* Hero cloak — hidden only while motion is armed, animated in by the load timeline. */
+html.has-motion .hero__kicker,
+html.has-motion .hero__title,
+html.has-motion .hero__tagline,
+html.has-motion .hero__actions,
+html.has-motion .hero__filmstrip,
+html.has-motion .hero__glow { opacity: 0; }
