@@ -12,11 +12,19 @@
   <meta name="twitter:card" content="summary">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../style.css">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div class="letterbox letterbox--top" aria-hidden="true"></div>
+  <div class="letterbox letterbox--bottom" aria-hidden="true"></div>
+  <div class="sprockets sprockets--left" aria-hidden="true"></div>
+  <div class="sprockets sprockets--right" aria-hidden="true"></div>
+  <div class="grain-static" aria-hidden="true"></div>
+  <canvas class="grain" aria-hidden="true"></canvas>
+  <div class="vignette" aria-hidden="true"></div>
+  <div class="cursor" aria-hidden="true"></div>
   <nav class="nav">
     <div class="container nav-inner">
       <a href="/" class="nav-brand">theatrical</a>
@@ -98,5 +106,9 @@ const sessions = await client.sessions.list({
       <a href="cinema-as-protocol.html">Next: Cinema as Protocol &rarr;</a>
     </nav>
   </article>
+  <script src="/js/cursor.js" defer></script>
+  <script src="/js/grain.js" defer></script>
+  <script src="/js/nav.js" defer></script>
+  <script src="/js/main.js" defer></script>
 </body>
 </html>
