@@ -6,10 +6,13 @@
   <title>Event-Driven Cinema — Theatrical</title>
   <meta name="description" content="Why real-time events change everything for cinema operations — and how to build an event bridge when the platform API is request-response.">
   <meta property="og:title" content="Event-Driven Cinema — Theatrical">
-  <meta property="og:description" content="Why real-time events change everything for cinema operations.">
+  <meta property="og:description" content="Why real-time events change everything for cinema operations — and how to build an event bridge when the platform API is request-response.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://theatrical.dev/essays/event-driven-cinema.html">
-  <meta name="twitter:card" content="summary">
+  <meta property="og:image" content="https://theatrical.dev/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://theatrical.dev/og.png">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -25,13 +28,14 @@
   <canvas class="grain" aria-hidden="true"></canvas>
   <div class="vignette" aria-hidden="true"></div>
   <div class="cursor" aria-hidden="true"></div>
+
   <nav class="nav">
     <div class="container nav-inner">
       <a href="/" class="nav-brand">theatrical</a>
       <div class="nav-links">
         <a href="/">Home</a>
-        <a href="/#essays">Essays</a>
-        <a href="https://github.com/brunohart/theatrical" target="_blank" rel="noopener">GitHub</a>
+        <a href="/#essays">Research</a>
+        <a href="https://github.com/brunohart/theatrical" class="nav-github" target="_blank" rel="noopener">GitHub ↗</a>
       </div>
     </div>
   </nav>
@@ -40,50 +44,64 @@
     <header class="essay-header">
       <h1 class="essay-title">Event-Driven Cinema</h1>
       <p class="essay-subtitle">Why real-time events change everything for cinema operations — and how to build an event bridge when the platform API is request-response.</p>
-      <p class="essay-meta">Research Essay &middot; Theatrical SDK</p>
+      <p class="essay-meta">Research Essay · Theatrical</p>
     </header>
-
     <div class="essay-body">
-      <h2>The Problem</h2>
-      <p>Cinema management platforms are request-response systems. You ask the API for the current state — available seats, order status, film catalogue — and it tells you. This works well for interactive applications where a human initiates each query.</p>
-      <p>But cinema operations need more than request-response. They need awareness of change.</p>
-      <p>A cinema manager needs to know when a popular session is about to sell out — not because they queried it, but because the system noticed. A concession team needs to know when a large group booking is confirmed — not because they checked the orders list, but because an alert fired. A marketing team needs to know when a new film appears in the catalogue — not because they refreshed the page, but because the event bridge detected the change and notified their systems.</p>
-      <p>The gap between what cinema operations need (real-time change awareness) and what the API provides (current-state snapshots) is where an event bridge creates the most value.</p>
+<h2>The Problem</h2>
+<p>Cinema management platforms are request-response systems. You ask the API for the current state — available seats, order status, film catalogue — and it tells you. This works well for interactive applications where a human initiates each query. A customer opens the booking page, the app fetches seat availability, the customer selects seats.</p>
+<p>But cinema operations need more than request-response. They need awareness of change.</p>
+<p>A cinema manager needs to know when a popular session is about to sell out — not because they queried it, but because the system noticed. A concession team needs to know when a large group booking is confirmed — not because they checked the orders list, but because an alert fired. A marketing team needs to know when a new film appears in the catalogue — not because they refreshed the page, but because the event bridge detected the change and notified their systems.</p>
+<p>The gap between what cinema operations need (real-time change awareness) and what the API provides (current-state snapshots) is where an event bridge creates the most value.</p>
+<hr>
+<h2>The Architecture</h2>
+<p>An event bridge for a request-response API has four components. Each solves a specific problem, and keeping them separate is essential for testability and composability.</p>
+<h3>The Poller</h3>
+<p>The poller calls the API on a regular interval and delivers the raw response data. The design decisions matter:</p>
+<p><strong><code>setTimeout</code> after completion, not <code>setInterval</code></strong>. <code>setInterval</code> fires regardless of whether the previous API call has finished. On a slow API or a congested network, <code>setInterval</code> causes request overlap — multiple in-flight requests competing for the same connection pool. <code>setTimeout</code> after each call completes ensures requests are sequential. The interval is the gap between completions, not between starts.</p>
+<p><strong><code>AbortController</code> for clean shutdown</strong>. A poller that cannot be stopped cleanly is a memory leak. The <code>start()</code> method creates an <code>AbortController</code>. The <code>stop()</code> method calls <code>abort()</code>. The polling loop catches <code>AbortError</code> and exits silently. This matters in server processes that run for hours — a cinema dashboard monitoring multiple sites needs pollers that start and stop cleanly as sites come online and offline.</p>
+<p><strong>Configurable intervals per resource type</strong>. Session availability changes every few seconds during peak booking periods. Film catalogues change once a day. Loyalty member data changes infrequently. One polling interval does not fit all resources. The event bridge provides sensible defaults: sessions at 10 seconds, orders at 5 seconds, films at 60 seconds, inventory at 30 seconds.</p>
+<h3>The Diff Engine</h3>
+<p>The diff engine compares the current API response against the previous state and produces a list of changes: items added, items removed, items changed.</p>
+<p><strong>Pure function</strong>. <code>diff&lt;T extends { id: string }&gt;(current: T[], previous: T[])</code> takes two arrays and returns <code>DiffEvent&lt;T&gt;[]</code>. No timer imports, no side effects, no dependencies on the polling infrastructure. This means it can be tested with two array literals — no fake timers, no mock clocks, no async setup.</p>
+<p><strong>Identity-based comparison</strong>. Items are matched by <code>id</code>. An item present in <code>current</code> but not in <code>previous</code> is <code>added</code>. An item in <code>previous</code> but not in <code>current</code> is <code>removed</code>. An item in both but with different serialised form is <code>changed</code>. The <code>changed</code> event carries both the current and previous state, enabling consumers to detect which specific fields changed.</p>
+<p>This separation of concerns — the poller handles timing, the diff engine handles comparison — means the diff algorithm can be improved independently of the polling strategy. If the API adds ETags or delta responses in the future, the poller changes but the diff engine stays the same.</p>
+<h3>The State Store</h3>
+<p>The state store persists the most recent known state for each item. The poller delivers fresh data; the state store remembers what was there before.</p>
+<p><strong>TTL support</strong>. A poller that stops for 30 seconds should not serve the last known state as if it were current. TTL-based expiry ensures that stale state is discarded. When <code>get()</code> is called for an expired entry, it returns <code>undefined</code> and deletes the entry. This makes the event bridge honest about data freshness.</p>
+<p><strong>In-memory by default</strong>. For most cinema use cases — a dashboard monitoring availability, a webhook dispatcher watching orders — an in-memory <code>Map</code> with TTL is sufficient. The <code>StateStore</code> interface is simple enough that a Redis-backed implementation could be swapped in for high-availability deployments, but the default should be zero-dependency.</p>
+<h3>The Typed Event Emitter</h3>
+<p>The event emitter dispatches typed events to registered listeners. The type system ensures that <code>emit(&#39;booking.confirmed&#39;, payload)</code> is checked at compile time — the payload must match the <code>BookingConfirmedPayload</code> shape, or TypeScript rejects the code.</p>
+<p><strong>Extends Node&#39;s EventEmitter</strong>. The cinema operations use case — server-side processes monitoring API state — is a Node.js domain. Extending the native <code>EventEmitter</code> means the event bridge works with existing Node.js patterns: <code>process.on(&#39;SIGTERM&#39;, () =&gt; watcher.stop())</code>, error propagation via <code>&#39;error&#39;</code> events, and listener count management via <code>getMaxListeners()</code>.</p>
+<p><strong>Generic type parameter</strong>. <code>TypedEventEmitter&lt;Events extends Record&lt;string, unknown&gt;&gt;</code> constrains the event names and payload types at compile time. Adding a new event to a watcher means adding it to the <code>Events</code> type — and TypeScript immediately flags any listener that expects the wrong payload shape.</p>
+<hr>
+<h2>The Watchers</h2>
+<p>Watchers are domain-specific compositions of the four components. Each watcher knows what to poll, what changes matter, and what events to emit.</p>
+<p><strong>BookingWatcher</strong>: Polls orders. Emits <code>booking.created</code> when a new order appears, <code>booking.confirmed</code> when an order transitions to confirmed status, <code>booking.cancelled</code> when an order is cancelled. The confirmed transition is the most operationally significant — it is the signal that a booking is finalised and the cinema can prepare (F&amp;B pre-orders, accessibility accommodations, staffing adjustments).</p>
+<p><strong>SessionWatcher</strong>: Polls sessions. Emits <code>session.added</code> when a new screening is scheduled, <code>session.updated</code> when session metadata changes (time, screen, pricing), <code>session.soldout</code> when available seats drop to zero. The sold-out event is a specific transition — it fires only when <code>isSoldOut</code> changes from <code>false</code> to <code>true</code>, not on every poll where <code>isSoldOut</code> is <code>true</code>.</p>
+<p><strong>FilmWatcher</strong>: Polls the film catalogue. Emits <code>film.added</code> when a new release appears, <code>film.removed</code> when a film leaves the catalogue, <code>film.updated</code> when metadata changes. Film catalogue changes are infrequent but high-impact — a new release triggers marketing automation, website updates, and social media scheduling.</p>
+<p><strong>InventoryWatcher</strong>: Polls F&amp;B menu items. Emits <code>inventory.low</code> when an item becomes unavailable, <code>inventory.restocked</code> when an item returns to available, <code>menu.updated</code> when item metadata changes (price, description, dietary flags). Concession operations depend on real-time availability awareness — running out of a popular item during peak hours requires immediate operational response.</p>
+<hr>
+<h2>Webhook Delivery</h2>
+<p>The event bridge detects changes. Webhook delivery externalises those changes.</p>
+<p><strong>HMAC-SHA256 signatures</strong>. Every webhook payload is signed with a per-endpoint shared secret. The signature is transmitted in the <code>X-Theatrical-Signature</code> header as <code>sha256=&lt;hex&gt;</code>. Recipients verify the signature using constant-time comparison to prevent timing attacks. This is the same pattern that Stripe and GitHub use for webhook verification.</p>
+<p><strong>Retry with exponential backoff</strong>. Failed deliveries are retried with exponentially increasing delays. The first retry waits 1 second, the second waits 2 seconds, the third waits 4 seconds. After the maximum retry count, the delivery is marked as failed with the error reason and attempt count.</p>
+<p><strong>Endpoint isolation via <code>Promise.allSettled</code></strong>. When an event is delivered to multiple endpoints, each delivery is independent. One endpoint returning <code>500</code> does not block delivery to other endpoints. This is critical for production reliability — a single misconfigured webhook URL should not prevent other systems from receiving notifications.</p>
+<hr>
+<h2>Why This Matters</h2>
+<p>Real-time awareness transforms cinema operations from reactive to proactive.</p>
+<p>Without events, a cinema manager checks the dashboard periodically and notices that the 7:15 PM showing is sold out. By then, the social media post could have gone out an hour earlier. The F&amp;B team could have prepared additional stock for the larger-than-expected crowd. The accessibility coordinator could have confirmed wheelchair companion seating arrangements.</p>
+<p>With events, the sold-out transition triggers an automated chain: the marketing system schedules a social post, the F&amp;B system adjusts prep quantities, the accessibility coordinator receives an email. The cinema manager does not need to check the dashboard — the systems that need to know are already informed.</p>
+<p>This is not futuristic. This is how every mature operations platform works. Payment processors send webhook notifications for successful charges. E-commerce platforms send events for order status changes. Communication platforms send events for message delivery. Cinema operations deserve the same real-time awareness.</p>
+<p>The event bridge built on top of a request-response API is a pattern, not a hack. It is the standard approach for adding real-time capabilities to platforms that were designed for request-response interactions. And when the platform eventually adds native event support — WebSocket connections, server-sent events, or a proper webhook system — the event bridge&#39;s consumer-facing API stays the same. The watcher interface (<code>watcher.on(&#39;session.soldout&#39;, callback)</code>) does not change. Only the poller&#39;s internal implementation switches from HTTP polling to a persistent connection.</p>
+<p>Building the event bridge now, on top of the existing API, means cinema developers get real-time capabilities immediately — and the migration to native events, when it comes, is transparent.</p>
 
-      <hr>
-
-      <h2>The Architecture</h2>
-      <p>An event bridge for cinema sits between the polling reality of the platform API and the event-driven expectations of modern applications. It has three layers:</p>
-      <ul>
-        <li><strong>Poll layer</strong> — Periodically queries the platform API for state changes. Smart diffing identifies what changed since the last poll. Adaptive polling intervals based on activity patterns (more frequent during peak booking hours).</li>
-        <li><strong>Event layer</strong> — Transforms state diffs into typed domain events. A seat that was available and is now occupied becomes a <code>SeatBooked</code> event. An order that transitions from pending to confirmed becomes an <code>OrderConfirmed</code> event. A session that drops below 10% availability becomes a <code>SessionNearSellout</code> event.</li>
-        <li><strong>Delivery layer</strong> — Routes events to subscribers. WebSocket connections for real-time UIs. Webhook delivery for server-to-server integrations. Message queue publication for event-sourced architectures.</li>
-      </ul>
-
-      <hr>
-
-      <h2>The Events That Matter</h2>
-      <p>Not all state changes are interesting. The event bridge must encode cinema domain knowledge about which changes matter:</p>
-      <ul>
-        <li><strong>Booking events</strong> — OrderCreated, OrderConfirmed, OrderCancelled, OrderRefunded. These drive concession preparation, staffing decisions, and revenue tracking.</li>
-        <li><strong>Availability events</strong> — SessionNearSellout (threshold-based), SeatReleased (cancellation freed seats), SessionSoldOut. These drive dynamic pricing and marketing automation.</li>
-        <li><strong>Catalogue events</strong> — FilmAdded, SessionScheduled, SessionCancelled. These drive content distribution and customer notification.</li>
-        <li><strong>Loyalty events</strong> — PointsEarned, TierUpgrade, RedemptionApplied. These drive personalisation engines and member engagement.</li>
-      </ul>
-      <p>Each event type carries the context needed for downstream processing — not just what changed, but enough domain context to act on the change without additional API calls.</p>
-
-      <hr>
-
-      <h2>Why This Is the Crown Jewel</h2>
-      <p>The event bridge is the most valuable component in the Theatrical ecosystem because it creates capability that does not exist in the platform today. The SDK makes existing APIs easier to use. The CLI makes development faster. The React components make UIs faster to build. But the event bridge creates new operational capability — real-time awareness that cinema operators currently lack.</p>
-      <p>This is where the Theatrical project goes from "nice developer tool" to "operational infrastructure that cinema businesses depend on."</p>
     </div>
-
     <nav class="essay-nav">
-      <a href="the-3.3-billion-api.html">&larr; The 3.3 Billion Dollar API</a>
-      <a href="/">&rarr; Back to Home</a>
+      <a href="/essays/">← All essays</a>
+      <a href="https://github.com/brunohart/theatrical" target="_blank" rel="noopener">GitHub ↗</a>
     </nav>
   </article>
+
   <script src="/js/cursor.js" defer></script>
   <script src="/js/grain.js" defer></script>
   <script src="/js/nav.js" defer></script>
