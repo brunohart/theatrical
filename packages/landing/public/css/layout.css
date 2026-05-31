@@ -1,0 +1,81 @@
+/* ─── Layout ─── */
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+.container--narrow { max-width: var(--container-narrow); }
+
+/* Vertical rhythm — each "act" of the reel */
+.act {
+  position: relative;
+  padding-block: clamp(var(--space-3xl), 9vw, var(--space-5xl));
+  z-index: var(--z-base);
+}
+.act + .act { padding-top: clamp(var(--space-2xl), 6vw, var(--space-4xl)); }
+
+.act__head { margin-bottom: var(--space-2xl); }
+.act__title {
+  font-size: clamp(var(--text-2xl), 5vw, var(--text-3xl));
+  margin-top: var(--space-md);
+  max-width: 18ch;
+}
+.act__lede {
+  margin-top: var(--space-md);
+  color: var(--grey);
+  font-size: var(--text-lg);
+  max-width: 56ch;
+}
+
+/* ─── Letterbox frame — fixed bars top & bottom ─── */
+.letterbox {
+  position: fixed;
+  left: 0; right: 0;
+  height: var(--letterbox);
+  background: var(--ink);
+  z-index: var(--z-frame);
+  pointer-events: none;
+}
+.letterbox--top { top: 0; }
+.letterbox--bottom { bottom: 0; }
+
+/* ─── Sprocket side rails ─── */
+.sprockets {
+  position: fixed;
+  top: 0; bottom: 0;
+  width: var(--sprocket-w);
+  z-index: var(--z-above);
+  pointer-events: none;
+  background: url("/textures/sprockets.svg") repeat-y center top;
+  background-size: var(--sprocket-w) auto;
+  opacity: 0.55;
+}
+.sprockets--left  { left: 0;  border-right: 1px solid rgba(26,26,26,0.18); }
+.sprockets--right { right: 0; border-left: 1px solid rgba(26,26,26,0.18); }
+
+@media (max-width: 720px) {
+  .sprockets { display: none; }
+}
+
+/* Keep content clear of the rails on wide screens */
+@media (min-width: 721px) {
+  body { padding-inline: var(--sprocket-w); }
+  .letterbox { left: var(--sprocket-w); right: var(--sprocket-w); }
+}
+
+/* ─── Grids ─── */
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-xl);
+}
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-xl);
+}
+@media (max-width: 860px) {
+  .grid-3 { grid-template-columns: 1fr; }
+  .grid-2 { grid-template-columns: 1fr; }
+}
