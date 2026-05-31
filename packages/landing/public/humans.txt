@@ -1,0 +1,10 @@
+/* TEAM */
+  Design & Engineering: designedbybruno
+  Site: https://designedbybruno.net
+  Location: Auckland, NZ
+
+/* SITE */
+  Project: Theatrical — a developer platform for cinema technology
+  Stack: hand-written HTML, modular CSS, GSAP, vanilla JS
+  Type: bespoke static · no framework
+  Aesthetic: cinematic patina · collage · film metaphor
