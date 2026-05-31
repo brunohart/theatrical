@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://theatrical.dev/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://theatrical.dev/essays/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://theatrical.dev/essays/cinema-platform-thesis</loc><priority>0.6</priority></url>
+  <url><loc>https://theatrical.dev/essays/what-stripe-did-for-payments</loc><priority>0.6</priority></url>
+  <url><loc>https://theatrical.dev/essays/cinema-as-protocol</loc><priority>0.6</priority></url>
+  <url><loc>https://theatrical.dev/essays/the-3.3-billion-api</loc><priority>0.6</priority></url>
+  <url><loc>https://theatrical.dev/essays/event-driven-cinema</loc><priority>0.6</priority></url>
+</urlset>
