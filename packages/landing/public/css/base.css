@@ -1,0 +1,64 @@
+/* ─── Base ─── */
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  overflow-x: hidden;
+  position: relative;
+  /* hand the cursor over to the custom reticle on fine pointers */
+}
+
+::selection { background: var(--orange); color: var(--white); }
+
+h1, h2, h3 { font-family: var(--font-display); letter-spacing: var(--tracking-tight); }
+
+p { max-width: 64ch; }
+
+code, pre { font-family: var(--font-mono); }
+
+strong { font-weight: 600; color: var(--ink); }
+
+:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+/* The mono "scene slate" label used across sections */
+.section-label {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--grey);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+.section-label::before {
+  content: "";
+  width: 22px;
+  height: 1px;
+  background: var(--orange);
+}
+
+/* ─── Fine-pointer: hide native cursor, custom reticle takes over ─── */
+@media (hover: hover) and (pointer: fine) {
+  html.has-cursor, html.has-cursor * { cursor: none; }
+}
+
+/* ─── Reduced motion: everything visible, no animation ─── */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  [data-reveal] { opacity: 1 !important; transform: none !important; }
+  .cursor, .grain { display: none !important; }
+}
