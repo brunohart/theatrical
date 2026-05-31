@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://theatrical.dev/sitemap.xml
