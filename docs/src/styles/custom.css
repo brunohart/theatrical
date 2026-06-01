@@ -1,4 +1,6 @@
-/* Theatrical docs — designedbybruno palette */
+/* Theatrical docs — designedbybruno palette + type */
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
 :root {
   --sl-color-accent-low: #F5F0E1;
   --sl-color-accent: #D4622B;
@@ -11,11 +13,24 @@
   --sl-color-gray-5: #1B2D4F;
   --sl-color-gray-6: #1A1A1A;
   --sl-color-black: #1A1A1A;
-  --sl-font-system: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  /* designedbybruno type system */
+  --sl-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --sl-font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
 }
 
 [data-theme='dark'] {
   --sl-color-accent-low: #2A1A10;
   --sl-color-accent: #D4622B;
   --sl-color-accent-high: #E8844A;
+}
+
+/* Space Grotesk for headings + the site title — poster energy, tight tracking */
+.site-title,
+h1, h2, h3,
+.sl-markdown-content h1,
+.sl-markdown-content h2,
+.sl-markdown-content h3 {
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
+  letter-spacing: -0.02em;
 }

@@ -18,31 +18,31 @@ export default defineConfig({
         {
           label: 'Getting Started',
           items: [
-            { label: 'Installation', slug: 'getting-started/installation' },
-            { label: 'Quickstart', slug: 'getting-started/quickstart' },
+            { label: 'Installation', link: '/getting-started/installation/' },
+            { label: 'Quickstart', link: '/getting-started/quickstart/' },
           ],
         },
         {
           label: 'Guides',
           items: [
-            { label: 'Authentication', slug: 'guides/authentication' },
-            { label: 'Error Handling', slug: 'guides/error-handling' },
-            { label: 'Theming & Branding', slug: 'guides/theming' },
+            { label: 'Authentication', link: '/guides/authentication/' },
+            { label: 'Error Handling', link: '/guides/error-handling/' },
+            { label: 'Theming & Branding', link: '/guides/theming/' },
           ],
         },
         {
           label: 'Templates',
           items: [
-            { label: 'Overview', slug: 'templates/overview' },
-            { label: 'React Ticketing', slug: 'templates/react-ticketing' },
+            { label: 'Overview', link: '/templates/overview/' },
+            { label: 'React Ticketing', link: '/templates/react-ticketing/' },
           ],
         },
         {
           label: 'Packages',
           items: [
-            { label: '@theatrical/sdk', slug: 'packages/sdk' },
-            { label: '@theatrical/cli', slug: 'packages/cli' },
-            { label: '@theatrical/react', slug: 'packages/react' },
+            { label: '@theatrical/sdk', link: '/packages/sdk/' },
+            { label: '@theatrical/cli', link: '/packages/cli/' },
+            { label: '@theatrical/react', link: '/packages/react/' },
           ],
         },
       ],
