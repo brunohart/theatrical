@@ -10,7 +10,7 @@ readme = "README.md"
 license = "MIT"
 requires-python = ">=3.10"
 authors = [
-    { name = "Bruno Hart" },
+    { name = "designedbybruno" },
 ]
 keywords = ["cinema", "api", "sdk", "ocapi", "ticketing"]
 classifiers = [
@@ -47,8 +47,21 @@ Documentation = "https://github.com/brunohart/theatrical/tree/main/packages/sdk-
 Changelog = "https://github.com/brunohart/theatrical/blob/main/packages/sdk-py/CHANGELOG.md"
 "Bug Tracker" = "https://github.com/brunohart/theatrical/issues"
 
+[tool.hatch.build]
+# Exclude iCloud sync-duplicate artifacts ("name 2.py") from published artifacts.
+exclude = [
+  "**/* 2.py",
+  "**/* 2.typed",
+  "**/* 2.pyi",
+]
+
 [tool.hatch.build.targets.wheel]
 packages = ["theatrical"]
+exclude = [
+  "**/* 2.py",
+  "**/* 2.typed",
+  "**/* 2.pyi",
+]
 
 [tool.mypy]
 strict = true
