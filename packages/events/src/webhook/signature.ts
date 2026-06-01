@@ -1,4 +1,4 @@
-import { createHmac } from 'node:crypto';
+import { createHmac, timingSafeEqual } from 'node:crypto';
 
 /**
  * Generate an HMAC-SHA256 signature for a webhook payload.
@@ -37,11 +37,20 @@ export function verifySignature(
   receivedSignature: string,
 ): boolean {
   const expected = computeSignature(payload, secret);
-  if (expected.length !== receivedSignature.length) return false;
 
-  // Constant-time comparison
+  // Accept either the raw hex digest or the "sha256=<hex>" header form.
+  const received = receivedSignature.startsWith('sha256=')
+    ? receivedSignature.slice('sha256='.length)
+    : receivedSignature;
+
   const a = Buffer.from(expected, 'hex');
-  const b = Buffer.from(receivedSignature, 'hex');
+  const b = Buffer.from(received, 'hex');
+
+  // Length check first: timingSafeEqual throws on unequal-length buffers.
+  // A mismatched length already means the signature is invalid, so this
+  // does not leak anything useful about the secret.
   if (a.length !== b.length) return false;
-  return a.every((byte, i) => byte === b[i]);
+
+  // Constant-time comparison — prevents timing attacks on signature verification.
+  return timingSafeEqual(a, b);
 }
