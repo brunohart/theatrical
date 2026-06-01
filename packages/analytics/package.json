@@ -10,25 +10,26 @@
     "data-warehouse",
     "query-builder"
   ],
-  "author": "Bruno Hart <hello@theatrical.dev>",
-  "license": "MIT",
+  "author": "designedbybruno <hello@theatrical.dev>",
+  "license": "BUSL-1.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/brunohart/theatrical",
     "directory": "packages/analytics"
   },
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs",
-      "types": "./dist/index.d.ts"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "LICENSE"
   ],
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs --dts",
@@ -46,11 +47,14 @@
     "vitest": "^1.6.1"
   },
   "peerDependencies": {
-    "@theatrical/sdk": "*"
+    "@theatrical/sdk": "workspace:^"
   },
   "peerDependenciesMeta": {
     "@theatrical/sdk": {
       "optional": true
     }
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

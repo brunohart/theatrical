@@ -13,7 +13,8 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "LICENSE"
   ],
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts --external react --external react-dom --tsconfig tsconfig.build.json",
@@ -26,7 +27,7 @@
     "react-dom": "^18.0.0"
   },
   "dependencies": {
-    "@theatrical/sdk": "file:../sdk"
+    "@theatrical/sdk": "workspace:^"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.0.0",
@@ -42,5 +43,9 @@
     "typescript": "^5.4.0",
     "vitest": "^1.6.1"
   },
-  "license": "BSL-1.1"
+  "license": "BUSL-1.1",
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": "designedbybruno <hello@theatrical.dev>"
 }

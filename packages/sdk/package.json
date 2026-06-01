@@ -3,19 +3,21 @@
   "version": "0.1.0",
   "description": "Type-safe TypeScript SDK for cinema management platform APIs",
   "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "LICENSE"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "tsup src/index.ts --format esm,cjs --dts",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
@@ -27,6 +29,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
+    "tsup": "^8.4.0",
     "typescript": "^5.4.0",
     "vitest": "^1.6.0"
   },
@@ -40,11 +43,14 @@
     "showtime",
     "booking"
   ],
-  "author": "Bruno Hart <hello@theatrical.dev>",
+  "author": "designedbybruno <hello@theatrical.dev>",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/brunohart/theatrical",
     "directory": "packages/sdk"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

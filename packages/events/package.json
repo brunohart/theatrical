@@ -10,21 +10,21 @@
     "vista",
     "ocapi"
   ],
-  "author": "Bruno Hart <hello@theatrical.dev>",
-  "license": "BSL-1.1",
+  "author": "designedbybruno <hello@theatrical.dev>",
+  "license": "BUSL-1.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/brunohart/theatrical",
     "directory": "packages/events"
   },
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs",
-      "types": "./dist/index.d.ts"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
     }
   },
   "files": [
@@ -38,12 +38,15 @@
     "dev": "tsup src/index.ts --format esm,cjs --dts --watch"
   },
   "dependencies": {
-    "@theatrical/sdk": "file:../sdk"
+    "@theatrical/sdk": "workspace:^"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
     "tsup": "^8.4.0",
     "typescript": "^5.9.3",
     "vitest": "^1.6.1"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
