@@ -13,8 +13,9 @@
 
 <p align="center">
   <a href="#quick-start">Quick Start</a> &middot;
+  <a href="https://docs.theatrical.dev">Docs</a> &middot;
+  <a href="https://theatrical-demo.vercel.app">Live Demo</a> &middot;
   <a href="ARCHITECTURE.md">Architecture</a> &middot;
-  <a href="VISION.md">Vision</a> &middot;
   <a href="#research">Research</a> &middot;
   <a href="https://theatrical.dev">Website</a>
 </p>
@@ -25,6 +26,12 @@
   <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.10+-D4622B.svg?style=flat-square&labelColor=1B2D4F" alt="Python" /></a>
   <a href="#testing"><img src="https://img.shields.io/badge/tests-1%2C048%20passing-D4622B.svg?style=flat-square&labelColor=1B2D4F" alt="Tests" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT%20%2F%20BSL%201.1-D4622B.svg?style=flat-square&labelColor=1B2D4F" alt="License" /></a>
+</p>
+
+<p align="center">
+  <a href="https://www.npmjs.com/package/@theatrical/sdk"><img src="https://img.shields.io/npm/v/@theatrical/sdk?style=flat-square&labelColor=1B2D4F&color=D4622B&label=npm%20%40theatrical%2Fsdk" alt="npm" /></a>
+  <a href="https://pypi.org/project/theatrical/"><img src="https://img.shields.io/pypi/v/theatrical?style=flat-square&labelColor=1B2D4F&color=D4622B&label=pypi%20theatrical" alt="PyPI" /></a>
+  <a href="https://www.nuget.org/packages/Theatrical.Sdk"><img src="https://img.shields.io/nuget/v/Theatrical.Sdk?style=flat-square&labelColor=1B2D4F&color=D4622B&label=nuget%20Theatrical.Sdk" alt="NuGet" /></a>
 </p>
 
 <br/>
