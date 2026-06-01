@@ -10,9 +10,9 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Authors>Bruno Hart</Authors>
+    <Authors>designedbybruno</Authors>
     <Company>Theatrical</Company>
-    <Copyright>Copyright (c) 2026 Bruno Hart</Copyright>
+    <Copyright>Copyright (c) 2026 designedbybruno</Copyright>
     <PackageProjectUrl>https://github.com/brunohart/theatrical</PackageProjectUrl>
     <RepositoryUrl>https://github.com/brunohart/theatrical</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
