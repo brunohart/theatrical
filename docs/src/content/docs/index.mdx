@@ -18,6 +18,7 @@ hero:
 ---
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
+import PkgCard from '../../components/PkgCard.astro';
 
 ## Six packages. One developer platform.
 
@@ -25,15 +26,25 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
   <Card title="@theatrical/sdk" icon="puzzle">
     The core TypeScript client — sessions, films, orders, loyalty, pricing, F&B. Full Zod runtime validation and typed error hierarchy.
   </Card>
-  <Card title="@theatrical/cli" icon="terminal">
+  <PkgCard title="@theatrical/cli" color="purple">
+    <svg slot="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <rect x="3" y="4" width="18" height="16" rx="2.5" />
+      <path d="M7 9.5l3 2.5-3 2.5" />
+      <path d="M13 15h4" />
+    </svg>
     Developer tools for your terminal — `theatrical init`, `theatrical codegen`, and `theatrical inspect` for live API exploration.
-  </Card>
+  </PkgCard>
   <Card title="@theatrical/react" icon="seti:react">
     Cinema-grade UI components: SeatMap, SessionPicker, OrderSummary, PaymentForm, and loyalty display widgets.
   </Card>
-  <Card title="@theatrical/analytics" icon="bar-chart">
+  <PkgCard title="@theatrical/analytics" color="red">
+    <svg slot="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <rect x="3.5" y="12" width="3.5" height="8" rx="1" />
+      <rect x="10.25" y="8" width="3.5" height="12" rx="1" />
+      <rect x="17" y="4" width="3.5" height="16" rx="1" />
+    </svg>
     A typed query builder for Vista Horizon — fluent metric/dimension API with CSV, JSON, and chart export utilities.
-  </Card>
+  </PkgCard>
   <Card title="@theatrical/events" icon="rss">
     A polling-based event bridge that detects state changes and emits typed booking, session, and inventory events in real time.
   </Card>

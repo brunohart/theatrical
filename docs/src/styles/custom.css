@@ -25,6 +25,53 @@
   --sl-color-accent-high: #E8844A;
 }
 
+/* Light theme — Starlight's default forces a blue accent + stark-white bg,
+   which loses the brand. Re-skin to the designedbybruno palette: warm bone
+   paper, cool navy ink, cinnabar accent. Cooler than default, still high
+   contrast and fully legible. */
+:root[data-theme='light'],
+[data-theme='light'] {
+  --sl-color-white: #1B2538;      /* darkest — headings / strong text (navy ink) */
+  --sl-color-gray-1: #25303F;
+  --sl-color-gray-2: #39455A;     /* body text — cool navy-grey */
+  --sl-color-gray-3: #5C6479;
+  --sl-color-gray-4: #8A8E99;
+  --sl-color-gray-5: #C6C0B2;     /* borders — warm */
+  --sl-color-gray-6: #E7E0D1;     /* inline code / hairline — bone */
+  --sl-color-gray-7: #EFE9DB;
+  --sl-color-black: #F4F0E6;      /* page bg base — bone */
+  --sl-color-bg: #F4F0E6;
+  --sl-color-accent-low: #F1DAC9;
+  --sl-color-accent: #C5531E;     /* cinnabar (deepened for contrast on bone) */
+  --sl-color-accent-high: #9C4019;
+  --sl-color-text-accent: var(--sl-color-accent);
+  --sl-color-hairline-light: #DFD7C6;
+  --sl-color-hairline-shade: #E4DDCD;
+  --sl-color-bg-nav: #EBE4D4;
+  --sl-color-bg-sidebar: #EFE9DB;
+  --sl-color-bg-inline-code: #E7E0D1;
+}
+
+/* Pagination (Previous / Next) — give the cards a visible edge + subtle lift so
+   they read as buttons against the background, in both themes. */
+.pagination-links a {
+  border-color: var(--sl-color-gray-5);
+  background-color: var(--sl-color-gray-7);
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+.pagination-links a:hover {
+  border-color: var(--sl-color-accent);
+  background-color: var(--sl-color-gray-6);
+}
+[data-theme='dark'] .pagination-links a {
+  border-color: #46536E;
+  background-color: rgba(27, 45, 79, 0.35);
+}
+[data-theme='dark'] .pagination-links a:hover {
+  border-color: var(--sl-color-accent);
+  background-color: rgba(27, 45, 79, 0.6);
+}
+
 /* Space Grotesk for headings + the site title — poster energy, tight tracking */
 .site-title,
 h1, h2, h3,

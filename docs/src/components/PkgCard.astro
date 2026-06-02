@@ -1,0 +1,61 @@
+---
+/**
+ * A package card that mirrors Starlight's <Card> exactly but accepts a custom
+ * inline SVG via the `icon` slot — Starlight's built-in icon set has no
+ * terminal or chart glyph, so @theatrical/cli and /analytics rendered empty.
+ * `color` matches the position in the CardGrid colour cycle.
+ */
+interface Props {
+  title: string;
+  color?: 'orange' | 'purple' | 'green' | 'red' | 'blue';
+}
+const { title, color = 'purple' } = Astro.props;
+---
+
+<article
+  class="card sl-flex"
+  style={`--sl-card-border: var(--sl-color-${color}); --sl-card-bg: var(--sl-color-${color}-low);`}
+>
+  <p class="title sl-flex">
+    <span class="icon sl-flex"><slot name="icon" /></span>
+    <span set:html={title} />
+  </p>
+  <div class="body"><slot /></div>
+</article>
+
+<style>
+  .card {
+    display: flex;
+    border: 1px solid var(--sl-color-gray-5);
+    background-color: var(--sl-color-black);
+    padding: clamp(1rem, calc(0.125rem + 3vw), 2.5rem);
+    flex-direction: column;
+    gap: clamp(0.5rem, calc(0.125rem + 1vw), 1rem);
+  }
+  .title {
+    display: flex;
+    font-weight: 600;
+    font-size: var(--sl-text-h4);
+    color: var(--sl-color-white);
+    line-height: var(--sl-line-height-headings);
+    gap: 1rem;
+    align-items: center;
+  }
+  .icon {
+    display: inline-flex;
+    border: 1px solid var(--sl-card-border);
+    background-color: var(--sl-card-bg);
+    padding: 0.2em;
+    border-radius: 0.25rem;
+    color: var(--sl-color-white);
+  }
+  .icon :global(svg) {
+    width: 1.333em;
+    height: 1.333em;
+    display: block;
+  }
+  .body {
+    margin: 0;
+    font-size: clamp(var(--sl-text-sm), calc(0.5rem + 1vw), var(--sl-text-body));
+  }
+</style>
