@@ -1,118 +1,68 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { OrderSummary, PaymentForm, MemberCard, LoyaltyBadge } from '@theatrical/react';
-import type { LoyaltyMemberData } from '@theatrical/react';
-import { useBooking } from '../context/BookingContext';
+import React from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { T } from '../theme';
+import { Poster } from '../components/Poster';
+
+interface Booked {
+  filmTitle: string; poster: string; screen: string; format: string; time: string; seats: string[]; price: number;
+}
 
 export function ConfirmationPage() {
-  const { client, state, dispatch } = useBooking();
   const navigate = useNavigate();
-  const [member, setMember] = useState<LoyaltyMemberData | null>(null);
-  const [paymentDone, setPaymentDone] = useState(false);
+  const state = (useLocation().state ?? null) as Booked | null;
+  if (!state) { navigate('/'); return null; }
 
-  useEffect(() => {
-    if (!state.order) { navigate('/'); return; }
-    client.loyalty.getMember('mem_hemi_walker_5528')
-      .then(m => {
-        setMember(m as unknown as LoyaltyMemberData);
-        dispatch({ type: 'SET_MEMBER', member: m });
-      })
-      .catch(() => { /* loyalty is optional */ });
-  }, [client, state.order, navigate, dispatch]);
-
-  const session = state.session;
-  const order = state.order;
-  if (!session || !order) return null;
-
-  const pricePerSeat = session.priceFrom ?? 19.50;
-  const subtotal = state.selectedSeatIds.length * pricePerSeat;
-  const tax = subtotal * 0.15;
-  const loyaltyDiscount = member ? subtotal * 0.1 : 0;
-  const total = subtotal + tax - loyaltyDiscount;
-
-  const lineItems = state.selectedSeatIds.map((seatId) => ({
-    id: seatId,
-    type: 'ticket' as const,
-    label: `${session.filmTitle} — Seat ${seatId}`,
-    quantity: 1,
-    unitPrice: pricePerSeat,
-    totalPrice: pricePerSeat,
-    currency: 'NZD',
-  }));
-
-  const priceBreakdown = {
-    subtotal,
-    tax,
-    discounts: member ? [{ label: 'Gold member 10% discount', amount: loyaltyDiscount }] : [],
-    loyaltyDiscount: member ? loyaltyDiscount : undefined,
-    total,
-    currency: 'NZD',
-  };
-
-  if (paymentDone) {
-    return (
-      <div style={{ maxWidth: 600, margin: '80px auto', padding: '0 24px', textAlign: 'center' }}>
-        <div style={{ fontSize: 64, marginBottom: 24 }}>🎬</div>
-        <h1 style={{ fontSize: 28, fontWeight: 700, color: '#f5f5f0', marginBottom: 12 }}>You're booked!</h1>
-        <p style={{ color: '#8A8578', marginBottom: 32 }}>
-          Check your email for your tickets. Enjoy {session.filmTitle}.
-        </p>
-        <button
-          onClick={() => { dispatch({ type: 'RESET' }); navigate('/'); }}
-          style={{
-            background: '#D4622B', color: '#F0EDE6', border: 'none', borderRadius: 8,
-            padding: '12px 28px', fontSize: 15, fontWeight: 600, cursor: 'pointer',
-          }}
-        >
-          Back to films
-        </button>
-      </div>
-    );
-  }
+  const total = state.seats.length * state.price;
+  const when = new Date(state.time).toLocaleString('en-NZ', { weekday: 'long', day: 'numeric', month: 'long', hour: 'numeric', minute: '2-digit', hour12: true });
 
   return (
-    <div style={{ maxWidth: 900, margin: '0 auto', padding: '48px 24px' }}>
-      <button
-        onClick={() => navigate('/booking')}
-        style={{ color: '#D4622B', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, marginBottom: 24 }}
-      >
-        ← Back to seats
-      </button>
+    <div style={{ maxWidth: 640, margin: '0 auto', padding: '56px clamp(20px,5vw,40px) 96px', textAlign: 'center' }}>
+      <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+        style={{ fontFamily: T.mono, fontSize: 12, letterSpacing: '0.24em', textTransform: 'uppercase', color: T.orange }}>
+        Booking confirmed
+      </motion.p>
+      <motion.h1 initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18, ...T.spring }}
+        style={{ fontFamily: T.display, fontSize: 'clamp(2rem,5vw,3rem)', fontWeight: 700, color: T.ink, letterSpacing: '-0.03em', margin: '12px 0 32px' }}>
+        Enjoy the show.
+      </motion.h1>
 
-      <h1 style={{ fontSize: 24, fontWeight: 700, color: '#f5f5f0', marginBottom: 32 }}>Review & Pay</h1>
-
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: 32, alignItems: 'start' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-          {member && (
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-                <h2 style={{ fontSize: 16, fontWeight: 600, color: '#f5f5f0' }}>Loyalty Member</h2>
-                <LoyaltyBadge member={{ tier: member.tier as any, points: member.points }} />
-              </div>
-              <MemberCard member={member} showBenefits={false} showProgress />
-            </div>
-          )}
-
-          <PaymentForm
-            amountMinor={Math.round(total * 100)}
-            currency="NZD"
-            onPaymentComplete={(result) => { if (result.success) setPaymentDone(true); }}
-          />
+      {/* the ticket */}
+      <motion.div initial={{ opacity: 0, y: 28, rotateX: 14 }} animate={{ opacity: 1, y: 0, rotateX: 0 }} transition={{ delay: 0.26, ...T.spring }}
+        style={{ display: 'flex', textAlign: 'left', background: T.surfaceRaised, border: `1px solid ${T.border}`, borderRadius: 16, overflow: 'hidden', boxShadow: '0 40px 80px -50px rgba(27,45,79,0.5)' }}>
+        <div style={{ width: 120, flexShrink: 0 }}>
+          <Poster title={state.filmTitle} posterUrl={state.poster} height={200} />
         </div>
+        {/* perforation */}
+        <div style={{ width: 2, background: `repeating-linear-gradient(180deg, ${T.border} 0 7px, transparent 7px 14px)` }} />
+        <div style={{ padding: '22px 24px', flex: 1 }}>
+          <div style={{ fontFamily: T.display, fontSize: 22, fontWeight: 700, color: T.ink, letterSpacing: '-0.02em' }}>{state.filmTitle}</div>
+          <Row label="When" value={when} />
+          <Row label="Where" value={`${state.screen} · ${state.format}`} />
+          <Row label="Seats" value={state.seats.join(', ')} />
+          <Row label="Total" value={`$${total.toFixed(2)} NZD`} />
+          <div style={{ marginTop: 16, fontFamily: T.mono, fontSize: 10, letterSpacing: '0.3em', color: T.muted }}>
+            ROXY · WELLINGTON · {state.seats.length} ADMIT
+          </div>
+        </div>
+      </motion.div>
 
-        <OrderSummary
-          lineItems={lineItems}
-          priceBreakdown={priceBreakdown}
-          sessionDetails={{
-            filmTitle: session.filmTitle,
-            cinema: 'Roxy Cinema, Wellington',
-            screenName: session.screenName,
-            startTime: session.startTime,
-            format: session.format,
-            seats: state.selectedSeatIds,
-          }}
-        />
-      </div>
+      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} style={{ color: T.muted, margin: '28px 0 24px', fontSize: 14 }}>
+        Tickets sent to your phone. The auditorium opens 20 minutes before the show.
+      </motion.p>
+      <button data-hot onClick={() => navigate('/')}
+        style={{ background: T.ink, color: T.bg, border: 'none', borderRadius: 10, padding: '12px 26px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: T.body }}>
+        Back to the board
+      </button>
+    </div>
+  );
+}
+
+function Row({ label, value }: { label: string; value: string }) {
+  return (
+    <div style={{ display: 'flex', gap: 12, marginTop: 12 }}>
+      <span style={{ fontFamily: T.mono, fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase', color: T.muted, width: 48, flexShrink: 0, paddingTop: 2 }}>{label}</span>
+      <span style={{ fontFamily: T.body, fontSize: 14, color: T.inkSoft }}>{value}</span>
     </div>
   );
 }

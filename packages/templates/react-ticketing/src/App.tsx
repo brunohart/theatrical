@@ -1,87 +1,47 @@
 /// <reference types="vite/client" />
 import React from 'react';
-import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom';
-import { TheatricalThemeProvider } from '@theatrical/react';
-import { TheatricalClient } from '@theatrical/sdk';
-import { BookingProvider, useBooking } from './context/BookingContext';
-import { Home } from './pages/Home';
-import { FilmPage } from './pages/Film';
-import { BookingPage } from './pages/Booking';
+import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
+import { T } from './theme';
+import { Chrome } from './components/Chrome';
+import { Timeboard } from './components/Timeboard';
+import { SeatsPage } from './pages/Seats';
 import { ConfirmationPage } from './pages/Confirmation';
-
-const isMock = import.meta.env.VITE_THEATRICAL_MOCK !== 'false';
-
-const client = isMock
-  ? TheatricalClient.createMock()
-  : TheatricalClient.create({
-      apiKey: import.meta.env.VITE_THEATRICAL_API_KEY ?? '',
-      environment: (import.meta.env.VITE_THEATRICAL_ENV ?? 'sandbox') as 'sandbox' | 'staging' | 'production',
-    });
+import { usePulse, type PulseState } from './lib/cinema';
 
 function Nav() {
-  const { state, dispatch } = useBooking();
+  const now = new Date().toLocaleTimeString('en-NZ', { hour: '2-digit', minute: '2-digit', hour12: false });
   return (
-    <nav
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '0 24px',
-        height: 56,
-        borderBottom: '1px solid #D6D0C4',
-        background: '#F0EDE6',
-        position: 'sticky',
-        top: 0,
-        zIndex: 10,
-      }}
-    >
-      <NavLink to="/" style={{ textDecoration: 'none' }}>
-        <span style={{ fontWeight: 700, fontSize: 18, color: '#1B2D4F', letterSpacing: '-0.03em', fontFamily: "'Space Grotesk', system-ui, sans-serif" }}>
-          theatrical
-        </span>
-        {isMock && (
-          <span style={{ marginLeft: 8, fontSize: 10, color: '#8A8578', background: '#EBE6DA', padding: '2px 6px', borderRadius: 4, fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.05em', textTransform: 'uppercase' as const }}>
-            MOCK
-          </span>
-        )}
-      </NavLink>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-        {state.film && (
-          <span style={{ fontSize: 13, color: '#1A1A1A' }}>{state.film.title}</span>
-        )}
-        {state.session && (
-          <span style={{ fontSize: 12, color: '#8A8578', fontFamily: "'JetBrains Mono', monospace" }}>
-            {new Date(state.session.startTime).toLocaleTimeString('en-NZ', {
-              hour: '2-digit', minute: '2-digit', hour12: true,
-            })}
-          </span>
-        )}
-        {state.selectedSeatIds.length > 0 && (
-          <span style={{ fontSize: 12, color: '#D4622B', fontWeight: 600 }}>
-            {state.selectedSeatIds.length} seat{state.selectedSeatIds.length !== 1 ? 's' : ''}
-          </span>
-        )}
-      </div>
+    <nav style={{ position: 'sticky', top: 'clamp(14px,2.4vw,26px)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 60, padding: '0 clamp(20px,5vw,40px)', borderBottom: `1px solid ${T.border}`, background: 'rgba(240,237,230,0.82)', backdropFilter: 'blur(10px)' }}>
+      <a href="/" data-hot style={{ display: 'inline-flex', alignItems: 'center', gap: 9, textDecoration: 'none' }}>
+        <span style={{ width: 16, height: 16, borderRadius: 4, background: T.navy, boxShadow: `inset 0 0 0 4px ${T.bg}, inset 0 0 0 8px ${T.orange}` }} />
+        <span style={{ fontFamily: T.display, fontWeight: 700, fontSize: 18, letterSpacing: '-0.03em', color: T.navy }}>theatrical</span>
+        <span style={{ fontFamily: T.mono, fontSize: 9, color: T.muted, background: T.surfaceRaised, border: `1px solid ${T.border}`, padding: '2px 6px', borderRadius: 4, letterSpacing: '0.1em' }}>LIVE DEMO</span>
+      </a>
+      <span style={{ fontFamily: T.mono, fontSize: 12, color: T.muted, display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+        <span style={{ width: 6, height: 6, borderRadius: '50%', background: T.green }} /> Roxy · Wellington · {now}
+      </span>
     </nav>
   );
 }
 
+function Home({ pulse }: { pulse: PulseState }) {
+  const navigate = useNavigate();
+  return <Timeboard pulse={pulse} onOpen={(id) => navigate(`/book/${id}`)} />;
+}
+
 export default function App() {
+  const pulse = usePulse();
   return (
-    <TheatricalThemeProvider>
-      <BrowserRouter>
-        <BookingProvider client={client}>
-          <div style={{ minHeight: '100vh', background: '#F0EDE6' }}>
-            <Nav />
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/film/:filmId" element={<FilmPage />} />
-              <Route path="/booking" element={<BookingPage />} />
-              <Route path="/confirmation" element={<ConfirmationPage />} />
-            </Routes>
-          </div>
-        </BookingProvider>
-      </BrowserRouter>
-    </TheatricalThemeProvider>
+    <BrowserRouter>
+      <div style={{ minHeight: '100vh', background: T.bg, color: T.ink, position: 'relative', paddingInline: 'clamp(0px,2vw,26px)' }}>
+        <Chrome />
+        <Nav />
+        <Routes>
+          <Route path="/" element={<Home pulse={pulse} />} />
+          <Route path="/book/:sessionId" element={<SeatsPage pulse={pulse} />} />
+          <Route path="/done" element={<ConfirmationPage />} />
+        </Routes>
+      </div>
+    </BrowserRouter>
   );
 }
