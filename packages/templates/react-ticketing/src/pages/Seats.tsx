@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { T } from '../theme';
 import { FILMS, SCREENS, type PulseState } from '../lib/cinema';
+import { useIsMobile } from '../lib/responsive';
 
 const ROWS = 'ABCDEFGHIJKLMN';
 type SeatState = 'available' | 'taken' | 'premium' | 'wheelchair' | 'companion';
@@ -16,6 +17,7 @@ function h(str: string) { let x = 2166136261; for (let i = 0; i < str.length; i+
 export function SeatsPage({ pulse }: { pulse: PulseState }) {
   const { sessionId } = useParams();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const session = pulse.sessions.find((s) => s.id === sessionId);
   const screen = session ? SCREENS[session.screenId] : undefined;
@@ -126,10 +128,18 @@ export function SeatsPage({ pulse }: { pulse: PulseState }) {
         </div>
       </div>
 
-      <div style={{ marginTop: 28, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 18 }}>
+      <div style={{
+        marginTop: 28, display: 'flex', justifyContent: isMobile ? 'space-between' : 'flex-end', alignItems: 'center', gap: 18,
+        ...(isMobile ? ({
+          position: 'sticky', bottom: 'calc(clamp(14px,2.4vw,26px) + 12px)', zIndex: 60,
+          background: 'rgba(240,237,230,0.94)', backdropFilter: 'blur(8px)',
+          border: `1px solid ${T.border}`, borderRadius: 12, padding: '10px 14px',
+          boxShadow: '0 18px 40px -26px rgba(27,45,79,0.5)',
+        } as React.CSSProperties) : {}),
+      }}>
         <span style={{ color: T.muted, fontSize: 14 }}>{selected.size} seat{selected.size !== 1 ? 's' : ''} · ${(selected.size * session.priceFrom).toFixed(2)}</span>
         <motion.button data-hot whileHover={{ scale: selected.size ? 1.03 : 1 }} whileTap={{ scale: 0.97 }} onClick={confirm} disabled={!selected.size}
-          style={{ background: selected.size ? T.orange : T.border, color: selected.size ? T.white : T.muted, border: 'none', borderRadius: 10, padding: '13px 30px', fontSize: 15, fontWeight: 600, fontFamily: T.body, cursor: selected.size ? 'pointer' : 'not-allowed' }}>
+          style={{ background: selected.size ? T.orange : T.border, color: selected.size ? T.white : T.muted, border: 'none', borderRadius: 10, padding: isMobile ? '12px 22px' : '13px 30px', fontSize: 15, fontWeight: 600, fontFamily: T.body, cursor: selected.size ? 'pointer' : 'not-allowed', flexShrink: 0 }}>
           Confirm seats →
         </motion.button>
       </div>

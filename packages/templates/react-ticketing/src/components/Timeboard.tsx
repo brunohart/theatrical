@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { T } from '../theme';
 import { FILMS, SCREENS, type LiveSession, type PulseState } from '../lib/cinema';
 import { Poster } from './Poster';
+import { useIsMobile } from '../lib/responsive';
 
 const film = (id: string) => FILMS.find((f) => f.id === id)!;
 const fmtTime = (iso: string) => new Date(iso).toLocaleTimeString('en-NZ', { hour: 'numeric', minute: '2-digit', hour12: true });
@@ -40,10 +41,58 @@ export function Timeboard({ pulse, onOpen }: { pulse: PulseState; onOpen: (sessi
 }
 
 function SessionRow({ s, onOpen }: { s: LiveSession; onOpen: (id: string) => void }) {
+  const isMobile = useIsMobile();
   const f = film(s.filmId);
   const screen = SCREENS[s.screenId]!;
   const st = status(s);
   const pct = Math.min(100, (s.sold / s.capacity) * 100);
+
+  const bar = (
+    <div style={{ height: 6, background: T.border, borderRadius: 99, overflow: 'hidden' }}>
+      <motion.div animate={{ width: `${pct}%` }} transition={{ duration: 0.6, ease: T.easeOut }}
+        style={{ height: '100%', borderRadius: 99, background: s.soldOut ? T.red : `linear-gradient(90deg, ${T.orange}, ${T.gold})` }} />
+    </div>
+  );
+
+  if (isMobile) {
+    return (
+      <motion.button
+        data-hot
+        onClick={() => !s.soldOut && onOpen(s.id)}
+        whileTap={s.soldOut ? {} : { scale: 0.99 }}
+        transition={T.spring}
+        style={{
+          display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'stretch', textAlign: 'left',
+          width: '100%', padding: 14, border: `1px solid ${T.border}`, borderRadius: 14,
+          background: s.soldOut ? T.surface : T.surfaceRaised, cursor: s.soldOut ? 'default' : 'pointer',
+          opacity: s.soldOut ? 0.62 : 1,
+        }}
+      >
+        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+          <div style={{ width: 44, height: 62, borderRadius: 6, overflow: 'hidden', border: `1px solid ${T.border}`, flexShrink: 0 }}>
+            <Poster film={f} height={62} />
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontFamily: T.display, fontSize: 16, fontWeight: 600, color: T.ink, letterSpacing: '-0.01em', lineHeight: 1.2 }}>{f.title}</div>
+            <div style={{ marginTop: 3, fontFamily: T.mono, fontSize: 10.5, color: T.muted, letterSpacing: '0.06em' }}>{screen.name.toUpperCase()} · {screen.format.toUpperCase()}</div>
+          </div>
+          <div style={{ textAlign: 'right', flexShrink: 0 }}>
+            <div style={{ fontFamily: T.mono, fontSize: 16, fontWeight: 500, color: T.ink, letterSpacing: '-0.02em', fontVariantNumeric: 'tabular-nums' }}>{fmtTime(s.startTime)}</div>
+            <div style={{ marginTop: 3, fontFamily: T.mono, fontSize: 10, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: st.color }}>{st.label}</div>
+          </div>
+        </div>
+        {bar}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+          <span style={{ fontFamily: T.mono, fontSize: 10.5, color: T.muted, fontVariantNumeric: 'tabular-nums' }}>{Math.floor(s.sold)} / {s.capacity} seats</span>
+          <span style={{ display: 'inline-flex', alignItems: 'baseline', gap: 10 }}>
+            <span style={{ fontFamily: T.body, fontSize: 13, color: T.muted }}>from ${s.priceFrom.toFixed(2)}</span>
+            {!s.soldOut && <span style={{ fontSize: 13, color: T.orange, fontWeight: 600 }}>Book →</span>}
+          </span>
+        </div>
+      </motion.button>
+    );
+  }
+
   return (
     <motion.button
       data-hot
