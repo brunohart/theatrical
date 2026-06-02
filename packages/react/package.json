@@ -1,6 +1,6 @@
 {
   "name": "@theatrical/react",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Cinema-grade React component library for theatrical booking interfaces",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
