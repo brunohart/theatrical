@@ -1,6 +1,22 @@
 import React from 'react';
 import type { Film } from '../lib/cinema';
 
+/* Poster text scales to the poster's OWN width (container queries), so a long
+   title like "The Mandalorian & Grogu" fits a 120px ticket stub and a full
+   key-art poster alike — never clipped. Tagline/genres only show once the
+   poster is wide enough to carry them. Injected once. */
+const POSTER_CSS = `
+.thp{container-type:inline-size;}
+.thp-meta{position:absolute;left:clamp(10px,5cqw,18px);right:clamp(10px,5cqw,18px);bottom:clamp(12px,5cqw,18px);}
+.thp-title{font-family:'Space Grotesk',sans-serif;font-weight:700;line-height:1.02;letter-spacing:-0.02em;color:#F0EDE6;text-shadow:0 2px 18px rgba(0,0,0,0.45);overflow-wrap:break-word;font-size:clamp(13px,10.5cqw,30px);}
+.thp-tag{display:none;font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(255,255,255,0.8);margin-bottom:7px;text-shadow:0 1px 8px rgba(0,0,0,0.7);}
+.thp-genre{display:none;margin-top:9px;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.14em;color:rgba(255,255,255,0.6);}
+@container (min-width:190px){.thp-tag{display:block;}.thp-genre{display:block;}}
+`;
+if (typeof document !== 'undefined' && !document.getElementById('thp-style')) {
+  const s = document.createElement('style'); s.id = 'thp-style'; s.textContent = POSTER_CSS; document.head.appendChild(s);
+}
+
 /**
  * Bespoke film-poster artwork. No external images — every poster is composed
  * from the film's own palette + a motif, in the Roxy house style (think
@@ -10,10 +26,9 @@ import type { Film } from '../lib/cinema';
 export function Poster({ film, height = 300 }: { film: Film; height?: number }) {
   const compact = height < 130;
   const ground = `linear-gradient(155deg, ${dark(film.accent, 0.32)} 0%, ${film.accent} 56%, ${dark(film.accent, 0.58)} 100%)`;
-  const titleSize = Math.max(15, Math.min(30, height * 0.13));
 
   return (
-    <div style={{ height, position: 'relative', overflow: 'hidden', background: ground }}>
+    <div className="thp" style={{ height, position: 'relative', overflow: 'hidden', background: ground }}>
       {motif(film.motif, film.accent2, compact)}
       {/* film-grain / vignette */}
       <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(130% 100% at 50% -10%, rgba(255,255,255,0.10), transparent 45%), radial-gradient(120% 120% at 50% 120%, rgba(0,0,0,0.55), transparent 55%)' }} />
@@ -25,10 +40,10 @@ export function Poster({ film, height = 300 }: { film: Film; height?: number }) 
             <span style={badge()}>{film.classification}</span>
             <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, letterSpacing: '0.18em', color: 'rgba(255,255,255,0.72)' }}>{film.year}</span>
           </div>
-          <div style={{ position: 'absolute', left: 18, right: 18, bottom: 18 }}>
-            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9.5, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.78)', marginBottom: 7, textShadow: '0 1px 8px rgba(0,0,0,0.7)' }}>{film.tagline}</div>
-            <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: titleSize, lineHeight: 0.98, letterSpacing: '-0.02em', color: '#F0EDE6', textShadow: '0 2px 18px rgba(0,0,0,0.45)' }}>{film.title}</div>
-            <div style={{ marginTop: 9, fontFamily: "'JetBrains Mono', monospace", fontSize: 9, letterSpacing: '0.14em', color: 'rgba(255,255,255,0.58)' }}>{film.genres.join(' · ').toUpperCase()}</div>
+          <div className="thp-meta">
+            <div className="thp-tag">{film.tagline}</div>
+            <div className="thp-title">{film.title}</div>
+            <div className="thp-genre">{film.genres.join(' · ').toUpperCase()}</div>
           </div>
         </>
       )}

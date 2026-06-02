@@ -24,7 +24,11 @@ function Nav() {
   return (
     <nav style={{ position: 'sticky', top: 'clamp(14px,2.4vw,26px)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 60, padding: '0 clamp(20px,5vw,40px)', borderBottom: `1px solid ${T.border}`, background: 'rgba(240,237,230,0.82)', backdropFilter: 'blur(10px)' }}>
       <a href="/" data-hot style={{ display: 'inline-flex', alignItems: 'center', gap: 9, textDecoration: 'none' }}>
-        <span style={{ width: 16, height: 16, borderRadius: 4, background: T.navy, boxShadow: `inset 0 0 0 4px ${T.bg}, inset 0 0 0 8px ${T.orange}` }} />
+        <svg width="20" height="20" viewBox="0 0 32 32" style={{ display: 'block', flexShrink: 0 }} aria-hidden="true">
+          <rect width="32" height="32" rx="6" fill={T.navy} />
+          <rect x="8" y="8" width="16" height="16" rx="3" fill={T.orange} />
+          <rect x="13" y="13" width="6" height="6" rx="1.5" fill={T.bg} />
+        </svg>
         <span style={{ fontFamily: T.display, fontWeight: 700, fontSize: 18, letterSpacing: '-0.03em', color: T.navy }}>theatrical</span>
         <span style={{ fontFamily: T.mono, fontSize: 9, color: T.muted, background: T.surfaceRaised, border: `1px solid ${T.border}`, padding: '2px 6px', borderRadius: 4, letterSpacing: '0.1em' }}>LIVE DEMO</span>
       </a>
@@ -154,7 +158,7 @@ function TourCaption({ tour, stop }: { tour: number | null; stop: () => void }) 
     <AnimatePresence>
       {tour !== null && tour < TOUR.length && (
         <motion.div key={tour} initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 24 }} transition={T.spring}
-          style={{ position: 'fixed', left: '50%', bottom: 'clamp(26px,4vw,44px)', transform: 'translateX(-50%)', zIndex: 500, width: 'min(640px, calc(100vw - 48px))' }}>
+          style={{ position: 'fixed', left: 0, right: 0, marginInline: 'auto', bottom: 'clamp(26px,4vw,44px)', zIndex: 500, width: 'min(640px, calc(100vw - 32px))' }}>
           <div style={{ background: T.navy, borderRadius: 14, padding: '16px 18px', boxShadow: '0 30px 60px -30px rgba(0,0,0,0.6)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <span style={{ fontFamily: T.mono, fontSize: 10, letterSpacing: '0.16em', color: T.orangeSoft, flexShrink: 0 }}>TOUR {tour + 1}/{TOUR.length}</span>

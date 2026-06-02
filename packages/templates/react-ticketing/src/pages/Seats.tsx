@@ -47,7 +47,18 @@ export function SeatsPage({ pulse }: { pulse: PulseState }) {
   const scr = screen;
   const f = FILMS.find((x) => x.id === ses.filmId)!;
   const soldRatio = ses.sold / ses.capacity;
-  const seatSize = scr.format === 'Gold Class' ? 30 : scr.layout.some((n) => n >= 22) ? 18 : 22;
+  // Seat sizing: scale to fit the viewport width on mobile so the auditorium
+  // never forces a horizontal scroll; keep the comfortable desktop sizes.
+  const gap = isMobile ? 4 : 6;
+  const aisleW = isMobile ? 10 : 14;
+  let seatSize = scr.format === 'Gold Class' ? 30 : scr.layout.some((n) => n >= 22) ? 18 : 22;
+  if (isMobile && typeof window !== 'undefined') {
+    const maxCols = Math.max(...scr.layout);
+    const aisles = scr.aisleAfter?.length ?? 0;
+    const avail = window.innerWidth - 92; // page + card padding + row-label clearance
+    const fit = Math.floor((avail - (maxCols - 1) * gap - aisles * aisleW) / maxCols);
+    seatSize = Math.max(8, Math.min(seatSize, fit));
+  }
 
   function toggle(id: string, taken: boolean) {
     if (taken) return;
@@ -77,11 +88,11 @@ export function SeatsPage({ pulse }: { pulse: PulseState }) {
           <div style={{ fontFamily: T.mono, fontSize: 10, letterSpacing: '0.4em', color: T.muted, marginTop: 6 }}>SCREEN</div>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap }}>
           {screen.layout.map((count, ri) => {
             const rowL = ROWS[ri];
             return (
-              <div key={rowL} style={{ display: 'flex', alignItems: 'center', gap: 6, position: 'relative' }}>
+              <div key={rowL} style={{ display: 'flex', alignItems: 'center', gap, position: 'relative' }}>
                 <span style={{ position: 'absolute', left: -22, fontFamily: T.mono, fontSize: 10, color: T.muted }}>{rowL}</span>
                 {Array.from({ length: count }, (_, i) => {
                   const c = i + 1;
@@ -90,7 +101,7 @@ export function SeatsPage({ pulse }: { pulse: PulseState }) {
                   const taken = base !== 'wheelchair' && base !== 'companion' && h(`${screen.id}-${id}`) < soldRatio;
                   const isSel = selected.has(id);
                   const state: SeatState | 'selected' = isSel ? 'selected' : taken ? 'taken' : base;
-                  const aisle = screen.aisleAfter?.includes(c) ? 14 : 0;
+                  const aisle = screen.aisleAfter?.includes(c) ? aisleW : 0;
                   return (
                     <React.Fragment key={id}>
                       <motion.button
