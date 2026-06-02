@@ -1,9 +1,47 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { SessionPicker } from '@theatrical/react';
 import type { SessionCardData } from '@theatrical/react';
 import { useBooking } from '../context/BookingContext';
 import type { Session } from '@theatrical/sdk';
+import { Poster } from '../components/Poster';
+
+const INK = '#1A1A1A';
+const MUTED = '#8A8578';
+const ORANGE = '#D4622B';
+
+const SCREENS = [
+  { screenName: 'Screen 1', format: 'Standard', priceFrom: 18.5, hour: 12, minute: 30 },
+  { screenName: 'Screen 4 — Gold Class', format: 'Gold Class', priceFrom: 45.0, hour: 15, minute: 45 },
+  { screenName: 'Screen 2 — IMAX', format: 'IMAX', priceFrom: 28.0, hour: 18, minute: 30 },
+  { screenName: 'Screen 1', format: 'Standard', priceFrom: 18.5, hour: 20, minute: 45 },
+];
+
+/** Curated, deterministic sessions for one film on one date. */
+function buildSessions(
+  film: { id: string; title: string; runtime?: number },
+  dateStr: string,
+): Session[] {
+  const runtime = film.runtime ?? 120;
+  return SCREENS.map((s, i) => {
+    const start = new Date(`${dateStr}T00:00:00`);
+    start.setHours(s.hour, s.minute, 0, 0);
+    const end = new Date(start.getTime() + (runtime + 20) * 60 * 1000);
+    const avail = [84, 8, 36, 121][i] ?? 50;
+    return {
+      id: `${film.id}-${dateStr}-${i}`,
+      filmId: film.id,
+      filmTitle: film.title,
+      startTime: start.toISOString(),
+      endTime: end.toISOString(),
+      screenName: s.screenName,
+      format: s.format,
+      priceFrom: s.priceFrom,
+      currency: 'NZD',
+      seatsAvailable: avail,
+    } as unknown as Session;
+  });
+}
 
 function toCardData(s: Session): SessionCardData {
   return {
@@ -14,26 +52,22 @@ function toCardData(s: Session): SessionCardData {
     screenName: s.screenName,
     format: s.format,
     priceFrom: s.priceFrom,
-    availableSeats: s.seatsAvailable,
+    currency: (s as unknown as { currency?: string }).currency,
+    availableSeats: (s as unknown as { seatsAvailable?: number }).seatsAvailable,
   };
 }
 
 export function FilmPage() {
-  const { filmId } = useParams<{ filmId: string }>();
-  const { client, state, dispatch } = useBooking();
+  const { state, dispatch } = useBooking();
   const navigate = useNavigate();
-  const [sessions, setSessions] = useState<Session[]>([]);
-  const [loading, setLoading] = useState(true);
+  const today = new Date().toISOString().slice(0, 10);
+  const [selectedDate, setSelectedDate] = useState(today);
 
   const film = state.film;
-
-  useEffect(() => {
-    if (!filmId) return;
-    client.sessions.list({ filmId, siteId: 'site_roxy_wellington' })
-      .then(r => setSessions(r.sessions))
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, [client, filmId]);
+  const sessions = useMemo(
+    () => (film ? buildSessions(film as never, selectedDate) : []),
+    [film, selectedDate],
+  );
 
   function handleSessionSelect(sessionId: string) {
     const session = sessions.find(s => s.id === sessionId);
@@ -42,53 +76,51 @@ export function FilmPage() {
     navigate('/booking');
   }
 
+  if (!film) {
+    navigate('/');
+    return null;
+  }
+
   return (
     <div style={{ maxWidth: 900, margin: '0 auto', padding: '48px 24px' }}>
       <button
         onClick={() => navigate('/')}
-        style={{ color: '#D4622B', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, marginBottom: 24 }}
+        style={{ color: ORANGE, background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, marginBottom: 28 }}
       >
         ← Back to films
       </button>
 
-      {film && (
-        <div style={{ display: 'flex', gap: 32, marginBottom: 40 }}>
-          <div style={{ flexShrink: 0, width: 120, height: 180, background: '#16161a', borderRadius: 8, overflow: 'hidden' }}>
-            {film.posterUrl && (
-              <img src={film.posterUrl} alt={film.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            )}
-          </div>
-          <div>
-            <h1 style={{ fontSize: 28, fontWeight: 700, color: '#f5f5f0', letterSpacing: '-0.02em' }}>
-              {film.title}
-            </h1>
-            <div style={{ display: 'flex', gap: 12, marginTop: 8, fontSize: 13, color: '#8A8578' }}>
-              <span>{film.rating.classification}</span>
-              <span>·</span>
-              <span>{film.runtime} min</span>
-              <span>·</span>
-              <span>{film.genres.slice(0, 2).join(', ')}</span>
-            </div>
-            <p style={{ marginTop: 16, color: '#b0b0aa', lineHeight: 1.6, fontSize: 15 }}>
-              {film.synopsis}
-            </p>
-          </div>
+      <div style={{ display: 'flex', gap: 32, marginBottom: 44, flexWrap: 'wrap' }}>
+        <div style={{ flexShrink: 0, width: 150, borderRadius: 12, overflow: 'hidden', border: '1px solid #D6D0C4' }}>
+          <Poster title={film.title} posterUrl={film.posterUrl} height={222} classification={film.rating?.classification} />
         </div>
-      )}
+        <div style={{ flex: 1, minWidth: 260 }}>
+          <h1 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', fontWeight: 700, color: INK, letterSpacing: '-0.02em', lineHeight: 1.05 }}>
+            {film.title}
+          </h1>
+          <div style={{ display: 'flex', gap: 12, marginTop: 12, fontSize: 13, color: MUTED, fontFamily: "'JetBrains Mono', monospace" }}>
+            <span>{film.rating?.classification}</span><span>·</span>
+            <span>{film.runtime} min</span><span>·</span>
+            <span>{film.genres?.slice(0, 2).join(', ')}</span>
+          </div>
+          <p style={{ marginTop: 18, color: '#4A463E', lineHeight: 1.65, fontSize: 16, maxWidth: '52ch' }}>
+            {film.synopsis}
+          </p>
+        </div>
+      </div>
 
-      <h2 style={{ fontSize: 20, fontWeight: 600, color: '#f5f5f0', marginBottom: 20 }}>Choose a session</h2>
+      <h2 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 22, fontWeight: 600, color: INK, marginBottom: 18, letterSpacing: '-0.01em' }}>
+        Choose a session
+      </h2>
 
-      {loading ? (
-        <p style={{ color: '#8A8578' }}>Loading sessions…</p>
-      ) : sessions.length === 0 ? (
-        <p style={{ color: '#8A8578' }}>No sessions available.</p>
-      ) : (
-        <SessionPicker
-          sessions={sessions.map(toCardData)}
-          selectedSessionId={state.session?.id}
-          onSessionSelect={handleSessionSelect}
-        />
-      )}
+      <SessionPicker
+        sessions={sessions.map(toCardData)}
+        selectedSessionId={state.session?.id}
+        onSessionSelect={handleSessionSelect}
+        selectedDate={selectedDate}
+        onDateChange={setSelectedDate}
+        groupBy="time"
+      />
     </div>
   );
 }
