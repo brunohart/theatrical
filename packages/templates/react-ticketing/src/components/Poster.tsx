@@ -36,6 +36,8 @@ export function Poster({
   const seed = Array.from(title).reduce((a, c) => a + c.charCodeAt(0), 0);
   const angle = 120 + (seed % 80);
 
+  const compact = height < 130;
+  const monogram = title.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join('');
   return (
     <div
       style={{
@@ -44,22 +46,21 @@ export function Poster({
         overflow: 'hidden',
         background: `linear-gradient(${angle}deg, #1B2D4F 0%, #14213D 55%, #1A1A1A 100%)`,
         display: 'flex',
-        alignItems: 'flex-end',
+        alignItems: compact ? 'center' : 'flex-end',
+        justifyContent: compact ? 'center' : 'flex-start',
       }}
     >
-      {/* projector wash */}
       <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(120% 80% at 70% 10%, rgba(212,98,43,0.28), transparent 60%)' }} />
-      {/* sprocket edge */}
-      <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, width: 14, background: 'repeating-linear-gradient(180deg, transparent 0 10px, rgba(240,237,230,0.10) 10px 20px)' }} />
-      <div style={{ position: 'relative', padding: '22px 22px 24px', width: '100%' }}>
-        <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, letterSpacing: '0.25em', color: 'rgba(240,237,230,0.55)', textTransform: 'uppercase', marginBottom: 8 }}>
-          Now showing
+      {!compact && <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, width: 14, background: 'repeating-linear-gradient(180deg, transparent 0 10px, rgba(240,237,230,0.10) 10px 20px)' }} />}
+      {compact ? (
+        <span style={{ position: 'relative', fontFamily: "'Space Grotesk', sans-serif", fontSize: Math.min(28, height * 0.34), fontWeight: 700, color: 'rgba(240,237,230,0.92)', letterSpacing: '-0.02em' }}>{monogram}</span>
+      ) : (
+        <div style={{ position: 'relative', padding: '22px 22px 24px', width: '100%' }}>
+          <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, letterSpacing: '0.25em', color: 'rgba(240,237,230,0.55)', textTransform: 'uppercase', marginBottom: 8 }}>Now showing</div>
+          <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 26, fontWeight: 700, color: '#F0EDE6', letterSpacing: '-0.02em', lineHeight: 1.05 }}>{title}</div>
         </div>
-        <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 26, fontWeight: 700, color: '#F0EDE6', letterSpacing: '-0.02em', lineHeight: 1.05 }}>
-          {title}
-        </div>
-      </div>
-      {classification && <ClassBadge value={classification} />}
+      )}
+      {classification && !compact && <ClassBadge value={classification} />}
     </div>
   );
 }

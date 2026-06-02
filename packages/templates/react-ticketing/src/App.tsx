@@ -1,7 +1,7 @@
 /// <reference types="vite/client" />
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { T } from './theme';
 import { Chrome } from './components/Chrome';
 import { Timeboard } from './components/Timeboard';
@@ -9,7 +9,7 @@ import { MissionControl } from './components/MissionControl';
 import { CodeSeam } from './components/CodeSeam';
 import { SeatsPage } from './pages/Seats';
 import { ConfirmationPage } from './pages/Confirmation';
-import { usePulse, type PulseState } from './lib/cinema';
+import { usePulse, filmOf, SCREENS, type PulseState } from './lib/cinema';
 
 type Lens = 'audience' | 'operator' | 'developer';
 const LENSES: { id: Lens; label: string; desc: string }[] = [
@@ -34,26 +34,30 @@ function Nav() {
   );
 }
 
-function LensBar({ lens, setLens }: { lens: Lens; setLens: (l: Lens) => void }) {
+function LensBar({ lens, setLens, onTour }: { lens: Lens; setLens: (l: Lens) => void; onTour: () => void }) {
   const navigate = useNavigate();
   const active = LENSES.find((l) => l.id === lens)!;
   return (
     <div style={{ position: 'sticky', top: 'calc(60px + clamp(14px,2.4vw,26px))', zIndex: 90, background: 'rgba(240,237,230,0.92)', backdropFilter: 'blur(8px)', borderBottom: `1px solid ${T.border}` }}>
-      <div style={{ maxWidth: 1180, margin: '0 auto', padding: '12px clamp(20px,5vw,40px)', display: 'flex', alignItems: 'center', gap: 18, flexWrap: 'wrap' }}>
+      <div style={{ maxWidth: 1180, margin: '0 auto', padding: '12px clamp(20px,5vw,40px)', display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
         <span style={{ fontFamily: T.mono, fontSize: 11, color: T.muted, letterSpacing: '0.06em' }}>One cinema, live · seen as</span>
         <div style={{ display: 'inline-flex', background: T.surface, border: `1px solid ${T.border}`, borderRadius: 99, padding: 3 }}>
           {LENSES.map((l) => {
             const on = l.id === lens;
             return (
               <button key={l.id} data-hot onClick={() => { setLens(l.id); navigate('/'); }}
-                style={{ position: 'relative', border: 'none', background: 'none', cursor: 'pointer', padding: '7px 16px', borderRadius: 99, fontFamily: T.body, fontSize: 13.5, fontWeight: 600, color: on ? T.white : T.inkSoft }}>
-                {on && <motion.span layoutId="lenspill" transition={T.spring} style={{ position: 'absolute', inset: 0, background: T.orange, borderRadius: 99, zIndex: -1 }} />}
-                {l.label}
+                style={{ position: 'relative', border: 'none', background: 'none', cursor: 'pointer', padding: '7px 16px', borderRadius: 99, fontFamily: T.body, fontSize: 13.5, fontWeight: 600 }}>
+                {on && <motion.span layoutId="lenspill" transition={T.spring} style={{ position: 'absolute', inset: 0, background: T.orange, borderRadius: 99, zIndex: 0 }} />}
+                <span style={{ position: 'relative', zIndex: 1, color: on ? T.white : T.inkSoft }}>{l.label}</span>
               </button>
             );
           })}
         </div>
-        <span style={{ fontSize: 13, color: T.muted, flex: 1, minWidth: 200 }}>{active.desc}</span>
+        <span style={{ fontSize: 13, color: T.muted, flex: 1, minWidth: 180 }}>{active.desc}</span>
+        <button data-hot onClick={onTour}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 7, border: `1px solid ${T.navy}`, background: 'none', color: T.navy, cursor: 'pointer', padding: '7px 14px', borderRadius: 99, fontFamily: T.body, fontSize: 13, fontWeight: 600 }}>
+          ▶ Auto-tour
+        </button>
       </div>
     </div>
   );
@@ -66,20 +70,64 @@ function Home({ lens, pulse }: { lens: Lens; pulse: PulseState }) {
   return <Timeboard pulse={pulse} onOpen={(id) => navigate(`/book/${id}`)} />;
 }
 
+interface TourStep { caption: string; ms: number; run: (ctx: { pulse: PulseState; nav: ReturnType<typeof useNavigate>; setLens: (l: Lens) => void }) => void; }
+const TOUR: TourStep[] = [
+  { caption: 'One cinema, breathing live. This is what the audience sees — every seat filling in real time.', ms: 5600, run: ({ setLens, nav }) => { setLens('audience'); nav('/'); } },
+  { caption: 'Step inside — a centred, per-screen auditorium. Seats keep filling as you choose.', ms: 5600, run: ({ pulse, nav }) => { const s = pulse.sessions.find((x) => !x.soldOut) ?? pulse.sessions[0]!; nav(`/book/${s.id}`); } },
+  { caption: 'Booked — a real ticket, in a few taps.', ms: 4600, run: ({ pulse, nav }) => { const s = pulse.sessions.find((x) => !x.soldOut) ?? pulse.sessions[0]!; const f = filmOf(s.filmId); nav('/done', { state: { filmTitle: f.title, poster: f.poster, screen: SCREENS[s.screenId]!.name, format: SCREENS[s.screenId]!.format, time: s.startTime, seats: ['F7', 'F8', 'F9'], price: s.priceFrom } }); } },
+  { caption: 'The operator’s view: the pulse surfaced — sell-outs projected before they happen.', ms: 6200, run: ({ setLens, nav }) => { setLens('operator'); nav('/'); } },
+  { caption: 'And the whole living system? A few lines of @theatrical. Build it this afternoon.', ms: 6400, run: ({ setLens, nav }) => { setLens('developer'); nav('/'); } },
+];
+
 function Shell({ pulse }: { pulse: PulseState }) {
   const [lens, setLens] = useState<Lens>('audience');
+  const [tour, setTour] = useState<number | null>(null);
+  const navigate = useNavigate();
   const onHome = useLocation().pathname === '/';
+
+  useEffect(() => {
+    if (tour === null) return;
+    if (tour >= TOUR.length) { setTour(null); setLens('audience'); navigate('/'); return; }
+    TOUR[tour]!.run({ pulse, nav: navigate, setLens });
+    const id = window.setTimeout(() => setTour((t) => (t === null ? null : t + 1)), TOUR[tour]!.ms);
+    return () => clearTimeout(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tour]);
+
   return (
     <div style={{ minHeight: '100vh', background: T.bg, color: T.ink, position: 'relative', paddingInline: 'clamp(0px,2vw,26px)' }}>
       <Chrome />
       <Nav />
-      {onHome && <LensBar lens={lens} setLens={setLens} />}
+      {onHome && <LensBar lens={lens} setLens={setLens} onTour={() => setTour(0)} />}
       <Routes>
         <Route path="/" element={<Home lens={lens} pulse={pulse} />} />
         <Route path="/book/:sessionId" element={<SeatsPage pulse={pulse} />} />
         <Route path="/done" element={<ConfirmationPage />} />
       </Routes>
+      <TourCaption tour={tour} stop={() => { setTour(null); setLens('audience'); navigate('/'); }} />
     </div>
+  );
+}
+
+function TourCaption({ tour, stop }: { tour: number | null; stop: () => void }) {
+  return (
+    <AnimatePresence>
+      {tour !== null && tour < TOUR.length && (
+        <motion.div key={tour} initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 24 }} transition={T.spring}
+          style={{ position: 'fixed', left: '50%', bottom: 'clamp(26px,4vw,44px)', transform: 'translateX(-50%)', zIndex: 500, width: 'min(640px, calc(100vw - 48px))' }}>
+          <div style={{ background: T.navy, borderRadius: 14, padding: '16px 18px', boxShadow: '0 30px 60px -30px rgba(0,0,0,0.6)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <span style={{ fontFamily: T.mono, fontSize: 10, letterSpacing: '0.16em', color: T.orangeSoft, flexShrink: 0 }}>TOUR {tour + 1}/{TOUR.length}</span>
+              <span style={{ fontFamily: T.body, fontSize: 14.5, color: '#EEF1F6', lineHeight: 1.45 }}>{TOUR[tour]!.caption}</span>
+              <button data-hot onClick={stop} style={{ marginLeft: 'auto', flexShrink: 0, border: 'none', background: 'rgba(255,255,255,0.1)', color: '#C9D2E2', cursor: 'pointer', borderRadius: 8, padding: '5px 10px', fontSize: 12, fontFamily: T.body }}>End</button>
+            </div>
+            <div style={{ marginTop: 12, height: 3, background: 'rgba(255,255,255,0.12)', borderRadius: 99, overflow: 'hidden' }}>
+              <motion.div key={'p' + tour} initial={{ width: '0%' }} animate={{ width: '100%' }} transition={{ duration: TOUR[tour]!.ms / 1000, ease: 'linear' }} style={{ height: '100%', background: T.orange }} />
+            </div>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
 
