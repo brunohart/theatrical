@@ -25,3 +25,7 @@ export class EventEmitter {
     await Promise.all(all.map(h => h(event)));
   }
 }
+
+// The watcher hierarchy resolves `../emitter` to this module; re-export the
+// typed base class here so the bare specifier yields both emitters.
+export { TypedEventEmitter } from './emitter/typed-emitter';

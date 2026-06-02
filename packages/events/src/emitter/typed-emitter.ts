@@ -1,9 +1,7 @@
-import { EventEmitter } from 'node:events';
-
 /**
- * TypedEventEmitter — wraps Node's EventEmitter with compile-time event and
- * payload type checking. Extend with a specific Events map to get typed
- * emit/on/off/once across the entire watcher hierarchy.
+ * TypedEventEmitter — a tiny, dependency-free (browser- and edge-safe) event
+ * emitter with compile-time event and payload type checking. Extend with a
+ * specific Events map to get typed emit/on/off/once across the watcher hierarchy.
  *
  * @example
  * ```typescript
@@ -15,31 +13,31 @@ import { EventEmitter } from 'node:events';
  * e.on('booking.created', ({ orderId }) => console.log(orderId));
  * ```
  */
-export class TypedEventEmitter<
-  Events extends Record<string, unknown>,
-> extends EventEmitter {
+export class TypedEventEmitter<Events extends Record<string, unknown>> {
+  private listeners = new Map<string, Set<(payload: never) => void>>();
+
   emit<K extends keyof Events & string>(event: K, payload: Events[K]): boolean {
-    return super.emit(event, payload);
+    const set = this.listeners.get(event);
+    if (!set || set.size === 0) return false;
+    for (const fn of [...set]) (fn as (p: Events[K]) => void)(payload);
+    return true;
   }
 
-  on<K extends keyof Events & string>(
-    event: K,
-    listener: (payload: Events[K]) => void,
-  ): this {
-    return super.on(event, listener);
+  on<K extends keyof Events & string>(event: K, listener: (payload: Events[K]) => void): this {
+    if (!this.listeners.has(event)) this.listeners.set(event, new Set());
+    this.listeners.get(event)!.add(listener as (payload: never) => void);
+    return this;
   }
 
-  off<K extends keyof Events & string>(
-    event: K,
-    listener: (payload: Events[K]) => void,
-  ): this {
-    return super.off(event, listener);
+  off<K extends keyof Events & string>(event: K, listener: (payload: Events[K]) => void): this {
+    this.listeners.get(event)?.delete(listener as (payload: never) => void);
+    return this;
   }
 
-  once<K extends keyof Events & string>(
-    event: K,
-    listener: (payload: Events[K]) => void,
-  ): this {
-    return super.once(event, listener);
+  once<K extends keyof Events & string>(event: K, listener: (payload: Events[K]) => void): this {
+    const wrap = (payload: Events[K]) => { this.off(event, wrap); listener(payload); };
+    return this.on(event, wrap);
   }
+
+  removeAllListeners(): this { this.listeners.clear(); return this; }
 }
