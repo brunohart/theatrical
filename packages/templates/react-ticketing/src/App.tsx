@@ -10,6 +10,7 @@ import { CodeSeam } from './components/CodeSeam';
 import { SeatsPage } from './pages/Seats';
 import { ConfirmationPage } from './pages/Confirmation';
 import { usePulse, filmOf, SCREENS, type PulseState } from './lib/cinema';
+import { useIsMobile } from './lib/responsive';
 
 type Lens = 'audience' | 'operator' | 'developer';
 const LENSES: { id: Lens; label: string; desc: string }[] = [
@@ -36,28 +37,30 @@ function Nav() {
 
 function LensBar({ lens, setLens, onTour }: { lens: Lens; setLens: (l: Lens) => void; onTour: () => void }) {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const active = LENSES.find((l) => l.id === lens)!;
   return (
     <div style={{ position: 'sticky', top: 'calc(60px + clamp(14px,2.4vw,26px))', zIndex: 90, background: 'rgba(240,237,230,0.92)', backdropFilter: 'blur(8px)', borderBottom: `1px solid ${T.border}` }}>
-      <div style={{ maxWidth: 1180, margin: '0 auto', padding: '12px clamp(20px,5vw,40px)', display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
-        <span style={{ fontFamily: T.mono, fontSize: 11, color: T.muted, letterSpacing: '0.06em' }}>One cinema, live · seen as</span>
-        <div style={{ display: 'inline-flex', background: T.surface, border: `1px solid ${T.border}`, borderRadius: 99, padding: 3 }}>
+      <div style={{ maxWidth: 1180, margin: '0 auto', padding: isMobile ? '10px clamp(20px,5vw,40px)' : '12px clamp(20px,5vw,40px)', display: 'flex', alignItems: 'center', gap: isMobile ? 8 : 16, flexWrap: 'wrap' }}>
+        {!isMobile && <span style={{ fontFamily: T.mono, fontSize: 11, color: T.muted, letterSpacing: '0.06em' }}>One cinema, live · seen as</span>}
+        <div style={{ display: 'flex', flex: isMobile ? 1 : 'none', background: T.surface, border: `1px solid ${T.border}`, borderRadius: 99, padding: 3 }}>
           {LENSES.map((l) => {
             const on = l.id === lens;
             return (
               <button key={l.id} data-hot onClick={() => { setLens(l.id); navigate('/'); }}
-                style={{ position: 'relative', border: 'none', background: 'none', cursor: 'pointer', padding: '7px 16px', borderRadius: 99, fontFamily: T.body, fontSize: 13.5, fontWeight: 600 }}>
+                style={{ position: 'relative', flex: isMobile ? 1 : 'none', border: 'none', background: 'none', cursor: 'pointer', padding: isMobile ? '8px 10px' : '7px 16px', borderRadius: 99, fontFamily: T.body, fontSize: 13.5, fontWeight: 600 }}>
                 {on && <motion.span layoutId="lenspill" transition={T.spring} style={{ position: 'absolute', inset: 0, background: T.orange, borderRadius: 99, zIndex: 0 }} />}
                 <span style={{ position: 'relative', zIndex: 1, color: on ? T.white : T.inkSoft }}>{l.label}</span>
               </button>
             );
           })}
         </div>
-        <span style={{ fontSize: 13, color: T.muted, flex: 1, minWidth: 180 }}>{active.desc}</span>
-        <button data-hot onClick={onTour}
-          style={{ display: 'inline-flex', alignItems: 'center', gap: 7, border: `1px solid ${T.navy}`, background: 'none', color: T.navy, cursor: 'pointer', padding: '7px 14px', borderRadius: 99, fontFamily: T.body, fontSize: 13, fontWeight: 600 }}>
-          ▶ Auto-tour
+        {!isMobile && <span style={{ fontSize: 13, color: T.muted, flex: 1, minWidth: 180 }}>{active.desc}</span>}
+        <button data-hot onClick={onTour} aria-label="Auto-tour"
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 7, border: `1px solid ${T.navy}`, background: 'none', color: T.navy, cursor: 'pointer', padding: isMobile ? '8px 12px' : '7px 14px', borderRadius: 99, fontFamily: T.body, fontSize: 13, fontWeight: 600, flexShrink: 0 }}>
+          ▶{isMobile ? '' : ' Auto-tour'}
         </button>
+        {isMobile && <span style={{ flexBasis: '100%', fontSize: 12.5, color: T.muted, lineHeight: 1.35 }}>{active.desc}</span>}
       </div>
     </div>
   );
@@ -135,11 +138,11 @@ function TourNudge({ show, start, dismiss }: { show: boolean; start: () => void;
     <AnimatePresence>
       {show && (
         <motion.div initial={{ opacity: 0, y: 16, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 16 }} transition={T.spring}
-          style={{ position: 'fixed', left: 'clamp(20px,4vw,40px)', bottom: 'clamp(24px,4vw,40px)', zIndex: 480, display: 'flex', alignItems: 'center', gap: 12, background: T.surfaceRaised, border: `1px solid ${T.border}`, borderRadius: 99, padding: '8px 10px 8px 16px', boxShadow: '0 22px 44px -28px rgba(27,45,79,0.5)' }}>
-          <motion.span animate={{ opacity: [1, 0.3, 1] }} transition={{ duration: 1.6, repeat: Infinity }} style={{ width: 7, height: 7, borderRadius: '50%', background: T.orange }} />
-          <span style={{ fontSize: 13.5, color: T.inkSoft }}>New here? Take the 30-second tour.</span>
-          <button data-hot onClick={start} style={{ border: 'none', background: T.orange, color: T.white, cursor: 'pointer', borderRadius: 99, padding: '7px 14px', fontSize: 13, fontWeight: 600, fontFamily: T.body }}>▶ Play</button>
-          <button data-hot onClick={dismiss} aria-label="Dismiss" style={{ border: 'none', background: 'none', color: T.muted, cursor: 'pointer', fontSize: 16, lineHeight: 1, padding: '0 6px' }}>×</button>
+          style={{ position: 'fixed', left: 'clamp(20px,4vw,40px)', bottom: 'clamp(24px,4vw,40px)', maxWidth: 'calc(100vw - 2 * clamp(20px,4vw,40px))', zIndex: 480, display: 'flex', alignItems: 'center', gap: 12, background: T.surfaceRaised, border: `1px solid ${T.border}`, borderRadius: 99, padding: '8px 10px 8px 16px', boxShadow: '0 22px 44px -28px rgba(27,45,79,0.5)' }}>
+          <motion.span animate={{ opacity: [1, 0.3, 1] }} transition={{ duration: 1.6, repeat: Infinity }} style={{ width: 7, height: 7, borderRadius: '50%', background: T.orange, flexShrink: 0 }} />
+          <span style={{ fontSize: 13.5, color: T.inkSoft, minWidth: 0 }}>New here? Take the 30-second tour.</span>
+          <button data-hot onClick={start} style={{ border: 'none', background: T.orange, color: T.white, cursor: 'pointer', borderRadius: 99, padding: '7px 14px', fontSize: 13, fontWeight: 600, fontFamily: T.body, flexShrink: 0 }}>▶ Play</button>
+          <button data-hot onClick={dismiss} aria-label="Dismiss" style={{ border: 'none', background: 'none', color: T.muted, cursor: 'pointer', fontSize: 16, lineHeight: 1, padding: '0 6px', flexShrink: 0 }}>×</button>
         </motion.div>
       )}
     </AnimatePresence>

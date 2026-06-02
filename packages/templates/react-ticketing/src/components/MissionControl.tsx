@@ -2,11 +2,13 @@ import React, { useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { T } from '../theme';
 import { FILMS, SCREENS, type LiveSession, type PulseState } from '../lib/cinema';
+import { useIsMobile } from '../lib/responsive';
 
 const film = (id: string) => FILMS.find((f) => f.id === id)!;
 const fmtTime = (iso: string) => new Date(iso).toLocaleTimeString('en-NZ', { hour: 'numeric', minute: '2-digit', hour12: true });
 
 export function MissionControl({ pulse }: { pulse: PulseState }) {
+  const isMobile = useIsMobile();
   const occupancy = Math.round((pulse.totalSold / pulse.capacity) * 100);
 
   // sellout projections — the slope, not the number
@@ -38,7 +40,9 @@ export function MissionControl({ pulse }: { pulse: PulseState }) {
         <RevenueSpark value={pulse.revenue} />
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) clamp(280px,30%,360px)', gap: 'clamp(24px,4vw,48px)', alignItems: 'start' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'minmax(0,1fr) clamp(280px,30%,360px)', gap: 'clamp(24px,4vw,48px)', alignItems: 'start' }}>
+        {/* On mobile the live stream is the headline — surface it first. */}
+        {isMobile && <Stream events={pulse.events} isMobile />}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
           {/* projections */}
           <Panel label="Trajectory — projected sell-outs">
@@ -48,8 +52,8 @@ export function MissionControl({ pulse }: { pulse: PulseState }) {
           {/* occupancy by screen */}
           <Panel label="House occupancy by screen">
             {byScreen.map(({ screen, pct }) => (
-              <div key={screen.id} style={{ display: 'grid', gridTemplateColumns: '160px 1fr 48px', gap: 14, alignItems: 'center', padding: '8px 0' }}>
-                <span style={{ fontSize: 13, color: T.inkSoft }}>{screen.name} <span style={{ color: T.muted, fontSize: 11 }}>· {screen.format}</span></span>
+              <div key={screen.id} style={{ display: 'grid', gridTemplateColumns: isMobile ? '92px 1fr 40px' : '160px 1fr 48px', gap: 14, alignItems: 'center', padding: '8px 0' }}>
+                <span style={{ fontSize: 13, color: T.inkSoft, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{screen.name} <span style={{ color: T.muted, fontSize: 11 }}>· {screen.format}</span></span>
                 <div style={{ height: 8, background: T.border, borderRadius: 99, overflow: 'hidden' }}>
                   <motion.div animate={{ width: `${pct}%` }} transition={{ duration: 0.6, ease: T.easeOut }} style={{ height: '100%', borderRadius: 99, background: pct > 85 ? T.red : `linear-gradient(90deg,${T.navy},${T.orange})` }} />
                 </div>
@@ -59,12 +63,12 @@ export function MissionControl({ pulse }: { pulse: PulseState }) {
           </Panel>
           {/* concessions slope */}
           <Panel label="Concessions — depletion forecast">
-            <Concession label="Popcorn (large)" pct={62} note="runs dry ~21:10 · mid-intermission" warn />
-            <Concession label="Choc-tops" pct={84} note="comfortable through tonight" />
-            <Concession label="Craft cider" pct={41} note="reorder before the 20:00 rush" warn />
+            <Concession label="Popcorn (large)" pct={62} note="runs dry ~21:10 · mid-intermission" warn isMobile={isMobile} />
+            <Concession label="Choc-tops" pct={84} note="comfortable through tonight" isMobile={isMobile} />
+            <Concession label="Craft cider" pct={41} note="reorder before the 20:00 rush" warn isMobile={isMobile} />
           </Panel>
         </div>
-        <Stream events={pulse.events} />
+        {!isMobile && <Stream events={pulse.events} />}
       </div>
     </div>
   );
@@ -88,9 +92,9 @@ function Projection({ s, eta }: { s: LiveSession; eta: number }) {
   );
 }
 
-function Concession({ label, pct, note, warn }: { label: string; pct: number; note: string; warn?: boolean }) {
+function Concession({ label, pct, note, warn, isMobile }: { label: string; pct: number; note: string; warn?: boolean; isMobile?: boolean }) {
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '130px 1fr', gap: 14, alignItems: 'center', padding: '9px 0' }}>
+    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '92px 1fr' : '130px 1fr', gap: 14, alignItems: 'center', padding: '9px 0' }}>
       <span style={{ fontSize: 13, color: T.inkSoft }}>{label}</span>
       <div>
         <div style={{ height: 6, background: T.border, borderRadius: 99, overflow: 'hidden' }}>
@@ -159,17 +163,17 @@ const EV: Record<string, { dot: string; label: (e: any) => string }> = {
   'loyalty.tier': { dot: '#3E5C8A', label: (e) => `${e.member} → ${e.tier}` },
 };
 
-function Stream({ events }: { events: PulseState['events'] }) {
+function Stream({ events, isMobile }: { events: PulseState['events']; isMobile?: boolean }) {
   return (
-    <aside style={{ position: 'sticky', top: 96, border: `1px solid ${T.border}`, borderRadius: 14, background: T.navy, overflow: 'hidden' }}>
+    <aside style={{ position: isMobile ? 'static' : 'sticky', top: 96, border: `1px solid ${T.border}`, borderRadius: 14, background: T.navy, overflow: 'hidden' }}>
       <div style={{ padding: '14px 18px', borderBottom: '1px solid rgba(255,255,255,0.10)', display: 'flex', alignItems: 'center', gap: 8 }}>
         <motion.span animate={{ opacity: [1, 0.3, 1] }} transition={{ duration: 1.4, repeat: Infinity }} style={{ width: 7, height: 7, borderRadius: '50%', background: T.green }} />
         <span style={{ fontFamily: T.mono, fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#C9D2E2' }}>Event stream</span>
         <span style={{ marginLeft: 'auto', fontFamily: T.mono, fontSize: 10, color: '#7E8CA6' }}>@theatrical/events</span>
       </div>
-      <div style={{ padding: '8px 8px 14px', maxHeight: 560, overflow: 'hidden' }}>
+      <div style={{ padding: '8px 8px 14px', maxHeight: isMobile ? 360 : 560, overflow: 'hidden' }}>
         <AnimatePresence initial={false}>
-          {events.slice(0, 15).map((e: any) => (
+          {events.slice(0, isMobile ? 8 : 15).map((e: any) => (
             <motion.div key={e.id ?? e.at + e.kind} layout initial={{ opacity: 0, x: 16, height: 0 }} animate={{ opacity: 1, x: 0, height: 'auto' }} exit={{ opacity: 0 }} transition={T.spring}
               style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 12px' }}>
               <span style={{ width: 7, height: 7, borderRadius: '50%', background: EV[e.kind].dot, flexShrink: 0 }} />
