@@ -1,6 +1,6 @@
 {
   "name": "@theatrical/events",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Real-time event bridge for cinema platform APIs — typed polling, diff, and event emission over Vista OCAPI",
   "keywords": [
     "cinema",
