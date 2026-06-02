@@ -37,10 +37,12 @@
 }
 .nav-brand::before {
   content: "";
-  width: 16px; height: 16px;
-  border-radius: 3px;
-  background: var(--blue);
-  box-shadow: inset 0 0 0 4px var(--bg), inset 0 0 0 8px var(--orange);
+  width: 20px; height: 20px;
+  border-radius: 5px;
+  border: 1.5px solid var(--blue);
+  background: var(--orange);
+  background-clip: content-box;
+  padding: 4.5px;
 }
 .nav-links { display: flex; align-items: center; gap: var(--space-lg); }
 .nav-links a {
@@ -208,6 +210,9 @@ a:hover > .underline-draw::after { transform: scaleX(1); }
   line-height: 1.5;
   color: var(--blue);
   white-space: pre;
+  width: max-content;
+  max-width: 100%;
+  margin-inline: auto;
 }
 
 /* ─── SDK reels ─── */
@@ -335,6 +340,8 @@ a:hover > .underline-draw::after { transform: scaleX(1); }
 .code-block code { color: inherit; }
 
 /* ─── Install tabs ─── */
+.install-tab { display: flex; flex-direction: column; height: 100%; }
+.install-tab .code-block { flex: 1 1 auto; }
 .install-tab h3 {
   font-family: var(--font-mono);
   font-size: var(--text-sm);
@@ -392,7 +399,7 @@ a:hover > .underline-draw::after { transform: scaleX(1); }
   .footer { margin-bottom: var(--letterbox); }
 }
 .footer .nav-brand { color: var(--white); }
-.footer .nav-brand::before { box-shadow: inset 0 0 0 4px var(--blue), inset 0 0 0 8px var(--orange); }
+.footer .nav-brand::before { border-color: rgba(250, 250, 247, 0.4); }
 .footer-content {
   display: flex;
   justify-content: space-between;
