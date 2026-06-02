@@ -16,16 +16,19 @@ export function SeatRow({ row, selectedSeatIds, onSeatSelect, disabled }: SeatRo
       style={{
         display: 'flex',
         alignItems: 'center',
+        justifyContent: 'center',
         marginBottom: tokens.spacing.xs,
+        position: 'relative',
       }}
       role="row"
       aria-label={`Row ${row.rowLabel}`}
     >
       <span
         style={{
+          position: 'absolute',
+          left: 0,
           width: 24,
           textAlign: 'right',
-          marginRight: tokens.spacing.sm,
           fontSize: tokens.typography.sizes.xs,
           color: tokens.colors.textMuted,
           fontWeight: tokens.typography.weights.medium,
