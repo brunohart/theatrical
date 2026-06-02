@@ -70,8 +70,20 @@
   -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 17 17 7'/%3E%3Cpath d='M8 7h9v9'/%3E%3C/svg%3E") center / contain no-repeat;
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 17 17 7'/%3E%3Cpath d='M8 7h9v9'/%3E%3C/svg%3E") center / contain no-repeat;
 }
+.nav-docs-arr { display: none; }
 @media (max-width: 560px) {
-  .nav-links a:not(.nav-github) { display: none; }
+  /* On mobile only the Docs pill shows (GitHub lives in the hero + footer). */
+  .nav-links a:not(.nav-docs) { display: none; }
+  .nav-docs {
+    color: var(--ink) !important;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs) !important;
+    letter-spacing: 0.05em;
+    padding: 0.45rem 0.8rem;
+    border: 1px solid var(--ink);
+    border-radius: var(--radius-sm);
+  }
+  .nav-docs-arr { display: inline-block; }
 }
 
 /* ─── Buttons ─── */
