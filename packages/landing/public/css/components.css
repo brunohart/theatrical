@@ -37,12 +37,9 @@
 }
 .nav-brand::before {
   content: "";
-  width: 20px; height: 20px;
-  border-radius: 5px;
-  border: 1.5px solid var(--blue);
-  background: var(--orange);
-  background-clip: content-box;
-  padding: 4.5px;
+  width: 22px; height: 22px;
+  flex-shrink: 0;
+  background: url("../favicon.svg") center / contain no-repeat;
 }
 .nav-links { display: flex; align-items: center; gap: var(--space-lg); }
 .nav-links a {
