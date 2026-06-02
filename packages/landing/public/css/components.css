@@ -106,6 +106,33 @@
 .btn-secondary { border-color: var(--ink); color: var(--ink); }
 .btn-secondary:hover { background: var(--ink); color: var(--bg); }
 
+/* "See it live" — the interactive demo is the hook, so make it the loudest,
+   most inviting CTA: cinnabar fill, a pulsing broadcast dot, a breathing glow. */
+.btn-live {
+  background: var(--orange);
+  color: var(--white);
+  border-color: var(--orange);
+  font-weight: 600;
+  animation: live-breathe 3s ease-in-out infinite;
+}
+.btn-live:hover { background: #BD5526; border-color: #BD5526; color: var(--white); }
+.live-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+  background: #fff;
+  animation: live-pulse 1.5s ease-in-out infinite;
+}
+@keyframes live-pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7); }
+  60% { opacity: 0.55; box-shadow: 0 0 0 6px rgba(255, 255, 255, 0); }
+}
+@keyframes live-breathe {
+  0%, 100% { box-shadow: 0 6px 16px -10px rgba(212, 98, 43, 0.5); }
+  50% { box-shadow: 0 10px 30px -6px rgba(212, 98, 43, 0.7); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .btn-live, .live-dot { animation: none; }
+}
+
 /* ─── Underline draw (brand signature) ─── */
 .underline-draw {
   position: relative;
