@@ -58,7 +58,7 @@ function SessionRow({ s, onOpen }: { s: LiveSession; onOpen: (id: string) => voi
       }}
     >
       <div style={{ width: 52, height: 74, borderRadius: 7, overflow: 'hidden', border: `1px solid ${T.border}` }}>
-        <Poster title={f.title} posterUrl={f.poster} height={74} />
+        <Poster film={f} height={74} />
       </div>
       <div style={{ fontFamily: T.mono, fontSize: 19, fontWeight: 500, color: T.ink, letterSpacing: '-0.02em', fontVariantNumeric: 'tabular-nums' }}>
         {fmtTime(s.startTime)}

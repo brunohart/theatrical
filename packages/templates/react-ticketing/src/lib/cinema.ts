@@ -12,7 +12,7 @@ import { BookingWatcher, SessionWatcher } from '@theatrical/events';
 
 export interface Film {
   id: string; title: string; year: number; runtime: number; classification: string;
-  genres: string[]; synopsis: string; poster: string; accent: string;
+  genres: string[]; synopsis: string; tagline: string; accent: string; accent2: string; motif: number;
 }
 export interface ScreenSpec {
   id: string; name: string; format: 'Standard' | 'IMAX' | 'Gold Class' | 'Boutique';
@@ -32,14 +32,14 @@ export type PulseEvent =
 
 // ─── Curated programme — Roxy Cinema, Wellington. Of-the-moment, varied. ───
 export const FILMS: Film[] = [
-  { id: 'mando-grogu', title: 'The Mandalorian & Grogu', year: 2026, runtime: 124, classification: 'PG', genres: ['Sci-Fi', 'Adventure'], synopsis: 'The galaxy’s most unlikely duo take on a mission that will reshape the New Republic.', poster: '', accent: '#3E6B4F' },
-  { id: 'sinners', title: 'Sinners', year: 2025, runtime: 137, classification: 'R16', genres: ['Horror', 'Thriller'], synopsis: 'Twin brothers return to their hometown to start again, only to discover an evil waiting to welcome them back.', poster: '', accent: '#7A2E2E' },
-  { id: 'mickey-17', title: 'Mickey 17', year: 2025, runtime: 137, classification: 'M', genres: ['Sci-Fi', 'Comedy'], synopsis: 'An expendable employee on a human expedition to colonise an ice world discovers what it means to be replaced.', poster: '', accent: '#2E5E7A' },
-  { id: 'dune-two', title: 'Dune: Part Two', year: 2024, runtime: 166, classification: 'M', genres: ['Sci-Fi', 'Adventure'], synopsis: 'Paul Atreides unites with the Fremen to wage war against House Harkonnen and avenge his family.', poster: 'https://image.tmdb.org/t/p/w500/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg', accent: '#C9922A' },
-  { id: 'poor-things', title: 'Poor Things', year: 2023, runtime: 141, classification: 'R18', genres: ['Comedy', 'Romance'], synopsis: 'The incredible tale of the fantastical evolution of Bella Baxter, brought back to life by an unorthodox scientist.', poster: 'https://image.tmdb.org/t/p/w500/kCGlIMHnOm8JPXq3rXM6c5wMxcT.jpg', accent: '#2E7D8F' },
-  { id: 'a-complete-unknown', title: 'A Complete Unknown', year: 2024, runtime: 140, classification: 'M', genres: ['Drama', 'Music'], synopsis: '19-year-old Bob Dylan arrives in New York and changes the course of American music forever.', poster: '', accent: '#8A6E3A' },
-  { id: 'the-holdovers', title: 'The Holdovers', year: 2023, runtime: 133, classification: 'M', genres: ['Comedy', 'Drama'], synopsis: 'A cranky teacher at a New England prep school is forced to remain on campus over the holidays with a troubled student.', poster: 'https://image.tmdb.org/t/p/w500/VyTl4LWBYBHK7bnsLk6fyZHGz2.jpg', accent: '#C26B3A' },
-  { id: 'past-lives', title: 'Past Lives', year: 2023, runtime: 105, classification: 'M', genres: ['Drama', 'Romance'], synopsis: 'Two childhood friends reunite two decades after one emigrates, confronting destiny, love, and the choices that make a life.', poster: 'https://image.tmdb.org/t/p/w500/k3waqVXSnvCZWfJYNtdamTgTtTA.jpg', accent: '#3E5C8A' },
+  { id: 'mando-grogu', title: 'The Mandalorian & Grogu', year: 2026, runtime: 124, classification: 'PG', genres: ['Sci-Fi', 'Adventure'], tagline: 'The galaxy’s unlikeliest duo ride again.', synopsis: 'A lone bounty hunter and the galaxy’s most wanted foundling take on a mission that could reshape the New Republic.', accent: '#2E6B4F', accent2: '#C9922A', motif: 0 },
+  { id: 'disclosure-day', title: 'Disclosure Day', year: 2026, runtime: 129, classification: 'M', genres: ['Sci-Fi', 'Thriller'], tagline: 'The day they finally told us the truth.', synopsis: 'When every government on Earth releases its files at the same hour, a junior archivist realises the disclosure is itself the cover story.', accent: '#2E5E9E', accent2: '#9DD3E8', motif: 0 },
+  { id: 'the-backrooms', title: 'The Backrooms', year: 2026, runtime: 101, classification: 'R16', genres: ['Horror', 'Thriller'], tagline: 'There is no exit. Only deeper.', synopsis: 'A teenager who films abandoned buildings clips through the floor of reality into an endless, humming maze of yellow rooms.', accent: '#7E7A2E', accent2: '#1E1C10', motif: 3 },
+  { id: 'tuner', title: 'Tuner', year: 2026, runtime: 118, classification: 'M', genres: ['Thriller', 'Crime'], tagline: 'Every safe has a frequency.', synopsis: 'A concert piano tuner with perfect pitch is pulled into a crew that cracks vaults by ear — until one job hits a note that won’t resolve.', accent: '#A66A2E', accent2: '#1A1208', motif: 1 },
+  { id: 'obsession', title: 'Obsession', year: 2026, runtime: 112, classification: 'R16', genres: ['Drama', 'Thriller'], tagline: 'How far would you follow a feeling?', synopsis: 'A grief counsellor becomes convinced a stranger on her morning train is living the life her late sister was meant to have.', accent: '#9E2E3A', accent2: '#2A1015', motif: 3 },
+  { id: 'sheep-detectives', title: 'The Sheep Detectives', year: 2026, runtime: 96, classification: 'G', genres: ['Animation', 'Comedy'], tagline: 'Two ewes. One mystery. No leads.', synopsis: 'When the prize ram vanishes the night before the county fair, two unlikely sheep turn gumshoe across the high-country farms of Otago.', accent: '#4F8A6B', accent2: '#F0E7C8', motif: 2 },
+  { id: 'sentimental-value', title: 'Sentimental Value', year: 2026, runtime: 133, classification: 'M', genres: ['Drama'], tagline: 'A house remembers everyone who left.', synopsis: 'Two estranged sisters return to their childhood home when their filmmaker father offers one of them the lead in his comeback feature.', accent: '#8A6E3A', accent2: '#2A2014', motif: 2 },
+  { id: 'after-the-hunt', title: 'After the Hunt', year: 2026, runtime: 138, classification: 'R16', genres: ['Thriller', 'Drama'], tagline: 'The truth has a cost. So does silence.', synopsis: 'A university professor is caught between a star student and a longtime colleague when a private accusation threatens to surface a secret of her own.', accent: '#3E4A6E', accent2: '#11151F', motif: 1 },
 ];
 
 export const SCREENS: Record<string, ScreenSpec> = {

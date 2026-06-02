@@ -54,7 +54,7 @@ export function SeatsPage({ pulse }: { pulse: PulseState }) {
 
   function confirm() {
     if (!selected.size) return;
-    navigate('/done', { state: { filmTitle: f.title, poster: f.poster, screen: scr.name, format: scr.format, time: ses.startTime, seats: [...selected], price: ses.priceFrom } });
+    navigate('/done', { state: { filmId: f.id, filmTitle: f.title, screen: scr.name, format: scr.format, time: ses.startTime, seats: [...selected], price: ses.priceFrom } });
   }
 
   return (

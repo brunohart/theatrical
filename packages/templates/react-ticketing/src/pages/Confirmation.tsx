@@ -3,15 +3,17 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { T } from '../theme';
 import { Poster } from '../components/Poster';
+import { filmOf } from '../lib/cinema';
 
 interface Booked {
-  filmTitle: string; poster: string; screen: string; format: string; time: string; seats: string[]; price: number;
+  filmId: string; filmTitle: string; screen: string; format: string; time: string; seats: string[]; price: number;
 }
 
 export function ConfirmationPage() {
   const navigate = useNavigate();
   const state = (useLocation().state ?? null) as Booked | null;
   if (!state) { navigate('/'); return null; }
+  const film = filmOf(state.filmId);
 
   const total = state.seats.length * state.price;
   const when = new Date(state.time).toLocaleString('en-NZ', { weekday: 'long', day: 'numeric', month: 'long', hour: 'numeric', minute: '2-digit', hour12: true });
@@ -31,7 +33,7 @@ export function ConfirmationPage() {
       <motion.div initial={{ opacity: 0, y: 28, rotateX: 14 }} animate={{ opacity: 1, y: 0, rotateX: 0 }} transition={{ delay: 0.26, ...T.spring }}
         style={{ display: 'flex', textAlign: 'left', background: T.surfaceRaised, border: `1px solid ${T.border}`, borderRadius: 16, overflow: 'hidden', boxShadow: '0 40px 80px -50px rgba(27,45,79,0.5)' }}>
         <div style={{ width: 120, flexShrink: 0 }}>
-          <Poster title={state.filmTitle} posterUrl={state.poster} height={200} />
+          <Poster film={film} height={200} />
         </div>
         {/* perforation */}
         <div style={{ width: 2, background: `repeating-linear-gradient(180deg, ${T.border} 0 7px, transparent 7px 14px)` }} />
