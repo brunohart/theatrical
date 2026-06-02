@@ -23,7 +23,7 @@ if (typeof document !== 'undefined' && !document.getElementById('thp-style')) {
  * minimalist A24/Criterion key art). A missing photo can never break it, and
  * the lineup reads as one designed season rather than scraped thumbnails.
  */
-export function Poster({ film, height = 300 }: { film: Film; height?: number }) {
+export function Poster({ film, height = 300, bare = false }: { film: Film; height?: number; bare?: boolean }) {
   const compact = height < 130;
   const ground = `linear-gradient(155deg, ${dark(film.accent, 0.32)} 0%, ${film.accent} 56%, ${dark(film.accent, 0.58)} 100%)`;
 
@@ -34,7 +34,7 @@ export function Poster({ film, height = 300 }: { film: Film; height?: number }) 
       <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(130% 100% at 50% -10%, rgba(255,255,255,0.10), transparent 45%), radial-gradient(120% 120% at 50% 120%, rgba(0,0,0,0.55), transparent 55%)' }} />
       <div style={{ position: 'absolute', inset: 0, opacity: 0.10, mixBlendMode: 'overlay', backgroundImage: 'url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'80\' height=\'80\'><filter id=\'n\'><feTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'2\'/></filter><rect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/></svg>")' }} />
 
-      {!compact && (
+      {!compact && !bare && (
         <>
           <div style={{ position: 'absolute', top: 13, left: 14, display: 'flex', gap: 6, alignItems: 'center' }}>
             <span style={badge()}>{film.classification}</span>
