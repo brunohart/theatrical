@@ -74,16 +74,36 @@ interface TourStep { caption: string; ms: number; run: (ctx: { pulse: PulseState
 const TOUR: TourStep[] = [
   { caption: 'One cinema, breathing live. This is what the audience sees — every seat filling in real time.', ms: 5600, run: ({ setLens, nav }) => { setLens('audience'); nav('/'); } },
   { caption: 'Step inside — a centred, per-screen auditorium. Seats keep filling as you choose.', ms: 5600, run: ({ pulse, nav }) => { const s = pulse.sessions.find((x) => !x.soldOut) ?? pulse.sessions[0]!; nav(`/book/${s.id}`); } },
-  { caption: 'Booked — a real ticket, in a few taps.', ms: 4600, run: ({ pulse, nav }) => { const s = pulse.sessions.find((x) => !x.soldOut) ?? pulse.sessions[0]!; const f = filmOf(s.filmId); nav('/done', { state: { filmTitle: f.title, poster: f.poster, screen: SCREENS[s.screenId]!.name, format: SCREENS[s.screenId]!.format, time: s.startTime, seats: ['F7', 'F8', 'F9'], price: s.priceFrom } }); } },
+  { caption: 'Booked — a real ticket, in a few taps.', ms: 4600, run: ({ pulse, nav }) => { const s = pulse.sessions.find((x) => !x.soldOut) ?? pulse.sessions[0]!; const f = filmOf(s.filmId); nav('/done', { state: { filmId: f.id, filmTitle: f.title, screen: SCREENS[s.screenId]!.name, format: SCREENS[s.screenId]!.format, time: s.startTime, seats: ['F7', 'F8', 'F9'], price: s.priceFrom } }); } },
   { caption: 'The operator’s view: the pulse surfaced — sell-outs projected before they happen.', ms: 6200, run: ({ setLens, nav }) => { setLens('operator'); nav('/'); } },
   { caption: 'And the whole living system? A few lines of @theatrical. Build it this afternoon.', ms: 6400, run: ({ setLens, nav }) => { setLens('developer'); nav('/'); } },
 ];
 
+function readLens(): Lens {
+  const l = new URLSearchParams(window.location.search).get('lens');
+  return (['audience', 'operator', 'developer'] as const).includes(l as Lens) ? (l as Lens) : 'audience';
+}
+
 function Shell({ pulse }: { pulse: PulseState }) {
-  const [lens, setLens] = useState<Lens>('audience');
+  const [lens, setLens] = useState<Lens>(readLens);
   const [tour, setTour] = useState<number | null>(null);
+  const [nudge, setNudge] = useState(false);
   const navigate = useNavigate();
   const onHome = useLocation().pathname === '/';
+
+  // Deep links: ?lens=operator lands on a lens; ?tour=1 auto-plays the tour.
+  // Otherwise, a subtle one-time nudge invites the tour.
+  useEffect(() => {
+    const sp = new URLSearchParams(window.location.search);
+    if (sp.get('tour') === '1') { setTour(0); return; }
+    if (!sessionStorage.getItem('th_tour_seen')) {
+      const id = window.setTimeout(() => setNudge(true), 1800);
+      return () => clearTimeout(id);
+    }
+  }, []);
+
+  const startTour = () => { sessionStorage.setItem('th_tour_seen', '1'); setNudge(false); setTour(0); };
+  const dismissNudge = () => { sessionStorage.setItem('th_tour_seen', '1'); setNudge(false); };
 
   useEffect(() => {
     if (tour === null) return;
@@ -98,14 +118,31 @@ function Shell({ pulse }: { pulse: PulseState }) {
     <div style={{ minHeight: '100vh', background: T.bg, color: T.ink, position: 'relative', paddingInline: 'clamp(0px,2vw,26px)' }}>
       <Chrome />
       <Nav />
-      {onHome && <LensBar lens={lens} setLens={setLens} onTour={() => setTour(0)} />}
+      {onHome && <LensBar lens={lens} setLens={setLens} onTour={startTour} />}
       <Routes>
         <Route path="/" element={<Home lens={lens} pulse={pulse} />} />
         <Route path="/book/:sessionId" element={<SeatsPage pulse={pulse} />} />
         <Route path="/done" element={<ConfirmationPage />} />
       </Routes>
       <TourCaption tour={tour} stop={() => { setTour(null); setLens('audience'); navigate('/'); }} />
+      <TourNudge show={nudge && tour === null} start={startTour} dismiss={dismissNudge} />
     </div>
+  );
+}
+
+function TourNudge({ show, start, dismiss }: { show: boolean; start: () => void; dismiss: () => void }) {
+  return (
+    <AnimatePresence>
+      {show && (
+        <motion.div initial={{ opacity: 0, y: 16, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 16 }} transition={T.spring}
+          style={{ position: 'fixed', left: 'clamp(20px,4vw,40px)', bottom: 'clamp(24px,4vw,40px)', zIndex: 480, display: 'flex', alignItems: 'center', gap: 12, background: T.surfaceRaised, border: `1px solid ${T.border}`, borderRadius: 99, padding: '8px 10px 8px 16px', boxShadow: '0 22px 44px -28px rgba(27,45,79,0.5)' }}>
+          <motion.span animate={{ opacity: [1, 0.3, 1] }} transition={{ duration: 1.6, repeat: Infinity }} style={{ width: 7, height: 7, borderRadius: '50%', background: T.orange }} />
+          <span style={{ fontSize: 13.5, color: T.inkSoft }}>New here? Take the 30-second tour.</span>
+          <button data-hot onClick={start} style={{ border: 'none', background: T.orange, color: T.white, cursor: 'pointer', borderRadius: 99, padding: '7px 14px', fontSize: 13, fontWeight: 600, fontFamily: T.body }}>▶ Play</button>
+          <button data-hot onClick={dismiss} aria-label="Dismiss" style={{ border: 'none', background: 'none', color: T.muted, cursor: 'pointer', fontSize: 16, lineHeight: 1, padding: '0 6px' }}>×</button>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
 
