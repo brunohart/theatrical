@@ -80,7 +80,7 @@
   --z-cursor:  9999;
 
   /* ─── Cinema (theatrical additions) ─── */
-  --grain-opacity: 0.045;
+  --grain-opacity: 0.28;
   --letterbox:     clamp(14px, 2.6vw, 30px);
   --sprocket-w:    clamp(14px, 2.4vw, 26px);
   --reticle-size:  26px;
