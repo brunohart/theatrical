@@ -24,25 +24,12 @@ const projector: React.CSSProperties = {
   background: 'radial-gradient(120% 60% at 50% -10%, rgba(212,98,43,0.10), transparent 60%)',
 };
 
+// Static, resolution-independent film grain via an SVG fractalNoise filter.
+// Renders crisp at any DPR (no chunky retina pixels) and reads as organic film
+// stock rather than salt-and-pepper canvas noise.
+const GRAIN_SVG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23g)'/%3E%3C/svg%3E";
 function Grain() {
-  const ref = useRef<HTMLCanvasElement>(null);
-  useEffect(() => {
-    const cv = ref.current!; const ctx = cv.getContext('2d', { alpha: true })!;
-    // A single, fixed noise tile — static film grain, not animated (animating it reads as jarring TV static).
-    const tile = document.createElement('canvas'); tile.width = tile.height = 130;
-    const tctx = tile.getContext('2d')!;
-    const img = tctx.createImageData(130, 130); const d = img.data;
-    for (let i = 0; i < d.length; i += 4) { const v = (Math.random() * 255) | 0; d[i] = d[i + 1] = d[i + 2] = v; d[i + 3] = 255; }
-    tctx.putImageData(img, 0, 0);
-    const paint = () => {
-      cv.width = innerWidth; cv.height = innerHeight; // resizing the canvas clears it, so re-tile
-      const p = ctx.createPattern(tile, 'repeat')!;
-      ctx.fillStyle = p; ctx.fillRect(0, 0, cv.width, cv.height);
-    };
-    paint(); addEventListener('resize', paint, { passive: true });
-    return () => removeEventListener('resize', paint);
-  }, []);
-  return <canvas ref={ref} aria-hidden style={{ position: 'fixed', inset: 0, zIndex: 300, pointerEvents: 'none', opacity: 0.04, mixBlendMode: 'multiply' }} />;
+  return <div aria-hidden style={{ position: 'fixed', inset: 0, zIndex: 300, pointerEvents: 'none', opacity: 0.05, mixBlendMode: 'multiply', backgroundImage: `url("${GRAIN_SVG}")`, backgroundSize: '220px 220px' }} />;
 }
 
 function Cursor() {
