@@ -27,24 +27,20 @@ const projector: React.CSSProperties = {
 function Grain() {
   const ref = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const cv = ref.current!; const ctx = cv.getContext('2d', { alpha: true })!;
+    // A single, fixed noise tile — static film grain, not animated (animating it reads as jarring TV static).
     const tile = document.createElement('canvas'); tile.width = tile.height = 130;
     const tctx = tile.getContext('2d')!;
-    const size = () => { cv.width = innerWidth; cv.height = innerHeight; };
-    size(); addEventListener('resize', size, { passive: true });
-    let last = 0, raf = 0;
-    const paint = (t: number) => {
-      raf = requestAnimationFrame(paint);
-      if (t - last < 83) return; last = t;
-      const img = tctx.createImageData(130, 130); const d = img.data;
-      for (let i = 0; i < d.length; i += 4) { const v = (Math.random() * 255) | 0; d[i] = d[i + 1] = d[i + 2] = v; d[i + 3] = 255; }
-      tctx.putImageData(img, 0, 0);
+    const img = tctx.createImageData(130, 130); const d = img.data;
+    for (let i = 0; i < d.length; i += 4) { const v = (Math.random() * 255) | 0; d[i] = d[i + 1] = d[i + 2] = v; d[i + 3] = 255; }
+    tctx.putImageData(img, 0, 0);
+    const paint = () => {
+      cv.width = innerWidth; cv.height = innerHeight; // resizing the canvas clears it, so re-tile
       const p = ctx.createPattern(tile, 'repeat')!;
-      ctx.clearRect(0, 0, cv.width, cv.height); ctx.fillStyle = p; ctx.fillRect(0, 0, cv.width, cv.height);
+      ctx.fillStyle = p; ctx.fillRect(0, 0, cv.width, cv.height);
     };
-    raf = requestAnimationFrame(paint);
-    return () => { cancelAnimationFrame(raf); removeEventListener('resize', size); };
+    paint(); addEventListener('resize', paint, { passive: true });
+    return () => removeEventListener('resize', paint);
   }, []);
   return <canvas ref={ref} aria-hidden style={{ position: 'fixed', inset: 0, zIndex: 300, pointerEvents: 'none', opacity: 0.04, mixBlendMode: 'multiply' }} />;
 }
