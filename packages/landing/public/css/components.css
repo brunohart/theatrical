@@ -386,8 +386,10 @@ a:hover > .underline-draw::after { transform: scaleX(1); }
 .code-block code { color: inherit; }
 
 /* ─── Install tabs ─── */
-.install-tab { display: flex; flex-direction: column; height: 100%; }
-.install-tab .code-block { flex: 1 1 auto; }
+.install-tab { display: flex; flex-direction: column; height: 100%; min-width: 0; }
+/* min-width:0 lets a wide <pre> scroll inside instead of forcing the grid track
+   wider than its 1fr share — otherwise the code blocks get unequal widths. */
+.install-tab .code-block { flex: 1 1 auto; min-width: 0; }
 .install-tab h3 {
   font-family: var(--font-mono);
   font-size: var(--text-sm);

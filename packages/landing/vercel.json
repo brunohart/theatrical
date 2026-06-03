@@ -22,6 +22,10 @@
     {
       "source": "/textures/(.*)",
       "headers": [{ "key": "Cache-Control", "value": "public, max-age=604800" }]
+    },
+    {
+      "source": "/essays/feed.xsl",
+      "headers": [{ "key": "Content-Type", "value": "text/xsl; charset=utf-8" }]
     }
   ]
 }

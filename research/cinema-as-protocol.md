@@ -12,6 +12,11 @@ You arrive at a building designed for one purpose. You choose seats from a map t
 
 This is not consumption. This is participation in a protocol.
 
+<figure class="essay-figure">
+  <img src="img/cinema-audience.jpg" alt="A full cinema audience seated in red velvet seats, watching the screen at a film festival." loading="lazy" width="1280" height="720" />
+  <figcaption>The protocol at scale — a festival audience mid-screening. Photo: <a href="https://commons.wikimedia.org/wiki/File:Cambridge_Film_Festival_Audience_2023.jpg" target="_blank" rel="noopener">Kitsonian</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>, via Wikimedia Commons.</figcaption>
+</figure>
+
 Cinema-going is one of the last shared cultural experiences that exists at scale. A concert requires a specific artist. A sporting event requires a specific team. But cinema is universal — the same film plays in Wellington, Auckland, London, and Tokyo. The protocol is the same everywhere: arrive, sit, watch, leave changed. The technology that supports this protocol — the ticketing systems, the seat maps, the scheduling engines — is not just software. It is cultural infrastructure.
 
 The technology platforms that power cinema operations understand this implicitly. Their systems are designed around the specifics of the cinema experience: session-based scheduling (not generic calendar events), seat-level inventory (not general admission), format-aware pricing (IMAX costs more than 2D for the same film at the same time), and a multi-step booking lifecycle that mirrors the psychological journey from browsing to commitment.
