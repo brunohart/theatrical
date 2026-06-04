@@ -6,45 +6,46 @@
     <link>https://theatrical.dev/essays/</link>
     <description>Research essays on cinema technology, developer ecosystems, and the $3.3B cinema API economy.</description>
     <language>en</language>
+    <lastBuildDate>Fri, 10 Apr 2026 00:00:00 +1200</lastBuildDate>
     <atom:link href="https://theatrical.dev/essays/feed.xml" rel="self" type="application/rss+xml"/>
 
     <item>
       <title>The Cinema Platform Thesis</title>
-      <link>https://theatrical.dev/essays/cinema-platform-thesis.html</link>
+      <link>https://theatrical.dev/essays/cinema-platform-thesis</link>
       <description>Why cinema technology needs a developer ecosystem — and what it looks like when it gets one.</description>
-      <guid>https://theatrical.dev/essays/cinema-platform-thesis.html</guid>
+      <guid>https://theatrical.dev/essays/cinema-platform-thesis</guid>
       <pubDate>Mon, 06 Apr 2026 00:00:00 +1200</pubDate>
     </item>
 
     <item>
       <title>What Stripe Did for Payments</title>
-      <link>https://theatrical.dev/essays/what-stripe-did-for-payments.html</link>
+      <link>https://theatrical.dev/essays/what-stripe-did-for-payments</link>
       <description>Draw the parallel: Stripe → payments :: Theatrical → cinema. A technical comparison with code examples.</description>
-      <guid>https://theatrical.dev/essays/what-stripe-did-for-payments.html</guid>
+      <guid>https://theatrical.dev/essays/what-stripe-did-for-payments</guid>
       <pubDate>Tue, 07 Apr 2026 00:00:00 +1200</pubDate>
     </item>
 
     <item>
       <title>Cinema as Protocol</title>
-      <link>https://theatrical.dev/essays/cinema-as-protocol.html</link>
+      <link>https://theatrical.dev/essays/cinema-as-protocol</link>
       <description>Cinema-going as cultural infrastructure — why the ritual matters more than the technology.</description>
-      <guid>https://theatrical.dev/essays/cinema-as-protocol.html</guid>
+      <guid>https://theatrical.dev/essays/cinema-as-protocol</guid>
       <pubDate>Wed, 08 Apr 2026 00:00:00 +1200</pubDate>
     </item>
 
     <item>
       <title>The 3.3 Billion Dollar API</title>
-      <link>https://theatrical.dev/essays/the-3.3-billion-api.html</link>
+      <link>https://theatrical.dev/essays/the-3.3-billion-api</link>
       <description>Vista Group processes $3.3B in annual GTV. The developer ecosystem around it is effectively zero.</description>
-      <guid>https://theatrical.dev/essays/the-3.3-billion-api.html</guid>
+      <guid>https://theatrical.dev/essays/the-3.3-billion-api</guid>
       <pubDate>Thu, 09 Apr 2026 00:00:00 +1200</pubDate>
     </item>
 
     <item>
       <title>Event-Driven Cinema</title>
-      <link>https://theatrical.dev/essays/event-driven-cinema.html</link>
+      <link>https://theatrical.dev/essays/event-driven-cinema</link>
       <description>Why real-time events change everything for cinema operations — and how to build an event bridge when the platform API is request-response.</description>
-      <guid>https://theatrical.dev/essays/event-driven-cinema.html</guid>
+      <guid>https://theatrical.dev/essays/event-driven-cinema</guid>
       <pubDate>Fri, 10 Apr 2026 00:00:00 +1200</pubDate>
     </item>
   </channel>
