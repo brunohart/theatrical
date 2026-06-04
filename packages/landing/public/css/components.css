@@ -474,6 +474,17 @@ a:hover > .underline-draw::after { transform: scaleX(1); }
   letter-spacing: 0.14em;
   color: #6E7E9C;
 }
+.footer-credit .credit-link {
+  color: var(--orange);
+  text-decoration: underline;
+  text-decoration-color: rgba(212, 98, 43, 0.4);
+  text-underline-offset: 0.2em;
+  transition: color var(--duration-fast), text-decoration-color var(--duration-fast);
+}
+.footer-credit .credit-link:hover {
+  color: var(--white);
+  text-decoration-color: var(--white);
+}
 
 /* ─── Custom cursor — crop-mark reticle ─── */
 .cursor {
