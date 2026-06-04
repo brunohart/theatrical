@@ -435,6 +435,12 @@ a:hover > .underline-draw::after { transform: scaleX(1); }
   max-width: 20ch;
 }
 .essay-card p { font-size: var(--text-sm); color: var(--grey); }
+/* full-width card spanning both columns (e.g. off-site "more essays" pointer) */
+.essay-card--wide { grid-column: 1 / -1; background: var(--blue); }
+.essay-card--wide h3 { color: var(--white); max-width: none; }
+.essay-card--wide p { color: #C9D2E2; }
+.essay-card--wide:hover { border-color: var(--orange); }
+@media (max-width: 720px) { .essay-card--wide { grid-column: auto; } }
 
 /* ─── Footer / credits roll ─── */
 .footer {
