@@ -179,7 +179,65 @@
   color: var(--color-accent-hover);
 }
 
+/* From-the-author CTA — points readers to Bruno's personal essays */
+.author-cta {
+  margin-top: 3.5rem;
+  padding: 2rem 2.25rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-left: 3px solid var(--color-accent);
+  border-radius: 10px;
+}
+.author-cta__eyebrow {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin-bottom: 0.75rem;
+}
+.author-cta__title {
+  font-family: var(--font-heading);
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin: 0 0 0.5rem;
+  color: var(--color-text);
+}
+.author-cta__desc {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--color-text-muted);
+  margin: 0 0 1.25rem;
+  max-width: 52ch;
+}
+.author-cta__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-accent);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+}
+.author-cta__link:hover {
+  color: var(--color-accent-hover);
+  border-color: var(--color-accent-hover);
+}
+.author-cta__link .arrow {
+  transition: transform 0.2s;
+}
+.author-cta__link:hover .arrow {
+  transform: translateX(3px);
+}
+
 @media (max-width: 640px) {
   .essay-title { font-size: 1.75rem; }
   .essay { padding: 2rem 1rem 4rem; }
+  .author-cta { padding: 1.5rem 1.5rem; }
 }
