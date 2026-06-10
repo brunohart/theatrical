@@ -41,12 +41,14 @@ from theatrical.types.order import (
     AddTicketsInput,
     ApplyLoyaltyInput,
     CreateOrderInput,
+    ItemInput,
     Order,
     OrderHistoryFilter,
     OrderItem,
     OrderStatus,
     OrderTransition,
     Ticket,
+    TicketInput,
 )
 from theatrical.types.pagination import (
     PaginatedResponse,
@@ -132,6 +134,7 @@ __all__ = [
     "Genre",
     "GeoLocation",
     "ItemCustomisation",
+    "ItemInput",
     "LoyaltyMember",
     "LoyaltyTier",
     "LoyaltyTierName",
@@ -178,6 +181,7 @@ __all__ = [
     "TaxConfig",
     "Ticket",
     "TicketCategory",
+    "TicketInput",
     "TicketType",
     "TicketTypeFilter",
 ]
