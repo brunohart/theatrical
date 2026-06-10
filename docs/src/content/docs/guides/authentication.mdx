@@ -1,15 +1,15 @@
 ---
 title: Authentication
-description: Configure token-based operator auth and cookie-based loyalty member auth.
+description: Configure token-based operator auth and loyalty member authentication.
 ---
 
 import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
 
-Theatrical supports two authentication modes. Most applications use both: operator tokens for transactional API calls, loyalty cookies for member-contextual calls (points balance, personal order history, subscription status).
+Theatrical supports two authentication contexts. Most applications use both: an operator API key for transactional API calls, and loyalty member authentication for member-contextual calls (points balance, personal order history, subscription status).
 
 ## Token-based auth (GAS)
 
-Vista Group's Global Authentication Service issues JWT operator tokens. These are short-lived (typically 1 hour) and are automatically refreshed by the SDK's `TokenManager` — your application code never handles token rotation.
+The Global Authentication Service issues JWT operator tokens. These are short-lived and are automatically managed by the SDK's `TokenManager` — your application code never handles token rotation.
 
 ### Configuration
 
@@ -17,25 +17,22 @@ Vista Group's Global Authentication Service issues JWT operator tokens. These ar
 import { TheatricalClient } from '@theatrical/sdk';
 
 const client = TheatricalClient.create({
-  apiKey: process.env.THEATRICAL_API_KEY,     // Your operator API key
-  apiSecret: process.env.THEATRICAL_SECRET,   // Your operator secret
-  baseUrl: 'https://your-vista-instance.example.com',
+  apiKey: process.env.THEATRICAL_API_KEY!,  // Your operator API key
+  environment: 'production',                // 'sandbox' (default) | 'staging' | 'production'
 });
 ```
 
-The `apiKey` + `apiSecret` pair is exchanged for a bearer token on first request. Subsequent requests reuse the cached token until 60 seconds before expiry, at which point the SDK proactively refreshes it.
+The `apiKey` is exchanged for a bearer token on first request. Subsequent requests reuse the cached token until five minutes before expiry, at which point the SDK proactively refreshes it. Concurrent requests during a refresh share a single token request — no thundering herd.
 
 ### Environment variables
 
 ```bash
 # .env
 THEATRICAL_API_KEY=op_live_xxxxxxxxxx
-THEATRICAL_SECRET=sk_live_xxxxxxxxxx
-THEATRICAL_BASE_URL=https://api.yourcinema.com
 ```
 
 <Aside type="caution">
-Never commit your operator secret to version control. Use `.env` files (in `.gitignore`) and a secrets manager in production.
+Never commit your API key to version control. Use `.env` files (in `.gitignore`) and a secrets manager in production.
 </Aside>
 
 ### Token lifecycle
@@ -44,7 +41,7 @@ Never commit your operator secret to version control. Use `.env` files (in `.git
 First request
     │
     ▼
-GAS token request (apiKey + apiSecret)
+GAS token request (apiKey)
     │
     ▼
 Bearer token cached in memory (TokenManager)
@@ -52,78 +49,50 @@ Bearer token cached in memory (TokenManager)
     ▼  repeated for all requests
 HTTP calls with Authorization: Bearer <token>
     │
-    ▼  60s before expiry
-Proactive token refresh (background)
+    ▼  5 minutes before expiry
+Proactive token refresh (deduplicated)
     │
     ▼  on 401 response
-Immediate token refresh + one retry
+Token invalidation + one immediate retry
 ```
 
-## Cookie-based auth (loyalty members)
+## Loyalty member authentication
 
-Loyalty member endpoints require the Vista loyalty session cookie. This is obtained after a member authenticates through your cinema's loyalty portal.
-
-### Configuration
-
-```typescript
-const memberClient = TheatricalClient.create({
-  apiKey: process.env.THEATRICAL_API_KEY,
-  baseUrl: 'https://your-vista-instance.example.com',
-  loyaltyCookie: req.cookies['vista_session'], // From your auth flow
-});
-```
-
-### Member authentication flow
+Member-contextual endpoints take an explicit member ID. A member proves who they are once via `loyalty.authenticate`; your application then stores the member ID in its own session and passes it to subsequent calls.
 
 <Tabs>
-  <TabItem label="Server-side (recommended)">
+  <TabItem label="Authenticate a member">
     ```typescript
-    // After member logs in through your loyalty portal
-    const member = await client.loyalty.authenticate({
-      username: email,
-      password: hashedPassword, // Vista handles password hashing
-    });
+    // After the member submits your login form
+    const member = await client.loyalty.authenticate(email, password);
 
-    // Store the session cookie in your own session
-    res.cookie('vista_session', member.sessionCookie, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'lax',
-    });
+    // Store the member ID in your own session
+    req.session.memberId = member.id;
     ```
   </TabItem>
-  <TabItem label="Client-side (SSR)">
+  <TabItem label="Member-contextual calls">
     ```typescript
     // In an API route or server component
-    const client = TheatricalClient.create({
-      apiKey: process.env.THEATRICAL_API_KEY,
-      baseUrl: process.env.THEATRICAL_BASE_URL,
-      loyaltyCookie: request.cookies.get('vista_session')?.value,
-    });
-
-    const member = await client.loyalty.getMember();
+    const member = await client.loyalty.getMember(req.session.memberId);
     const balance = await client.loyalty.getPointsBalance(member.id);
+
+    console.log(`${member.firstName}: ${balance.points} points`);
     ```
   </TabItem>
 </Tabs>
 
-## Per-request overrides
-
-The client supports per-request auth overrides for multi-tenant scenarios:
-
-```typescript
-// Override loyalty cookie for a specific call
-const balance = await client.loyalty.getPointsBalance(memberId, {
-  loyaltyCookie: memberSession,
-});
-```
+<Aside type="note">
+The SDK never stores member credentials or session state — session management belongs to your application. `authenticate` returns the full `LoyaltyMember`; everything after that is keyed by `member.id`.
+</Aside>
 
 ## Verifying your setup
 
 ```typescript
+import { AuthenticationError } from '@theatrical/sdk';
+
 try {
   const sites = await client.sites.list();
-  console.log(`Auth OK — ${sites.data.length} sites accessible`);
+  console.log(`Auth OK — ${sites.length} sites accessible`);
 } catch (err) {
   if (err instanceof AuthenticationError) {
     console.error('Auth failed:', err.message);
