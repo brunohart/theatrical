@@ -10,7 +10,7 @@ pip install theatrical
 
 ## Status
 
-**Alpha** — all 8 resource modules implemented with full TS API parity. 332 pytest tests passing. mypy strict clean, ruff clean.
+**Alpha** — all 8 resource modules implemented with full TS API parity. 339 pytest tests passing. mypy strict clean, ruff clean.
 
 ## Requirements
 
@@ -55,7 +55,7 @@ client = TheatricalClient.global_instance()
 - Typed error hierarchy: `AuthenticationError`, `NotFoundError`, `RateLimitError`, `ValidationError`
 - Mock mode with NZ cinema fixture data for offline development
 - PEP 561 compliant — ships `py.typed` for downstream type checking
-- 332 tests, mypy strict, ruff clean
+- 339 tests, mypy strict, ruff clean
 
 ## Development
 
