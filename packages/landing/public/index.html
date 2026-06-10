@@ -226,17 +226,23 @@
 const client =
   TheatricalClient.createMock();
 
-const { data: films } =
+const films =
   await client.films.nowShowing();
 
+const { sessions } =
+  await client.sessions.list({
+    filmId: films[0].id,
+  });
+
 const order = await client.orders.create({
-  sessionId: films[0].sessionId,
+  sessionId: sessions[0].id,
   tickets: [{ type: 'adult', seatId: 'H7' }],
 });</code></pre>
           </div>
           <div class="install-tab">
             <h3>C# / .NET</h3>
             <pre class="code-block"><code>using Theatrical.Sdk;
+using Theatrical.Sdk.Types;
 
 var client =
   TheatricalClient.CreateMock();
@@ -253,15 +259,14 @@ var sessions =
           <div class="install-tab">
             <h3>Python</h3>
             <pre class="code-block"><code>from theatrical import TheatricalClient
+from theatrical.types import SessionFilter
 
-client =
-  TheatricalClient.create_mock()
+client = TheatricalClient.create_mock()
 
-films =
-  await client.films.now_showing()
+films = await client.films.now_showing()
 
-sessions = await client.sessions.list(
-    site_id="site_embassy_wellington",
+result = await client.sessions.list(
+    SessionFilter(site_id="site_embassy_wellington"),
 )</code></pre>
           </div>
         </div>
