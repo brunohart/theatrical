@@ -120,7 +120,7 @@ Vista has no real-time event system. This package fills the gap:
 
 **Webhook Delivery**: HMAC-SHA256 signed payloads (`X-Theatrical-Signature: sha256=<hex>`), exponential backoff retry, `Promise.allSettled` for endpoint isolation — one failing endpoint never blocks another.
 
-### `@theatrical/templates` — Starter Applications
+### `templates/` — Starter Applications (scaffolded via `@theatrical/cli init`)
 
 The `react-ticketing` template is a complete cinema booking app:
 

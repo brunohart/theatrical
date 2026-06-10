@@ -160,7 +160,7 @@ Every SDK provides the same capabilities: GAS authentication with token refresh,
 | [`@theatrical/react`](packages/react) | SeatMap, SessionPicker, OrderSummary, PaymentForm, Loyalty — ARIA accessible, dark-mode-first | 57 | BSL 1.1 |
 | [`@theatrical/events`](packages/events) | Real-time event bridge: poll → diff → emit → webhook (HMAC-SHA256 signed) | 71 | BSL 1.1 |
 | [`@theatrical/analytics`](packages/analytics) | Horizon client, fluent query builder, export to CSV/JSON/DataFrame/Chart.js | 72 | BSL 1.1 |
-| [`@theatrical/templates`](packages/templates) | React ticketing starter — 4-page booking app, ready to deploy | — | BSL 1.1 |
+| [Starter templates](packages/templates) | React ticketing starter — 4-page booking app, scaffolded via `npx @theatrical/cli init` | — | BSL 1.1 |
 
 <p align="center"><img src="docs/public/divider.svg" width="480" alt="" /></p>
 
@@ -269,6 +269,6 @@ Theatrical is not affiliated with, endorsed by, or officially connected to Vista
 | Packages | License | Why |
 |----------|---------|-----|
 | `@theatrical/sdk`, `@theatrical/cli`, `Theatrical.Sdk`, `theatrical` (Python) | **MIT** | Maximum adoption |
-| `@theatrical/events`, `@theatrical/analytics`, `@theatrical/react`, `@theatrical/templates` | **BSL 1.1** | Commercial protection, converts to MIT after 3 years |
+| `@theatrical/events`, `@theatrical/analytics`, `@theatrical/react`, starter templates | **BSL 1.1** | Commercial protection, converts to MIT after 3 years |
 
 © 2026 [Bruno Hart](https://github.com/brunohart)
