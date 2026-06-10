@@ -58,8 +58,8 @@ import { TheatricalClient } from '@theatrical/sdk';
 
 const client = TheatricalClient.createMock();
 
-const { data: films } = await client.films.nowShowing();
-const { data: sessions } = await client.sessions.list({
+const films = await client.films.nowShowing();
+const { sessions } = await client.sessions.list({
   siteId: 'site_embassy_wellington',
 });
 
@@ -74,6 +74,7 @@ const order = await client.orders.create({
 
 ```csharp
 using Theatrical.Sdk;
+using Theatrical.Sdk.Types;
 
 var client = TheatricalClient.CreateMock();
 
@@ -90,12 +91,13 @@ var sessions = await client.Sessions.ListAsync(
 
 ```python
 from theatrical import TheatricalClient
+from theatrical.types import SessionFilter
 
 client = TheatricalClient.create_mock()
 
 films = await client.films.now_showing()
-sessions = await client.sessions.list(
-    site_id="site_embassy_wellington"
+result = await client.sessions.list(
+    SessionFilter(site_id="site_embassy_wellington")
 )
 ```
 
