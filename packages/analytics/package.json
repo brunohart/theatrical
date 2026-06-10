@@ -1,7 +1,7 @@
 {
   "name": "@theatrical/analytics",
-  "version": "0.1.0",
-  "description": "Typed analytics client for Vista Horizon — cinema data warehouse queries with a fluent builder API",
+  "version": "0.1.1",
+  "description": "Typed analytics client for Vista Horizon \u2014 cinema data warehouse queries with a fluent builder API",
   "keywords": [
     "cinema",
     "analytics",
