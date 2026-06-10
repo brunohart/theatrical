@@ -192,13 +192,13 @@ The event bridge polls, diffs state changes, and delivers typed webhooks with HM
 
 ```bash
 # Scaffold a new project with everything wired up
-npx theatrical init my-cinema-app --template react-ticketing
+npx @theatrical/cli init my-cinema-app --template react-ticketing
 
 # Explore any API endpoint interactively
-npx theatrical inspect sessions list --site roxy-wellington
+npx @theatrical/cli inspect sessions list --site roxy-wellington
 
 # Generate types from an OpenAPI spec
-npx theatrical codegen --spec openapi.yaml --output src/types
+npx @theatrical/cli codegen --spec openapi.yaml --output src/types
 ```
 
 ### Components that know cinema
