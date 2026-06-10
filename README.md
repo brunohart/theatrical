@@ -147,8 +147,8 @@ Every SDK provides the same capabilities: GAS authentication with token refresh,
 | Package | Language | Tests | Install |
 |---------|----------|-------|---------|
 | [`@theatrical/sdk`](packages/sdk) | TypeScript 5.9 | 274 | `npm install @theatrical/sdk` |
-| [`Theatrical.Sdk`](packages/sdk-csharp) | C# / .NET 8 | 272 | `dotnet add package Theatrical.Sdk` |
-| [`theatrical`](packages/sdk-py) | Python 3.10+ | 337 | `pip install theatrical` |
+| [`Theatrical.Sdk`](packages/sdk-csharp) | C# / .NET 8 | 276 | `dotnet add package Theatrical.Sdk` |
+| [`theatrical`](packages/sdk-py) | Python 3.10+ | 339 | `pip install theatrical` |
 
 **8 resource modules** per SDK: Sessions, Sites, Films, Orders, Loyalty, Subscriptions, Pricing, F&B.
 
@@ -157,9 +157,9 @@ Every SDK provides the same capabilities: GAS authentication with token refresh,
 | Package | Description | Tests | License |
 |---------|-------------|-------|---------|
 | [`@theatrical/cli`](packages/cli) | Scaffold projects, generate types from OpenAPI, explore APIs interactively | 165 | MIT |
-| [`@theatrical/react`](packages/react) | SeatMap, SessionPicker, OrderSummary, PaymentForm, Loyalty — ARIA accessible, dark-mode-first | 34 | BSL 1.1 |
+| [`@theatrical/react`](packages/react) | SeatMap, SessionPicker, OrderSummary, PaymentForm, Loyalty — ARIA accessible, dark-mode-first | 57 | BSL 1.1 |
 | [`@theatrical/events`](packages/events) | Real-time event bridge: poll → diff → emit → webhook (HMAC-SHA256 signed) | 71 | BSL 1.1 |
-| [`@theatrical/analytics`](packages/analytics) | Horizon client, fluent query builder, export to CSV/JSON/DataFrame/Chart.js | 35 | BSL 1.1 |
+| [`@theatrical/analytics`](packages/analytics) | Horizon client, fluent query builder, export to CSV/JSON/DataFrame/Chart.js | 72 | BSL 1.1 |
 | [`@theatrical/templates`](packages/templates) | React ticketing starter — 4-page booking app, ready to deploy | — | BSL 1.1 |
 
 <p align="center"><img src="docs/public/divider.svg" width="480" alt="" /></p>
@@ -217,12 +217,12 @@ Dark-mode-first. Fully themeable via design tokens.
 
 ## Testing
 
-**1,048 tests** across three languages:
+**1,254 tests** across three languages:
 
 ```
-TypeScript    439 tests    SDK 274 · CLI 165
-C# / .NET     272 tests    xUnit
-Python        337 tests    pytest · mypy-strict · ruff
+TypeScript    639 tests    SDK 274 · CLI 165 · Events 71 · React 57 · Analytics 72
+C# / .NET     276 tests    xUnit
+Python        339 tests    pytest · mypy-strict · ruff
 ```
 
 All mock data uses real NZ cinema context — Embassy Theatre Wellington, Roxy Cinema Wellington, Rialto Auckland. NZD currency, `en-NZ` locale. The fixture data tells a story, not `test-1` and `site-abc`.
