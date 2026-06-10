@@ -34,7 +34,7 @@ You need a Vista Group operator token. If you don't have one yet, see [Authentic
 
    ```typescript
    // In your app entry point
-   TheatricalClient.init({
+   TheatricalClient.setGlobal({
      apiKey: process.env.THEATRICAL_API_KEY,
      baseUrl: 'https://your-vista-instance.example.com',
    });
@@ -46,22 +46,22 @@ You need a Vista Group operator token. If you don't have one yet, see [Authentic
 3. **Fetch sessions**
 
    ```typescript
-   const sessions = await client.sessions.list({
+   const { sessions } = await client.sessions.list({
      siteId: 'site-001',
      date: '2026-04-20',
    });
 
-   for (const session of sessions.data) {
-     console.log(`${session.film.title} — ${session.startTime} — ${session.screen.name}`);
+   for (const session of sessions) {
+     console.log(`${session.filmTitle} — ${session.startTime} — ${session.screenName}`);
    }
    ```
 
-   The response is fully typed. Your editor will autocomplete `session.film`, `session.screen`, `session.format`, and all nested fields.
+   The response is fully typed. Your editor will autocomplete `session.filmTitle`, `session.screenName`, `session.format`, and all nested fields.
 
 4. **Check seat availability**
 
    ```typescript
-   const availability = await client.sessions.availability(sessions.data[0].id);
+   const availability = await client.sessions.availability(sessions[0].id);
 
    const availableSeats = availability.seats.filter(s => s.status === 'available');
    console.log(`${availableSeats.length} seats available`);
@@ -71,19 +71,15 @@ You need a Vista Group operator token. If you don't have one yet, see [Authentic
 
    ```typescript
    const order = await client.orders.create({
-     sessionId: sessions.data[0].id,
-     siteId: 'site-001',
-   });
-
-   await client.orders.addTickets(order.id, {
+     sessionId: sessions[0].id,
      tickets: [
-       { seatId: availableSeats[0].id, ticketTypeId: 'adult' },
-       { seatId: availableSeats[1].id, ticketTypeId: 'adult' },
+       { type: 'adult', seatId: availableSeats[0].id },
+       { type: 'adult', seatId: availableSeats[1].id },
      ],
    });
 
    const confirmed = await client.orders.confirm(order.id);
-   console.log(`Order confirmed: ${confirmed.id} — total ${confirmed.pricing.total}`);
+   console.log(`Order confirmed: ${confirmed.id} — total ${confirmed.total} ${confirmed.currency}`);
    ```
 
 </Steps>
