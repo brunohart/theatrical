@@ -201,6 +201,7 @@ function defaultTemplate(options: InitOptions): TemplateDefinition {
               '@theatrical/sdk': '^0.1.0',
             },
             devDependencies: {
+              '@theatrical/cli': '^0.1.0',
               typescript: '^5.4.0',
               tsx: '^4.0.0',
               '@types/node': '^20.0.0',
