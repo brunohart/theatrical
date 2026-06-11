@@ -1,66 +1,65 @@
 # react-ticketing
 
-A complete cinema ticketing application built with `@theatrical/sdk` and `@theatrical/react`.
+A living cinema booking demo built on `@theatrical/events`.
 
-Demonstrates the full booking flow: film discovery → session selection → seat map → order summary → payment.
+A request-response API hands you a photograph. This app runs a cinema whose state genuinely changes — seats sell, sessions sell out, orders confirm — and the real `BookingWatcher` and `SessionWatcher` from the published `@theatrical/events` package poll it, diff it, and emit the typed event stream that drives the UI. The interface listens to the pulse, not the photo.
+
+Three pages: programme → seat selection → confirmation.
 
 ## Quick Start
 
 ```bash
-# Clone
-git clone https://github.com/brunohart/theatrical.git
-cd theatrical/packages/templates/react-ticketing
+# Scaffold with the CLI
+npx @theatrical/cli init my-cinema --template react-ticketing
+cd my-cinema
 
-# Install
+# Install and run — no API key, no configuration
 npm install
-
-# Run in mock mode (no API key required)
 npm run dev
 ```
 
 Open [http://localhost:5173](http://localhost:5173).
 
-## Mock Mode
-
-The template ships in mock mode by default (`VITE_THEATRICAL_MOCK=true`). This uses `TheatricalClient.createMock()` — a fully offline client with pre-loaded NZ cinema fixture data.
-
-To connect to a real Vista API:
+Or run it from the monorepo:
 
 ```bash
-cp .env.example .env
-# Edit .env: set VITE_THEATRICAL_MOCK=false and VITE_THEATRICAL_API_KEY=your_key
-npm run dev
+git clone https://github.com/brunohart/theatrical.git
+cd theatrical/packages/templates/react-ticketing
+npm install && npm run dev
 ```
 
 ## Architecture
 
 ```
 src/
-├── context/BookingContext.tsx  # useReducer state: film → session → seats → order → member
+├── lib/cinema.ts          # The living cinema — simulated state + real
+│                          #   @theatrical/events watchers (poll → diff → emit)
 ├── pages/
-│   ├── Home.tsx           # Film grid (nowShowing)
-│   ├── Film.tsx           # SessionPicker for a film
-│   ├── Booking.tsx        # SeatMap + seat selection
-│   └── Confirmation.tsx   # OrderSummary + MemberCard + PaymentForm
-└── App.tsx                # Router, TheatricalThemeProvider, BookingProvider
+│   ├── Seats.tsx          # Seat map + selection for a session
+│   └── Confirmation.tsx   # Booking confirmation
+├── components/            # Chrome, Poster, Timeboard, MissionControl, CodeSeam
+├── App.tsx                # Router + Home programme grid
+└── theme.ts               # Design tokens
 ```
 
-## Components Used
+Routes: `/` (programme) → `/book/:sessionId` (seats) → `/done` (confirmation).
 
-| Component | Package | Page |
-|-----------|---------|------|
-| `SessionPicker` | `@theatrical/react` | Film |
-| `SeatMap` | `@theatrical/react` | Booking |
-| `OrderSummary` | `@theatrical/react` | Confirmation |
-| `PaymentForm` | `@theatrical/react` | Confirmation |
-| `MemberCard` | `@theatrical/react` | Confirmation |
-| `LoyaltyBadge` | `@theatrical/react` | Confirmation |
+## What it demonstrates
+
+| Capability | Package |
+|------------|---------|
+| `BookingWatcher` — typed `booking.confirmed` events from polled order state | `@theatrical/events` |
+| `SessionWatcher` — `session.soldout` detection via state diffing | `@theatrical/events` |
+| Event-driven UI — the timeboard and mission control react to the stream | — |
+
+The watchers are the published package, unmodified — the same poll → diff → emit
+pipeline you would point at a real cinema platform API.
 
 ## Deploy to Vercel
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/brunohart/theatrical/tree/main/packages/templates/react-ticketing)
 
-Or via CLI from the repo root:
+Or via CLI:
 
 ```bash
 cd packages/templates/react-ticketing
