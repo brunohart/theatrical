@@ -7,19 +7,23 @@
  * worker templates extend the default template with additional files.
  *
  * Available templates:
- * - `default`   — Minimal TypeScript + SDK client
- * - `fullstack` — Express API + React frontend
- * - `worker`    — Background event processor
+ * - `default`         — Minimal TypeScript + SDK client
+ * - `fullstack`       — Express API + React frontend
+ * - `worker`          — Background event processor
+ * - `react-ticketing` — Living cinema booking demo on @theatrical/events
  */
 
+import { REACT_TICKETING_FILES } from './react-ticketing.generated.js';
+
 /** Available project template identifiers */
-export type ProjectTemplate = 'default' | 'fullstack' | 'worker';
+export type ProjectTemplate = 'default' | 'fullstack' | 'worker' | 'react-ticketing';
 
 /** All valid template names for validation */
 export const VALID_TEMPLATES: readonly ProjectTemplate[] = [
   'default',
   'fullstack',
   'worker',
+  'react-ticketing',
 ] as const;
 
 /** Metadata and file list for a project template */
@@ -70,6 +74,7 @@ export function getTemplate(
     default: () => buildDefaultTemplate(context),
     fullstack: () => buildFullstackTemplate(context),
     worker: () => buildWorkerTemplate(context),
+    'react-ticketing': () => buildReactTicketingTemplate(context),
   };
 
   return builders[template]();
@@ -83,6 +88,7 @@ export function listTemplates(): Array<{ name: ProjectTemplate; description: str
     { name: 'default', description: 'Minimal TypeScript project with Theatrical SDK' },
     { name: 'fullstack', description: 'Express API + React frontend with SDK integration' },
     { name: 'worker', description: 'Background worker for cinema event processing' },
+    { name: 'react-ticketing', description: 'Living cinema booking demo — @theatrical/events watchers driving a React UI' },
   ];
 }
 
@@ -121,6 +127,17 @@ function buildWorkerTemplate(ctx: TemplateContext): TemplateDefinition {
   };
 }
 
+function buildReactTicketingTemplate(ctx: TemplateContext): TemplateDefinition {
+  return {
+    name: 'react-ticketing',
+    description: 'Living cinema booking demo — @theatrical/events watchers driving a React UI',
+    files: REACT_TICKETING_FILES.map((file) => ({
+      path: file.path,
+      content: file.content.replaceAll('{{PROJECT_NAME}}', ctx.projectName),
+    })),
+  };
+}
+
 // ─── File Generators ──────────────────────────────────────
 
 function packageJson(ctx: TemplateContext): TemplateFile {
@@ -141,6 +158,7 @@ function packageJson(ctx: TemplateContext): TemplateFile {
           '@theatrical/sdk': '^0.1.0',
         },
         devDependencies: {
+          '@theatrical/cli': '^0.1.0',
           typescript: '^5.4.0',
           tsx: '^4.0.0',
           '@types/node': '^20.0.0',
@@ -181,7 +199,8 @@ function envFile(ctx: TemplateContext): TemplateFile {
     content: [
       '# Theatrical SDK Configuration',
       `THEATRICAL_API_KEY=${ctx.apiKey ?? 'your-api-key-here'}`,
-      'THEATRICAL_API_URL=https://api.vista.co/ocapi/v1',
+      '# Base URL of your cinema platform API (optional — defaults to the sandbox environment)',
+      '# THEATRICAL_API_URL=https://your-platform-host.example.com',
       '',
     ].join('\n'),
   };
@@ -193,7 +212,8 @@ function envExample(): TemplateFile {
     content: [
       '# Theatrical SDK Configuration',
       'THEATRICAL_API_KEY=your-api-key-here',
-      'THEATRICAL_API_URL=https://api.vista.co/ocapi/v1',
+      '# Base URL of your cinema platform API (optional — defaults to the sandbox environment)',
+      '# THEATRICAL_API_URL=https://your-platform-host.example.com',
       '',
     ].join('\n'),
   };
@@ -212,16 +232,18 @@ function entryPoint(): TemplateFile {
     content: [
       "import { TheatricalClient } from '@theatrical/sdk';",
       '',
-      '// Initialize the SDK client',
-      'const client = TheatricalClient.create({',
-      "  apiKey: process.env.THEATRICAL_API_KEY ?? '',",
-      "  baseUrl: process.env.THEATRICAL_API_URL ?? 'https://api.vista.co/ocapi/v1',",
-      '});',
+      '// Initialize the SDK client — use createMock() to run without credentials',
+      'const client = process.env.THEATRICAL_API_KEY',
+      '  ? TheatricalClient.create({',
+      "      apiKey: process.env.THEATRICAL_API_KEY,",
+      '      baseUrl: process.env.THEATRICAL_API_URL,',
+      '    })',
+      '  : TheatricalClient.createMock();',
       '',
       'async function main() {',
       '  // List films currently showing',
-      '  const films = await client.films.list({ nowShowing: true });',
-      "  console.log('Now Showing:', films);",
+      '  const films = await client.films.nowShowing();',
+      "  console.log('Now Showing:', films.map((f) => f.title));",
       '}',
       '',
       "main().catch(console.error);",
@@ -245,7 +267,7 @@ function serverFile(): TemplateFile {
       '});',
       '',
       "app.get('/api/films', async (_req, res) => {",
-      '  const films = await client.films.list({ nowShowing: true });',
+      '  const films = await client.films.nowShowing();',
       '  res.json(films);',
       '});',
       '',
