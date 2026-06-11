@@ -1,25 +1,41 @@
 import React, { createContext, useContext, type ReactNode } from 'react';
 import { tokens, type Tokens } from '../tokens';
 
-const ThemeContext = createContext<Tokens>(tokens);
+/**
+ * The default `tokens` are declared `as const`, so each value is a literal
+ * type (e.g. `accent: '#D4622B'`). That is perfect for reading, but it would
+ * reject any brand override — `accent: '#e60026'` is not the literal
+ * `'#D4622B'`. `Themeable` widens every leaf back to its primitive so
+ * overrides accept arbitrary colours, sizes, and font stacks.
+ */
+type Themeable<T> = {
+  -readonly [K in keyof T]: T[K] extends string
+    ? string
+    : T[K] extends number
+      ? number
+      : Themeable<T[K]>;
+};
 
-export function useTheme(): Tokens {
+/** Fully-resolved, writable theme — the shape `useTheme()` returns. */
+export type Theme = Themeable<Tokens>;
+
+type DeepPartial<T> = {
+  [K in keyof T]?: T[K] extends object ? DeepPartial<T[K]> : T[K];
+};
+
+/** A partial set of token overrides, nested to any depth within a namespace. */
+export type ThemeOverrides = DeepPartial<Theme>;
+
+const ThemeContext = createContext<Theme>(tokens);
+
+export function useTheme(): Theme {
   return useContext(ThemeContext);
 }
-
-type DeepPartialTokens = Partial<{
-  colors: Partial<Tokens['colors']>;
-  spacing: Partial<Tokens['spacing']>;
-  typography: Partial<Tokens['typography']>;
-  radii: Partial<Tokens['radii']>;
-  shadows: Partial<Tokens['shadows']>;
-  transitions: Partial<Tokens['transitions']>;
-}>;
 
 interface TheatricalThemeProviderProps {
   children: ReactNode;
   /** Override specific token values. Deep-merged with defaults — partial overrides within each namespace are safe. */
-  overrides?: DeepPartialTokens;
+  overrides?: ThemeOverrides;
 }
 
 /**
@@ -34,12 +50,20 @@ interface TheatricalThemeProviderProps {
  * ```
  */
 export function TheatricalThemeProvider({ children, overrides }: TheatricalThemeProviderProps) {
-  const theme: Tokens = overrides
+  const theme: Theme = overrides
     ? {
         ...tokens,
         colors: { ...tokens.colors, ...(overrides.colors ?? {}) },
         spacing: { ...tokens.spacing, ...(overrides.spacing ?? {}) },
-        typography: { ...tokens.typography, ...(overrides.typography ?? {}) },
+        typography: {
+          ...tokens.typography,
+          ...(overrides.typography ?? {}),
+          // The nested scales merge per-key so overriding one size or weight
+          // doesn't drop the rest of the scale.
+          sizes: { ...tokens.typography.sizes, ...(overrides.typography?.sizes ?? {}) },
+          weights: { ...tokens.typography.weights, ...(overrides.typography?.weights ?? {}) },
+          lineHeights: { ...tokens.typography.lineHeights, ...(overrides.typography?.lineHeights ?? {}) },
+        },
         radii: { ...tokens.radii, ...(overrides.radii ?? {}) },
         shadows: { ...tokens.shadows, ...(overrides.shadows ?? {}) },
         transitions: { ...tokens.transitions, ...(overrides.transitions ?? {}) },

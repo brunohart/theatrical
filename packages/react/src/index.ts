@@ -4,6 +4,7 @@ export type { Tokens, ColorToken } from './tokens';
 
 // Theme
 export { TheatricalThemeProvider, useTheme } from './theme/ThemeProvider';
+export type { Theme, ThemeOverrides } from './theme/ThemeProvider';
 
 // Components
 export { SeatMap, Seat, SeatRow, SeatLegend } from './components/SeatMap';
