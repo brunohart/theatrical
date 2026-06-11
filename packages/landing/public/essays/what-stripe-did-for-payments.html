@@ -100,7 +100,7 @@ const client = TheatricalClient.create({ apiKey: process.env.API_KEY });
 
 // Typed return value. Automatic token refresh. Rate limit handling.
 // Zod validates the response shape at the boundary.
-const { data: sessions } = await client.sessions.list({
+const { sessions } = await client.sessions.list({
   siteId: &#39;roxy-wellington&#39;,
   date: &#39;2026-05-03&#39;,
 });
@@ -120,7 +120,7 @@ const customer = await stripe.customers.create({ email: &#39;user@example.com&#3
 // customer.id is string. customer.email is string | null. TypeScript knows.
 
 // Theatrical equivalent
-const { data: sites } = await client.sites.list({ query: &#39;Wellington&#39; });
+const sites = await client.sites.list({ query: &#39;Wellington&#39; });
 // sites is Site[]. Each site has typed screens, address, config.
 </code></pre>
 <h3>2. The Error Hierarchy</h3>
@@ -152,7 +152,7 @@ const stripe = require(&#39;stripe&#39;)(&#39;sk_test_...&#39;);
 
 // Theatrical: mock mode is a factory method
 const client = TheatricalClient.createMock();
-const { data: films } = await client.films.nowShowing();
+const films = await client.films.nowShowing();
 // Returns NZ cinema fixture data — Embassy Theatre, Roxy Cinema.
 // No API key required. Works offline.
 </code></pre>
