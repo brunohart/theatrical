@@ -24,7 +24,7 @@
   <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-5.9-D4622B.svg?style=flat-square&labelColor=1B2D4F" alt="TypeScript" /></a>
   <a href="https://dotnet.microsoft.com/"><img src="https://img.shields.io/badge/.NET-8.0-D4622B.svg?style=flat-square&labelColor=1B2D4F" alt=".NET" /></a>
   <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.10+-D4622B.svg?style=flat-square&labelColor=1B2D4F" alt="Python" /></a>
-  <a href="#testing"><img src="https://img.shields.io/badge/tests-1%2C048%20passing-D4622B.svg?style=flat-square&labelColor=1B2D4F" alt="Tests" /></a>
+  <a href="#testing"><img src="https://img.shields.io/badge/tests-1%2C260%20passing-D4622B.svg?style=flat-square&labelColor=1B2D4F" alt="Tests" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT%20%2F%20BSL%201.1-D4622B.svg?style=flat-square&labelColor=1B2D4F" alt="License" /></a>
 </p>
 
@@ -120,8 +120,8 @@ Mock mode returns real NZ cinema fixture data — Embassy Theatre Wellington, Ro
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                         Your Application                                │
 ├──────────────┬───────────────┬───────────────┬──────────────────────────┤
-│  @theatrical │  @theatrical  │  @theatrical  │      @theatrical         │
-│    /react    │  /templates   │  /analytics   │       /events            │
+│  @theatrical │   templates   │  @theatrical  │      @theatrical         │
+│    /react    │  (CLI init)   │  /analytics   │       /events            │
 │  Components  │  Starters     │  Horizon      │  Real-time Bridge        │
 ├──────────────┴───────┬───────┴───────────────┴──────────────────────────┤
 │                      │         @theatrical/cli                          │
@@ -156,7 +156,7 @@ Every SDK provides the same capabilities: GAS authentication with token refresh,
 
 | Package | Description | Tests | License |
 |---------|-------------|-------|---------|
-| [`@theatrical/cli`](packages/cli) | Scaffold projects, generate types from OpenAPI, explore APIs interactively | 165 | MIT |
+| [`@theatrical/cli`](packages/cli) | Scaffold projects, generate types from OpenAPI, explore APIs interactively | 171 | MIT |
 | [`@theatrical/react`](packages/react) | SeatMap, SessionPicker, OrderSummary, PaymentForm, Loyalty — ARIA accessible, dark-mode-first | 57 | BSL 1.1 |
 | [`@theatrical/events`](packages/events) | Real-time event bridge: poll → diff → emit → webhook (HMAC-SHA256 signed) | 71 | BSL 1.1 |
 | [`@theatrical/analytics`](packages/analytics) | Horizon client, fluent query builder, export to CSV/JSON/DataFrame/Chart.js | 72 | BSL 1.1 |
@@ -217,10 +217,10 @@ Dark-mode-first. Fully themeable via design tokens.
 
 ## Testing
 
-**1,254 tests** across three languages:
+**1,260 tests** across three languages:
 
 ```
-TypeScript    639 tests    SDK 274 · CLI 165 · Events 71 · React 57 · Analytics 72
+TypeScript    645 tests    SDK 274 · CLI 171 · Events 71 · React 57 · Analytics 72
 C# / .NET     276 tests    xUnit
 Python        339 tests    pytest · mypy-strict · ruff
 ```
