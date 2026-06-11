@@ -1,22 +1,22 @@
 ---
 title: Theming & Branding
-description: Customise Theatrical's cinema-dark design system to match your brand.
+description: Customise Theatrical's cinema design system to match your brand.
 ---
 
 import { Aside, Tabs, TabItem, Code } from '@astrojs/starlight/components';
 
-`@theatrical/react` ships a warm parchment design system as its default — warm backgrounds, burnt orange accents, deep navy structure. Every visual value is a token in `TheatricalThemeProvider`. This guide shows how to adapt those tokens to your brand without touching component internals.
+`@theatrical/react` ships a warm parchment design system as its default — warm backgrounds, burnt orange accents, deep navy structure. Every visual value is a token. This guide shows how to adapt those tokens to your brand without touching component internals.
 
 ## How the token system works
 
-`TheatricalThemeProvider` accepts a `theme` prop containing partial token overrides. Tokens are organised into namespaces (`colors`, `typography`, `spacing`, `radii`, `shadows`, `transitions`). A partial override **merges within each namespace** — passing `{ colors: { accent: '#e60026' } }` changes only the accent color; all other color tokens keep their default values.
+`TheatricalThemeProvider` accepts an `overrides` prop containing partial token overrides. Tokens are organised into namespaces (`colors`, `typography`, `spacing`, `radii`, `shadows`, `transitions`). A partial override **merges within each namespace** — passing `{ colors: { accent: '#e60026' } }` changes only the accent color; all other color tokens keep their default values.
 
 ```tsx
 import { TheatricalThemeProvider } from '@theatrical/react';
 
 export function App() {
   return (
-    <TheatricalThemeProvider theme={{ colors: { accent: '#e60026' } }}>
+    <TheatricalThemeProvider overrides={{ colors: { accent: '#e60026' } }}>
       <YourApp />
     </TheatricalThemeProvider>
   );
@@ -42,13 +42,15 @@ The full color palette with their default values:
 | `colors.warning` | `#D4622B` | Caution states |
 | `colors.error` | `#C4391D` | Error and destructive states — rust |
 
+Seat states have their own tokens — `seatAvailable` (`#1B2D4F`), `seatSelected` (`#D4622B`), `seatTaken` (`#D6D0C4`), `seatPremium` (`#C9922A`), `seatWheelchair` (`#2A6F97`), and `seatCompanion` (`#52B788`).
+
 ### Overriding for your brand
 
 <Tabs>
   <TabItem label="Navy accent">
     ```tsx
     // Swap accent to deep navy for a structural tone
-    const theme = {
+    const overrides = {
       colors: {
         accent: '#1B2D4F',
         accentMuted: '#15243F',
@@ -59,7 +61,7 @@ The full color palette with their default values:
   <TabItem label="Red brand">
     ```tsx
     // Event cinema red accent — rust from the palette
-    const theme = {
+    const overrides = {
       colors: {
         accent: '#C4391D',
         accentMuted: '#A83018',
@@ -70,7 +72,7 @@ The full color palette with their default values:
   <TabItem label="Dark mode">
     ```tsx
     // Invert for a dark-background deployment
-    const theme = {
+    const overrides = {
       colors: {
         bg: '#1A1A1A',
         surface: '#242420',
@@ -91,17 +93,18 @@ The full color palette with their default values:
 
 | Token | Default | Description |
 |-------|---------|-------------|
-| `typography.fontFamily` | `'Inter, -apple-system, sans-serif'` | Body and UI text — clean, stays out of the way |
-| `typography.fontFamilyHeading` | `'Space Grotesk, -apple-system, sans-serif'` | Headlines — tight tracking, poster energy |
-| `typography.fontFamilyMono` | `'JetBrains Mono, monospace'` | Labels, metadata, reference codes — archival, systematic |
-| `typography.fontSizeBase` | `'16px'` | Root font size |
-| `typography.lineHeightBase` | `'1.5'` | Body line height |
+| `typography.fontFamily` | `'Inter', -apple-system, …` | Body and UI text — clean, stays out of the way |
+| `typography.fontFamilyHeading` | `'Space Grotesk', -apple-system, …` | Headlines — tight tracking, poster energy |
+| `typography.fontFamilyMono` | `'JetBrains Mono', …` | Labels, metadata, reference codes — archival, systematic |
+| `typography.sizes` | `xs`–`display` (`0.75rem`–`2rem`) | Type scale, keyed by name |
+| `typography.weights` | `regular`–`bold` (400–700) | Font weights |
+| `typography.lineHeights` | `tight` `1.25` · `normal` `1.5` · `relaxed` `1.75` | Line-height scale |
 
 The default type stack pairs Space Grotesk for compressed, confident headings with Inter for clean body text and JetBrains Mono for systematic labels:
 
 ```tsx
 // Override with your own typeface pair
-const theme = {
+const overrides = {
   typography: {
     fontFamily: '"DM Sans", system-ui, sans-serif',
     fontFamilyHeading: '"DM Sans", system-ui, sans-serif',
@@ -115,47 +118,45 @@ Headlines should feel like poster type — compress them, track them tight. Mono
 
 ## Spacing and radii
 
-The spacing scale uses `rem` values. All component layout is derived from `spacing.base`:
+The spacing scale is a set of unitless pixel values. All component layout is derived from it:
 
 | Token | Default |
 |-------|---------|
-| `spacing.xs` | `0.25rem` |
-| `spacing.sm` | `0.5rem` |
-| `spacing.md` | `1rem` |
-| `spacing.lg` | `1.5rem` |
-| `spacing.xl` | `2rem` |
-| `spacing.xxl` | `3rem` |
+| `spacing.xs` | `4` |
+| `spacing.sm` | `8` |
+| `spacing.md` | `16` |
+| `spacing.lg` | `24` |
+| `spacing.xl` | `32` |
+| `spacing.xxl` | `48` |
 
-Border radii control component roundness:
+Border radii control component roundness (also unitless pixels):
 
 | Token | Default | Used by |
 |-------|---------|---------|
-| `radii.sm` | `4px` | Badges, chips |
-| `radii.md` | `8px` | Cards, buttons |
-| `radii.lg` | `12px` | Modals, panels |
-| `radii.full` | `9999px` | Pill buttons, avatars |
+| `radii.sm` | `4` | Badges, chips |
+| `radii.md` | `8` | Cards, buttons |
+| `radii.lg` | `12` | Modals, panels |
+| `radii.full` | `9999` | Pill buttons, avatars |
 
 For a sharper, more geometric look (common in European arthouse cinemas):
 
 ```tsx
-const theme = {
+const overrides = {
   radii: {
-    sm: '2px',
-    md: '4px',
-    lg: '6px',
-    full: '4px',  // even pill buttons become slightly squared
+    sm: 2,
+    md: 4,
+    lg: 6,
+    full: 4,  // even pill buttons become slightly squared
   },
 };
 ```
 
 ## Applying a complete brand theme
 
-This example wires a full custom theme in the `react-ticketing` template. Create `src/theme.ts`:
+This example wires a full custom theme in the `react-ticketing` template. Create `src/brand.ts`:
 
 ```typescript
-import type { DeepPartialTokens } from '@theatrical/react';
-
-export const brandTheme: DeepPartialTokens = {
+export const brandOverrides = {
   colors: {
     accent: '#C4391D',
     accentMuted: '#A83018',
@@ -167,8 +168,8 @@ export const brandTheme: DeepPartialTokens = {
     fontFamilyHeading: '"Space Grotesk", system-ui, sans-serif',
   },
   radii: {
-    md: '4px',
-    lg: '8px',
+    md: 4,
+    lg: 8,
   },
 };
 ```
@@ -176,11 +177,12 @@ export const brandTheme: DeepPartialTokens = {
 Then pass it to the provider in `src/App.tsx`:
 
 ```tsx
-import { brandTheme } from './theme';
+import { TheatricalThemeProvider } from '@theatrical/react';
+import { brandOverrides } from './brand';
 
 export default function App() {
   return (
-    <TheatricalThemeProvider theme={brandTheme}>
+    <TheatricalThemeProvider overrides={brandOverrides}>
       {/* ... */}
     </TheatricalThemeProvider>
   );
@@ -189,13 +191,13 @@ export default function App() {
 
 ## Reading tokens in your own components
 
-The theme context is available via `useTheatricalTheme()`:
+The resolved tokens are available via `useTheme()`:
 
 ```tsx
-import { useTheatricalTheme } from '@theatrical/react';
+import { useTheme } from '@theatrical/react';
 
 function PriceTag({ amount }: { amount: number }) {
-  const { colors } = useTheatricalTheme();
+  const { colors } = useTheme();
   return (
     <span style={{ color: colors.accent, fontWeight: 700 }}>
       {new Intl.NumberFormat('en-NZ', { style: 'currency', currency: 'NZD' }).format(amount)}
@@ -207,5 +209,5 @@ function PriceTag({ amount }: { amount: number }) {
 This keeps custom components visually consistent with the token system — if you change the accent color in the provider, your component updates automatically.
 
 <Aside>
-`useTheatricalTheme()` must be called inside a component tree wrapped by `TheatricalThemeProvider`. It throws if called outside the provider.
+`useTheme()` reads from React context. Called outside a `TheatricalThemeProvider`, it returns the default token set rather than throwing — so components stay renderable on their own.
 </Aside>
