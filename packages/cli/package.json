@@ -1,6 +1,6 @@
 {
   "name": "@theatrical/cli",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Developer CLI for cinema platform APIs \u2014 scaffold, codegen, and inspect",
   "type": "module",
   "main": "./dist/index.js",
