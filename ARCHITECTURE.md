@@ -122,12 +122,13 @@ Vista has no real-time event system. This package fills the gap:
 
 ### `templates/` — Starter Applications (scaffolded via `@theatrical/cli init`)
 
-The `react-ticketing` template is a complete cinema booking app:
+The `react-ticketing` template is a living cinema booking demo:
 
-- 4-page booking flow: Home → Film → Booking → Confirmation
-- `BookingContext` with `useReducer` state machine carrying the full funnel
-- `TheatricalClient.createMock()` for zero-credential onboarding
-- `VITE_THEATRICAL_MOCK` env toggle for SDK/mock switching
+- 3-page booking flow: programme → seat selection → confirmation
+- A simulated cinema whose state genuinely changes — seats sell, sessions sell out
+- The real `BookingWatcher` and `SessionWatcher` from `@theatrical/events` poll,
+  diff, and emit the typed event stream that drives the UI
+- Fully self-contained: no API key or configuration required to run
 
 ---
 

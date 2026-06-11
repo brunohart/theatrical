@@ -1,11 +1,13 @@
 ---
 title: React Ticketing Template
-description: A complete cinema booking application — film discovery through order confirmation.
+description: A living cinema booking demo — real event watchers driving a React UI.
 ---
 
 import { Steps, Aside, FileTree } from '@astrojs/starlight/components';
 
-The `react-ticketing` template is a production-ready React + Vite application demonstrating the complete Theatrical stack. It ships four pages (Home, Film, Booking, Confirmation), a `BookingContext` state machine, and full integration with `@theatrical/react` components.
+The `react-ticketing` template is a React + Vite application built around the most distinctive piece of the Theatrical stack: the event bridge. It runs a simulated cinema whose state genuinely changes — seats sell, sessions sell out, orders confirm — and the real `BookingWatcher` and `SessionWatcher` from the published `@theatrical/events` package poll it, diff it, and emit the typed event stream that drives the UI.
+
+Three pages: programme → seat selection → confirmation.
 
 ## Quick start
 
@@ -14,33 +16,26 @@ The `react-ticketing` template is a production-ready React + Vite application de
 1. **Scaffold the project**
 
    ```bash
-   theatrical init my-cinema --template react-ticketing
+   npx @theatrical/cli init my-cinema --template react-ticketing
    cd my-cinema
    ```
 
-2. **Configure your API key**
-
-   ```bash
-   cp .env.example .env
-   # Edit .env — add your VITE_THEATRICAL_API_KEY and VITE_THEATRICAL_BASE_URL
-   ```
-
-3. **Run locally**
+2. **Run locally**
 
    ```bash
    npm install
    npm run dev
    ```
 
-   The app runs in mock mode when no API key is configured — all data comes from the bundled mock layer, so you can explore the UI before connecting to a live Vista instance.
+   The app is fully self-contained — no API key, no environment configuration. Open [http://localhost:5173](http://localhost:5173).
 
-4. **Deploy to Vercel**
+3. **Deploy to Vercel**
 
    ```bash
-   vercel deploy
+   npx vercel --prod
    ```
 
-   The included `vercel.json` sets up SPA routing for React Router. Add your environment variables in the Vercel dashboard before deploying.
+   The included `vercel.json` sets up SPA routing for React Router.
 
 </Steps>
 
@@ -49,83 +44,51 @@ The `react-ticketing` template is a production-ready React + Vite application de
 <FileTree>
 
 - src/
-  - App.tsx (router setup)
-  - context/
-    - BookingContext.tsx (useReducer state machine)
+  - App.tsx (router + home programme grid)
+  - theme.ts (design tokens)
+  - lib/
+    - cinema.ts (the living cinema — simulated state + real event watchers)
+    - responsive.ts
   - pages/
-    - Home.tsx (now showing + coming soon)
-    - Film.tsx (detail, sessions, seat picker)
-    - Booking.tsx (order summary + payment)
-    - Confirmation.tsx (receipt, loyalty points earned)
-  - data/
-    - mock.ts (local mock data layer)
-- public/
+    - Seats.tsx (seat map + selection)
+    - Confirmation.tsx (booking confirmation)
+  - components/
+    - Chrome.tsx
+    - Poster.tsx
+    - Timeboard.tsx
+    - MissionControl.tsx
+    - CodeSeam.tsx
+- index.html
 - vercel.json
 - .env.example
 
 </FileTree>
 
-## Booking flow
+Routes: `/` (programme) → `/book/:sessionId` (seats) → `/done` (confirmation).
 
-The `BookingContext` state machine manages the full booking lifecycle:
+## How the event bridge is wired
+
+`src/lib/cinema.ts` runs a deterministic simulation (`LiveCinema`) that mutates session and order state over time. The watchers from `@theatrical/events` observe it exactly the way they would observe a real cinema platform API:
 
 ```
-idle → sessionSelected → seatsSelected → orderCreated → confirmed
-                                                      → cancelled
+LiveCinema state  ──poll──▶  BookingWatcher  ──diff──▶  booking.confirmed
+                             SessionWatcher  ──diff──▶  session.soldout
+                                                        │
+                                              typed event stream ──▶ UI
 ```
 
-Each state transition is typed — you can't confirm an order that hasn't had seats selected.
+The watchers are the published package, unmodified. The timeboard and mission-control surfaces subscribe to the stream — the interface listens to the pulse, not the photo.
 
 ## Customisation
 
 ### Theming
 
-Override cinema brand colors in `src/theme.ts`:
+The design tokens live in `src/theme.ts` — colours, type scale, and spacing for the whole app. Edit them directly; every component reads from the shared `T` object.
 
-```typescript
-export const theme = {
-  colors: {
-    accent: '#D4622B',      // burnt orange — replace with your brand color
-    background: '#F0EDE6',  // parchment
-    surface: '#F5F0E1',     // card backgrounds — cream
-  },
-  fonts: {
-    heading: '"Space Grotesk", system-ui, sans-serif',
-    body: '"Inter", system-ui, sans-serif',
-  },
-};
-```
+### Pointing at a real platform
 
-Pass `theme` to `TheatricalThemeProvider`:
-
-```tsx
-<TheatricalThemeProvider theme={theme}>
-  <App />
-</TheatricalThemeProvider>
-```
-
-### Adding loyalty sign-in
-
-The template ships with the loyalty UI components (`LoyaltyBadge`, `MemberCard`) but the auth flow is left as a connection point. To add loyalty sign-in:
-
-1. Add a `/login` route
-2. Call `client.loyalty.authenticate()` on form submit
-3. Store the returned session cookie
-4. Pass `loyaltyCookie` to `TheatricalClient.create()`
-
-### Mock data
-
-Edit `src/data/mock.ts` to add films, sessions, and site data for local development. The mock layer mirrors the real SDK response shape — all types are shared.
+To drive the same UI from a real cinema platform API, replace the `LiveCinema` simulation in `src/lib/cinema.ts` with `@theatrical/sdk` calls — the watchers accept any poll function that returns order and session snapshots.
 
 <Aside>
-Set `VITE_USE_MOCK=true` in `.env` to force mock mode even when an API key is configured. Useful for UI development and testing.
+The simulation is the point: it produces the state *transitions* (pending → confirmed, open → sold out) that let you watch the diff engine work without credentials or traffic.
 </Aside>
-
-## Environment variables
-
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `VITE_THEATRICAL_API_KEY` | Yes (live) | Vista operator API key |
-| `VITE_THEATRICAL_BASE_URL` | Yes (live) | Your Vista instance URL |
-| `VITE_USE_MOCK` | No | Force mock mode (`true`/`false`) |
-| `VITE_DEFAULT_SITE_ID` | No | Pre-select a cinema site on load |

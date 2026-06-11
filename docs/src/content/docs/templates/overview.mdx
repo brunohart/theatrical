@@ -1,33 +1,36 @@
 ---
 title: Templates Overview
-description: Production-ready starter applications for common cinema deployment patterns.
+description: Starter applications scaffolded by the Theatrical CLI.
 ---
 
-Theatrical templates are complete, deployable applications scaffolded from `theatrical init`. Each template demonstrates the full SDK and React component library in a real use case.
+Theatrical templates are complete applications scaffolded from `theatrical init`. Four templates are available:
 
 ## Available templates
 
-| Template | Description | Deploy |
-|----------|-------------|--------|
-| `react-ticketing` | Full-stack booking app — film discovery, seat selection, order confirmation | [Vercel](https://vercel.com) |
+| Template | Description |
+|----------|-------------|
+| `default` | Minimal TypeScript project with the SDK client wired up (mock mode when no API key is set) |
+| `fullstack` | Express API + the default scaffold — typed endpoints over the SDK |
+| `worker` | Background worker skeleton for event processing |
+| `react-ticketing` | Living cinema booking demo — real `@theatrical/events` watchers driving a React UI ([deploys to Vercel](https://vercel.com)) |
 
 ## Using a template
 
 ```bash
-# Interactive setup
-theatrical init
+# Default template
+npx @theatrical/cli init my-cinema-app
 
-# Non-interactive
-theatrical init my-cinema --template react-ticketing --api-key op_live_xxx
+# The full booking demo
+npx @theatrical/cli init my-cinema --template react-ticketing
 ```
 
 ## Template structure
 
-Each template ships with:
-- Complete source code and routing
-- Mock data layer for local development (no API key required to run locally)
+Every scaffold ships with:
+- Complete source code — runnable immediately, no API key required
 - Environment variable configuration (`.env.example`)
-- One-click deployment config (`vercel.json`)
-- Setup README with customization instructions
+- `.gitignore` and strict TypeScript config
+
+The `react-ticketing` template additionally includes SPA routing, a `vercel.json` deployment config, and a setup README.
 
 See [React Ticketing](/templates/react-ticketing/) for a detailed walkthrough.
