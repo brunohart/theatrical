@@ -33,8 +33,8 @@ Thumbs.db
 # npm lockfiles (this project uses pnpm)
 package-lock.json
 
-# Local build/dev scripts (not part of the published toolkit)
-scripts/
+# Local build/dev scripts at the repo root (not part of the published toolkit)
+/scripts/
 
 # Misc
 *.log
