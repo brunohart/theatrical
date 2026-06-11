@@ -1,7 +1,7 @@
 {
   "name": "@theatrical/cli",
   "version": "0.1.0",
-  "description": "Developer CLI for cinema platform APIs — scaffold, codegen, and inspect",
+  "description": "Developer CLI for cinema platform APIs \u2014 scaffold, codegen, and inspect",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -20,7 +20,9 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src/",
-    "clean": "rm -rf dist coverage"
+    "clean": "rm -rf dist coverage",
+    "sync-templates": "node scripts/sync-templates.mjs",
+    "prebuild": "npm run sync-templates"
   },
   "dependencies": {
     "@theatrical/sdk": "workspace:^",
