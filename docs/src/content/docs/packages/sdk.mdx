@@ -15,14 +15,14 @@ npm install @theatrical/sdk
 
 | Resource | Methods |
 |----------|---------|
-| `client.sessions` | `list`, `get`, `availability`, `listAll` |
-| `client.films` | `list`, `get`, `search`, `nowShowing`, `comingSoon` |
+| `client.sessions` | `list`, `listPaginated`, `listAll`, `get`, `availability` |
+| `client.films` | `nowShowing`, `comingSoon`, `get`, `getDetail`, `search`, `advancedSearch` |
 | `client.sites` | `list`, `get`, `nearby`, `screens` |
-| `client.orders` | `create`, `addTickets`, `addItems`, `applyLoyalty`, `confirm`, `cancel`, `history` |
-| `client.loyalty` | `authenticate`, `getMember`, `getPointsBalance`, `getHistory`, `redeemPoints` |
-| `client.subscriptions` | `listPlans`, `getMemberSubscription`, `getUsage`, `checkBenefitEligibility` |
-| `client.pricing` | `calculate`, `ticketTypes`, `applyCoupons` |
-| `client.foodAndBeverage` | `menu`, `itemDetail`, `addToOrder`, `combos` |
+| `client.orders` | `create`, `get`, `addTickets`, `addItems`, `applyLoyalty`, `confirm`, `cancel`, `refund`, `complete`, `history` |
+| `client.loyalty` | `authenticate`, `getMember`, `getPointsBalance`, `getHistory`, `listRedemptionOptions`, `redeemPoints` |
+| `client.subscriptions` | `listPlans`, `getMemberSubscription`, `getUsage`, `checkBenefitEligibility`, `suspend`, `cancel` |
+| `client.pricing` | `ticketTypes`, `calculate`, `applyCoupons` |
+| `client.fnb` | `menu`, `categories`, `itemDetail`, `combos`, `addToOrder` |
 
 ## Full API reference
 

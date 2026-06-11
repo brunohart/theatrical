@@ -44,9 +44,10 @@ export default function App() {
 import { SeatMap } from '@theatrical/react';
 
 <SeatMap
-  availability={sessionAvailability}
-  onSelectionChange={(seats) => setSelected(seats)}
-  maxSeats={4}
+  rows={rows}
+  selectedSeatIds={selectedSeatIds}
+  onSeatSelect={(seatId) => toggleSeat(seatId)}
+  maxSelectable={4}
 />
 ```
 
@@ -58,6 +59,6 @@ import { SessionPicker } from '@theatrical/react';
 <SessionPicker
   sessions={sessions}
   groupBy="time"
-  onSessionSelect={(session) => setSession(session)}
+  onSessionSelect={(sessionId) => setSessionId(sessionId)}
 />
 ```

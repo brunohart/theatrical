@@ -12,14 +12,13 @@ All errors thrown by Theatrical extend `TheatricalError`, which extends the nati
 ```
 TheatricalError
 ├── AuthenticationError    — 401 / invalid token
-├── AuthorizationError     — 403 / insufficient permissions
 ├── NotFoundError          — 404 / resource doesn't exist
+│   └── .resourceId        — the ID that failed to resolve
 ├── ValidationError        — 400 / request failed validation
-│   └── .fields            — array of { field, message }
+│   └── .fields            — { fieldName: message } map
 ├── RateLimitError         — 429 / request throttled
 │   └── .retryAfter        — seconds to wait before retrying
-├── ConflictError          — 409 / concurrent modification
-└── ServerError            — 5xx / Vista API error
+└── ServerError            — 5xx / upstream API error
 ```
 
 ## Catching specific errors
@@ -43,8 +42,8 @@ try {
     await new Promise(r => setTimeout(r, waitMs));
     // retry...
   } else if (err instanceof ValidationError) {
-    for (const field of err.fields) {
-      console.error(`${field.field}: ${field.message}`);
+    for (const [field, message] of Object.entries(err.fields)) {
+      console.error(`${field}: ${message}`);
     }
   } else {
     throw err; // re-throw unexpected errors
@@ -54,22 +53,16 @@ try {
 
 ## Automatic retry
 
-The SDK automatically retries `5xx` server errors and `429` rate limit responses using exponential backoff with jitter. Default config:
+The SDK automatically retries `5xx` server errors and `429` rate limit responses using exponential backoff with full jitter. The retry budget is configured on the client:
 
 ```typescript
 const client = TheatricalClient.create({
-  apiKey: process.env.THEATRICAL_API_KEY,
-  baseUrl: process.env.THEATRICAL_BASE_URL,
-  retry: {
-    maxRetries: 3,
-    baseDelayMs: 500,
-    maxDelayMs: 10_000,
-    jitter: true,
-  },
+  apiKey: process.env.THEATRICAL_API_KEY!,
+  maxRetries: 3, // default
 });
 ```
 
-Set `retry: false` to disable automatic retry entirely.
+Set `maxRetries: 0` to disable automatic retry entirely.
 
 <Aside>
 `429` responses that include a `Retry-After` header use the server-specified wait time rather than the computed backoff delay.

@@ -27,11 +27,15 @@ Options:
 
 ### `theatrical codegen`
 
-Generate TypeScript types and Zod schemas from a Vista OpenAPI spec.
+Generate TypeScript types and Zod schemas from an OpenAPI spec.
 
 ```bash
-theatrical codegen --spec ./vista-api.yaml --out ./src/types/generated
+theatrical codegen ./openapi.yaml --output ./src/types/generated --zod
 ```
+
+Options:
+- `--output <dir>` — output directory (default: `./src/generated`)
+- `--zod` — include Zod schemas alongside the types
 
 ### `theatrical inspect`
 
@@ -39,6 +43,6 @@ Explore live API responses with syntax highlighting and timing.
 
 ```bash
 theatrical inspect sessions list --site site-001 --date 2026-04-20
-theatrical inspect films search "Dune"
+theatrical inspect films search -q "Dune"
 theatrical inspect sites get site-001
 ```
