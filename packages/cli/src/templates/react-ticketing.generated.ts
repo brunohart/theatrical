@@ -15,6 +15,10 @@ export const REACT_TICKETING_FILES: readonly TemplateFile[] = [
     "content": "# Theatrical React Ticketing Template\n#\n# This demo runs entirely self-contained — a simulated living cinema\n# observed by the real @theatrical/events watchers. No API key, no\n# environment configuration required.\n#\n# When pointing the watchers at a real cinema platform API, configure\n# your client credentials here:\n# VITE_THEATRICAL_API_KEY=your_api_key_here\n"
   },
   {
+    "path": ".gitignore",
+    "content": "node_modules\ndist\n.env\n*.log\n.vercel\n"
+  },
+  {
     "path": "index.html",
     "content": "<!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>Theatrical — Cinema Ticketing</title>\n    <meta name=\"description\" content=\"Cinema ticketing powered by @theatrical/sdk\" />\n    <link rel=\"preconnect\" href=\"https://fonts.googleapis.com\" />\n    <link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin />\n    <link href=\"https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap\" rel=\"stylesheet\" />\n    <style>\n      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }\n      body { background: #F0EDE6; color: #1A1A1A; font-family: 'Inter', system-ui, -apple-system, sans-serif; -webkit-font-smoothing: antialiased; }\n    </style>\n  </head>\n  <body>\n    <div id=\"root\"></div>\n    <script type=\"module\" src=\"/src/main.tsx\"></script>\n  </body>\n</html>\n"
   },
