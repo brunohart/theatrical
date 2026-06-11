@@ -160,7 +160,7 @@ Every SDK provides the same capabilities: GAS authentication with token refresh,
 | [`@theatrical/react`](packages/react) | SeatMap, SessionPicker, OrderSummary, PaymentForm, Loyalty — ARIA accessible, dark-mode-first | 57 | BSL 1.1 |
 | [`@theatrical/events`](packages/events) | Real-time event bridge: poll → diff → emit → webhook (HMAC-SHA256 signed) | 71 | BSL 1.1 |
 | [`@theatrical/analytics`](packages/analytics) | Horizon client, fluent query builder, export to CSV/JSON/DataFrame/Chart.js | 72 | BSL 1.1 |
-| [Starter templates](packages/templates) | React ticketing starter — 4-page booking app, scaffolded via `npx @theatrical/cli init` | — | BSL 1.1 |
+| [Starter templates](packages/templates) | React ticketing starter — living booking demo on the event bridge, scaffolded via `npx @theatrical/cli init` | — | BSL 1.1 |
 
 <p align="center"><img src="docs/public/divider.svg" width="480" alt="" /></p>
 
@@ -198,7 +198,7 @@ npx @theatrical/cli init my-cinema-app --template react-ticketing
 npx @theatrical/cli inspect sessions list --site roxy-wellington
 
 # Generate types from an OpenAPI spec
-npx @theatrical/cli codegen --spec openapi.yaml --output src/types
+npx @theatrical/cli codegen openapi.yaml --output src/types
 ```
 
 ### Components that know cinema
