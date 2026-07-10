@@ -4,6 +4,34 @@ All notable changes to Theatrical are documented in this file. The format is
 based on [Keep a Changelog](https://keepachangelog.com/), and the project aims
 to follow [Semantic Versioning](https://semver.org/).
 
+## [0.1.2] — 2026-06-11
+
+Patch releases for two TypeScript packages. All other packages are unchanged.
+
+### Fixed
+- `@theatrical/react` 0.1.2 — theme overrides accept arbitrary brand values;
+  override widening and nested merge now covered by tests (62 tests, up from 57).
+- `@theatrical/events` 0.1.2 — `node:crypto` kept out of the browser entry so
+  bundlers no longer choke; webhook signing remains Node-only.
+
+## [0.1.1] — 2026-06-11
+
+Patch wave across the five TypeScript packages, rolled out 2–11 June. The C#
+(`Theatrical.Sdk`) and Python (`theatrical`) SDKs remain at 0.1.0 — no changes.
+
+### Added
+- `@theatrical/cli` 0.1.1 — `react-ticketing` embedded as a first-class `init`
+  template, so scaffolding works standalone without a registry fetch.
+
+### Fixed
+- `@theatrical/sdk` 0.1.1 — mock-mode order creation returns a well-formed order.
+- `@theatrical/react` 0.1.1 — visually distinct seat-state colors in SeatMap.
+- `@theatrical/events` 0.1.1 — watchers compile clean, are browser-safe, and are
+  exported from the package root.
+- `@theatrical/analytics` 0.1.1 — restored the intended public API surface.
+- CLI scaffolds reference `npx @theatrical/cli` (not the bare bin name), include
+  `@theatrical/cli` as a devDependency, and ship a `.gitignore`.
+
 ## [0.1.0] — 2026-06-01
 
 Initial public release — the polyglot developer toolkit for cinema platform APIs.
@@ -37,4 +65,6 @@ Initial public release — the polyglot developer toolkit for cinema platform AP
 - 1,000+ tests across the three languages; mock data uses real NZ cinema
   fixtures.
 
+[0.1.2]: https://github.com/brunohart/theatrical/releases/tag/v0.1.2
+[0.1.1]: https://github.com/brunohart/theatrical/releases/tag/v0.1.1
 [0.1.0]: https://github.com/brunohart/theatrical/releases/tag/v0.1.0
