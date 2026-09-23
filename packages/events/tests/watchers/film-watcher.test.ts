@@ -57,6 +57,68 @@ describe('FilmWatcher', () => {
     expect(onRemoved.mock.calls[0][0].film.id).toBe('film-001');
   });
 
+  it('emits film.removed once, not again on every poll after', async () => {
+    const filmA = createFilm({ id: 'film-A' });
+    const filmB = createFilm({ id: 'film-B' });
+    const fetchFn = vi.fn()
+      .mockResolvedValueOnce([filmA, filmB])
+      .mockResolvedValue([filmA]);
+    const watcher = new FilmWatcher({ fetch: fetchFn, intervalMs: 1000 });
+    const onRemoved = vi.fn();
+    watcher.on('film.removed', onRemoved);
+
+    watcher.start();
+    await vi.advanceTimersByTimeAsync(0);
+    await vi.advanceTimersByTimeAsync(3000);
+    watcher.stop();
+
+    expect(fetchFn).toHaveBeenCalledTimes(4);
+    expect(onRemoved).toHaveBeenCalledOnce();
+    expect(onRemoved.mock.calls[0][0].film.id).toBe('film-B');
+  });
+
+  it('does not announce a film as new when it returns after a short absence', async () => {
+    const film = createFilm();
+    const fetchFn = vi.fn()
+      .mockResolvedValueOnce([film])
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([film]);
+    const watcher = new FilmWatcher({ fetch: fetchFn, intervalMs: 1000 });
+    const onAdded = vi.fn();
+    const onRemoved = vi.fn();
+    watcher.on('film.added', onAdded);
+    watcher.on('film.removed', onRemoved);
+
+    watcher.start();
+    await vi.advanceTimersByTimeAsync(0);
+    await vi.advanceTimersByTimeAsync(2000);
+    watcher.stop();
+
+    expect(fetchFn).toHaveBeenCalledTimes(3);
+    expect(onRemoved).toHaveBeenCalledOnce();
+    expect(onAdded).toHaveBeenCalledOnce();
+  });
+
+  it('forgets a film missing for longer than rememberPolls, and announces its return', async () => {
+    const film = createFilm();
+    const fetchFn = vi.fn()
+      .mockResolvedValueOnce([film])
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([film]);
+    const watcher = new FilmWatcher({ fetch: fetchFn, intervalMs: 1000, rememberPolls: 1 });
+    const onAdded = vi.fn();
+    watcher.on('film.added', onAdded);
+
+    watcher.start();
+    await vi.advanceTimersByTimeAsync(0);
+    await vi.advanceTimersByTimeAsync(3000);
+    watcher.stop();
+
+    expect(fetchFn).toHaveBeenCalledTimes(4);
+    expect(onAdded).toHaveBeenCalledTimes(2);
+  });
+
   it('emits film.updated when film metadata changes', async () => {
     const original = createFilm({ title: 'The Last Projection' });
     const updated = createFilm({ title: 'The Last Projection: Director\'s Cut' });

@@ -1,6 +1,7 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 import type { Order } from '@theatrical/sdk';
 import { BookingWatcher } from '../../src/watchers/booking-watcher';
+import { StateStore } from '../../src/state-store';
 
 function createOrder(overrides: Partial<Order> = {}): Order {
   return {
@@ -114,6 +115,52 @@ describe('BookingWatcher', () => {
 
     expect(onConfirmed).toHaveBeenCalledOnce();
     expect(onConfirmed.mock.calls[0][0].order.id).toBe('ord-A');
+  });
+
+  it('confirms an order that was missing from one poll, and does not create it twice', async () => {
+    const pending = createOrder({ status: 'pending' });
+    const confirmed = createOrder({ status: 'confirmed' });
+    const fetchFn = vi.fn()
+      .mockResolvedValueOnce([pending])
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([confirmed]);
+    const watcher = new BookingWatcher({ fetch: fetchFn, intervalMs: 1000 });
+    const onCreated = vi.fn();
+    const onConfirmed = vi.fn();
+    watcher.on('booking.created', onCreated);
+    watcher.on('booking.confirmed', onConfirmed);
+
+    watcher.start();
+    await vi.advanceTimersByTimeAsync(0);
+    await vi.advanceTimersByTimeAsync(2000);
+    watcher.stop();
+
+    expect(fetchFn).toHaveBeenCalledTimes(3);
+    expect(onCreated).toHaveBeenCalledOnce();
+    expect(onConfirmed).toHaveBeenCalledOnce();
+    expect(onConfirmed.mock.calls[0][0].previousStatus).toBe('pending');
+  });
+
+  it('holds only the last poll: a rolling window of orders does not grow the store', async () => {
+    const store = new StateStore<Order>();
+    let poll = 0;
+    // The newest three orders each poll, one new order per poll, the oldest falling out of the window.
+    const fetchFn = vi.fn(async () => {
+      poll += 1;
+      return [0, 1, 2].map((i) => createOrder({ id: `ord-${poll + i}` }));
+    });
+    const watcher = new BookingWatcher({ fetch: fetchFn, intervalMs: 1000, store });
+    const onCreated = vi.fn();
+    watcher.on('booking.created', onCreated);
+
+    watcher.start();
+    await vi.advanceTimersByTimeAsync(0);
+    await vi.advanceTimersByTimeAsync(9000);
+    watcher.stop();
+
+    expect(fetchFn).toHaveBeenCalledTimes(10);
+    expect(store.size).toBe(3);
+    expect(onCreated).toHaveBeenCalledTimes(3 + 9);
   });
 
   it('start() and stop() control the polling lifecycle', async () => {

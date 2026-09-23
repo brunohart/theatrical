@@ -4,6 +4,20 @@ All notable changes to Theatrical are documented in this file. The format is
 based on [Keep a Changelog](https://keepachangelog.com/), and the project aims
 to follow [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+- `@theatrical/events` — a watcher's state store holds the last poll, not every
+  item it has ever seen, so a long-running watcher's memory and per-poll cost no
+  longer grow with every order that passes through a rolling window. A film that
+  leaves the catalogue fires `film.removed` once, not on every poll after.
+
+### Added
+- `@theatrical/events` — `rememberPolls` on every watcher (default 10): how many
+  polls in a row an item may be missing and still be recognised when it returns.
+  An order missing from one truncated response is not created twice, and a status
+  change made while it was missing still fires `booking.confirmed`.
+
 ## [0.1.2] — 2026-06-11
 
 Patch releases for two TypeScript packages. All other packages are unchanged.
