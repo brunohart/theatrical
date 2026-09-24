@@ -6,6 +6,22 @@ to follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Security
+- `@theatrical/sdk` — every ID interpolated into a request path is encoded as
+  exactly one segment (`apiPath`), and `''`, `.` and `..` are refused. An ID
+  such as `abc/refund#` could turn `orders.confirm()` into a refund, and
+  `mem_a/../mem_b` could read another member's record, with the operator token.
+- `@theatrical/cli` — the template sync skips every `.env*` file but
+  `.env.example`; a key in `.env.local` or `.env.production` would have been
+  embedded in the generated template, the npm tarball and every scaffold.
+- `@theatrical/events` — `verifySignature` accepts only a 64-hex-digit
+  signature (it accepted a valid digest followed by garbage), returns `false`
+  for a missing header instead of throwing, and takes an opt-in
+  `toleranceSeconds` replay window over the signed `timestamp`.
+- Workflows run with `contents: read`, keep no credential after checkout, and
+  pin every action to a commit (the PyPI publisher was on the moving
+  `release/v1` branch in the job that mints the publishing token).
+
 ### Fixed
 - `@theatrical/events` — a watcher's state store holds the last poll, not every
   item it has ever seen, so a long-running watcher's memory and per-poll cost no
