@@ -1,3 +1,4 @@
+import { apiPath } from '../http/path';
 import type { TheatricalHTTPClient } from '../http/client';
 import type {
   MemberSubscription,
@@ -41,7 +42,7 @@ export class SubscriptionsResource {
    * @param memberId - Vista loyalty member identifier
    */
   async getMemberSubscription(memberId: string): Promise<MemberSubscription> {
-    return this.http.get<MemberSubscription>(`/ocapi/v1/subscriptions/members/${memberId}`);
+    return this.http.get<MemberSubscription>(apiPath`/ocapi/v1/subscriptions/members/${memberId}`);
   }
 
   /**
@@ -55,7 +56,7 @@ export class SubscriptionsResource {
    */
   async getUsage(memberId: string): Promise<SubscriptionUsage> {
     return this.http.get<SubscriptionUsage>(
-      `/ocapi/v1/subscriptions/members/${memberId}/usage`,
+      apiPath`/ocapi/v1/subscriptions/members/${memberId}/usage`,
     );
   }
 
@@ -73,7 +74,7 @@ export class SubscriptionsResource {
     benefitId: string,
   ): Promise<{ eligible: boolean; usesRemaining: number | null; reason?: string }> {
     return this.http.get<{ eligible: boolean; usesRemaining: number | null; reason?: string }>(
-      `/ocapi/v1/subscriptions/members/${memberId}/benefits/${benefitId}/eligibility`,
+      apiPath`/ocapi/v1/subscriptions/members/${memberId}/benefits/${benefitId}/eligibility`,
     );
   }
 
@@ -93,7 +94,7 @@ export class SubscriptionsResource {
     input?: SuspendSubscriptionInput,
   ): Promise<MemberSubscription> {
     return this.http.post<MemberSubscription>(
-      `/ocapi/v1/subscriptions/members/${memberId}/suspend`,
+      apiPath`/ocapi/v1/subscriptions/members/${memberId}/suspend`,
       { body: input ?? {} },
     );
   }
@@ -113,7 +114,7 @@ export class SubscriptionsResource {
     input?: CancelSubscriptionInput,
   ): Promise<MemberSubscription> {
     return this.http.post<MemberSubscription>(
-      `/ocapi/v1/subscriptions/members/${memberId}/cancel`,
+      apiPath`/ocapi/v1/subscriptions/members/${memberId}/cancel`,
       { body: input ?? {} },
     );
   }

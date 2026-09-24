@@ -1,3 +1,4 @@
+import { apiPath } from '../http/path';
 import type { TheatricalHTTPClient } from '../http/client';
 import { siteSchema, siteListResponseSchema, screenSchema } from '../types/site';
 import type { Site, Screen } from '../types/site';
@@ -63,7 +64,7 @@ export class SitesResource {
    * ```
    */
   async get(siteId: string): Promise<Site> {
-    const raw = await this.http.get<unknown>(`/ocapi/v1/sites/${siteId}`);
+    const raw = await this.http.get<unknown>(apiPath`/ocapi/v1/sites/${siteId}`);
     return siteSchema.parse(raw);
   }
 
@@ -82,7 +83,7 @@ export class SitesResource {
    * ```
    */
   async screens(siteId: string): Promise<Screen[]> {
-    const raw = await this.http.get<unknown>(`/ocapi/v1/sites/${siteId}/screens`);
+    const raw = await this.http.get<unknown>(apiPath`/ocapi/v1/sites/${siteId}/screens`);
     return screenSchema.array().parse(raw);
   }
 

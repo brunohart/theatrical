@@ -1,3 +1,4 @@
+import { apiPath } from '../http/path';
 import type { TheatricalHTTPClient } from '../http/client';
 import type { Session, SessionFilter, SessionListResponse, SeatAvailability } from '../types/session';
 import { sessionSchema, sessionListResponseSchema, seatAvailabilitySchema } from '../types/session';
@@ -143,7 +144,7 @@ export class SessionsResource {
    * Response is validated at runtime using Zod.
    */
   async get(sessionId: string): Promise<Session> {
-    const raw = await this.http.get<unknown>(`/ocapi/v1/sessions/${sessionId}`);
+    const raw = await this.http.get<unknown>(apiPath`/ocapi/v1/sessions/${sessionId}`);
     return sessionSchema.parse(raw);
   }
 
@@ -153,7 +154,7 @@ export class SessionsResource {
    * Response is validated at runtime using Zod.
    */
   async availability(sessionId: string): Promise<SeatAvailability> {
-    const raw = await this.http.get<unknown>(`/ocapi/v1/sessions/${sessionId}/seat-plan`);
+    const raw = await this.http.get<unknown>(apiPath`/ocapi/v1/sessions/${sessionId}/seat-plan`);
     return seatAvailabilitySchema.parse(raw);
   }
 }

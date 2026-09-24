@@ -1,3 +1,4 @@
+import { apiPath } from '../http/path';
 import type { TheatricalHTTPClient } from '../http/client';
 import type { Order, AddTicketsInput, AddItemsInput, ApplyLoyaltyInput, OrderHistoryFilter } from '../types/order';
 import { orderSchema } from '../types/order';
@@ -91,7 +92,7 @@ export class OrdersResource {
    * @param orderId - The UUID of the order to retrieve
    */
   async get(orderId: string): Promise<Order> {
-    const data = await this.http.get<unknown>(`/ocapi/v1/orders/${orderId}`);
+    const data = await this.http.get<unknown>(apiPath`/ocapi/v1/orders/${orderId}`);
     return this.parseOrder(data);
   }
 
@@ -104,7 +105,7 @@ export class OrdersResource {
    * @returns The updated order with the new ticket set
    */
   async addTickets(orderId: string, input: AddTicketsInput): Promise<Order> {
-    const data = await this.http.post<unknown>(`/ocapi/v1/orders/${orderId}/tickets`, { body: input });
+    const data = await this.http.post<unknown>(apiPath`/ocapi/v1/orders/${orderId}/tickets`, { body: input });
     return this.parseOrder(data);
   }
 
@@ -117,7 +118,7 @@ export class OrdersResource {
    * @returns The updated order with new items included
    */
   async addItems(orderId: string, input: AddItemsInput): Promise<Order> {
-    const data = await this.http.post<unknown>(`/ocapi/v1/orders/${orderId}/items`, { body: input });
+    const data = await this.http.post<unknown>(apiPath`/ocapi/v1/orders/${orderId}/items`, { body: input });
     return this.parseOrder(data);
   }
 
@@ -128,7 +129,7 @@ export class OrdersResource {
    * @param orderId - The UUID of the order to confirm
    */
   async confirm(orderId: string): Promise<Order> {
-    const data = await this.http.post<unknown>(`/ocapi/v1/orders/${orderId}/confirm`);
+    const data = await this.http.post<unknown>(apiPath`/ocapi/v1/orders/${orderId}/confirm`);
     return this.parseOrder(data);
   }
 
@@ -139,7 +140,7 @@ export class OrdersResource {
    * @param orderId - The UUID of the order to cancel
    */
   async cancel(orderId: string): Promise<Order> {
-    const data = await this.http.post<unknown>(`/ocapi/v1/orders/${orderId}/cancel`);
+    const data = await this.http.post<unknown>(apiPath`/ocapi/v1/orders/${orderId}/cancel`);
     return this.parseOrder(data);
   }
 
@@ -153,7 +154,7 @@ export class OrdersResource {
    * @returns The updated order with loyalty discount applied
    */
   async applyLoyalty(orderId: string, input: ApplyLoyaltyInput): Promise<Order> {
-    const data = await this.http.post<unknown>(`/ocapi/v1/orders/${orderId}/loyalty`, { body: input });
+    const data = await this.http.post<unknown>(apiPath`/ocapi/v1/orders/${orderId}/loyalty`, { body: input });
     return this.parseOrder(data);
   }
 
@@ -164,7 +165,7 @@ export class OrdersResource {
    * @param orderId - The UUID of the order to refund
    */
   async refund(orderId: string): Promise<Order> {
-    const data = await this.http.post<unknown>(`/ocapi/v1/orders/${orderId}/refund`);
+    const data = await this.http.post<unknown>(apiPath`/ocapi/v1/orders/${orderId}/refund`);
     return this.parseOrder(data);
   }
 
@@ -174,7 +175,7 @@ export class OrdersResource {
    * @param orderId - The UUID of the confirmed order
    */
   async complete(orderId: string): Promise<Order> {
-    const data = await this.http.post<unknown>(`/ocapi/v1/orders/${orderId}/complete`);
+    const data = await this.http.post<unknown>(apiPath`/ocapi/v1/orders/${orderId}/complete`);
     return this.parseOrder(data);
   }
 
@@ -193,7 +194,7 @@ export class OrdersResource {
     if (filter?.limit) params.limit = String(filter.limit);
     if (filter?.cursor) params.cursor = filter.cursor;
 
-    const data = await this.http.get<unknown>(`/ocapi/v1/members/${memberId}/orders`, { params });
+    const data = await this.http.get<unknown>(apiPath`/ocapi/v1/members/${memberId}/orders`, { params });
     return this.parsePaginatedOrders(data);
   }
 }

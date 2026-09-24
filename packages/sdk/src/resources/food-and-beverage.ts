@@ -1,3 +1,4 @@
+import { apiPath } from '../http/path';
 import type { TheatricalHTTPClient } from '../http/client';
 import type {
   MenuItem,
@@ -28,7 +29,7 @@ export class FoodAndBeverageResource {
    * @param filter - Optional filter (dietary, category, availability).
    */
   async menu(siteId: string, filter?: Omit<MenuFilter, 'siteId'>): Promise<MenuItem[]> {
-    return this.http.get<MenuItem[]>(`/ocapi/v1/sites/${siteId}/menu`, {
+    return this.http.get<MenuItem[]>(apiPath`/ocapi/v1/sites/${siteId}/menu`, {
       params: { ...filter, dietary: filter?.dietary?.join(',') },
     });
   }
@@ -42,7 +43,7 @@ export class FoodAndBeverageResource {
    * @param siteId - The Vista site ID.
    */
   async categories(siteId: string): Promise<MenuCategory[]> {
-    return this.http.get<MenuCategory[]>(`/ocapi/v1/sites/${siteId}/menu/categories`);
+    return this.http.get<MenuCategory[]>(apiPath`/ocapi/v1/sites/${siteId}/menu/categories`);
   }
 
   /**
@@ -55,7 +56,7 @@ export class FoodAndBeverageResource {
    * @param itemId - The menu item ID.
    */
   async itemDetail(siteId: string, itemId: string): Promise<MenuItem> {
-    return this.http.get<MenuItem>(`/ocapi/v1/sites/${siteId}/menu/items/${itemId}`);
+    return this.http.get<MenuItem>(apiPath`/ocapi/v1/sites/${siteId}/menu/items/${itemId}`);
   }
 
   /**
@@ -68,7 +69,7 @@ export class FoodAndBeverageResource {
    * @param siteId - The Vista site ID.
    */
   async combos(siteId: string): Promise<ComboOffer[]> {
-    return this.http.get<ComboOffer[]>(`/ocapi/v1/sites/${siteId}/menu/combos`);
+    return this.http.get<ComboOffer[]>(apiPath`/ocapi/v1/sites/${siteId}/menu/combos`);
   }
 
   /**
@@ -84,7 +85,7 @@ export class FoodAndBeverageResource {
    */
   async addToOrder(input: AddToOrderInput): Promise<FnbOrderConfirmation> {
     return this.http.post<FnbOrderConfirmation>(
-      `/ocapi/v1/orders/${input.orderId}/fnb`,
+      apiPath`/ocapi/v1/orders/${input.orderId}/fnb`,
       { body: input },
     );
   }
