@@ -53,3 +53,52 @@ describe('verifySignature', () => {
     expect(verifySignature(payload, secret, sig.slice(0, 32))).toBe(false);
   });
 });
+
+describe('verifySignature — header hardening', () => {
+  const payload = '{"event":"session.soldout","sessionId":"ses-42"}';
+  const secret = 'whsec_embassy_wellington';
+  const sig = computeSignature(payload, secret);
+
+  it('rejects a valid digest followed by trailing garbage', () => {
+    // Buffer.from(hex) stops at the first non-hex character, so this used to pass.
+    expect(verifySignature(payload, secret, `sha256=${sig}ZZZZ`)).toBe(false);
+  });
+
+  it('returns false (does not throw) when the header is missing', () => {
+    expect(verifySignature(payload, secret, undefined)).toBe(false);
+    expect(verifySignature(payload, secret, null)).toBe(false);
+  });
+
+  it('accepts uppercase hex in the sha256= form', () => {
+    expect(verifySignature(payload, secret, `sha256=${sig.toUpperCase()}`)).toBe(true);
+  });
+});
+
+describe('verifySignature — toleranceSeconds (replay window)', () => {
+  const secret = 'whsec_embassy_wellington';
+  const now = Date.parse('2026-04-12T19:00:00Z');
+  const body = (timestamp: string) =>
+    JSON.stringify({ id: 'dlv_1', event: 'booking.confirmed', timestamp, data: {} });
+  const header = (b: string) => `sha256=${computeSignature(b, secret)}`;
+
+  it('accepts a delivery signed inside the window', () => {
+    const b = body('2026-04-12T18:58:00Z');
+    expect(verifySignature(b, secret, header(b), { toleranceSeconds: 300, now })).toBe(true);
+  });
+
+  it('rejects a correctly signed but stale (replayed) delivery', () => {
+    const b = body('2026-04-12T18:00:00Z');
+    expect(verifySignature(b, secret, header(b), { toleranceSeconds: 300, now })).toBe(false);
+  });
+
+  it('rejects a signed body with no parseable timestamp when a window is set', () => {
+    const b = JSON.stringify({ id: 'dlv_1', event: 'booking.confirmed', data: {} });
+    expect(verifySignature(b, secret, header(b), { toleranceSeconds: 300, now })).toBe(false);
+    expect(verifySignature('not json', secret, header('not json'), { toleranceSeconds: 300, now })).toBe(false);
+  });
+
+  it('keeps the signature-only behaviour when no window is given', () => {
+    const b = body('2020-01-01T00:00:00Z');
+    expect(verifySignature(b, secret, header(b))).toBe(true);
+  });
+});
