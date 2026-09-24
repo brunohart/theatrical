@@ -166,6 +166,11 @@ describe('templates module', () => {
       expect(cinema!.content).toContain('BookingWatcher');
       expect(cinema!.content).toContain('SessionWatcher');
     });
+
+    it('should embed no local env files — only .env.example ships', () => {
+      const envFiles = template.files.map((f) => f.path).filter((p) => /(^|\/)\.env/.test(p));
+      expect(envFiles).toEqual(['.env.example']);
+    });
   });
 
   describe('getTemplate — fullstack', () => {

@@ -27,12 +27,15 @@ const REGISTRY_VERSIONS = {
   '@theatrical/cli': '^0.1.0',
 };
 
-const SKIP = new Set(['node_modules', 'dist', '.env', '.turbo']);
+const SKIP = new Set(['node_modules', 'dist', '.turbo', '.vercel', '.DS_Store']);
+
+/** Local env files (.env, .env.local, .env.production, …) may hold real keys; only the example ships. */
+const isSecretEnvFile = (name) => /^\.env(\..+)?$/.test(name) && name !== '.env.example';
 
 function collect(dir, prefix = '') {
   const files = [];
   for (const entry of fs.readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
-    if (SKIP.has(entry.name)) continue;
+    if (SKIP.has(entry.name) || isSecretEnvFile(entry.name)) continue;
     const rel = prefix ? `${prefix}/${entry.name}` : entry.name;
     const abs = path.join(dir, entry.name);
     if (entry.isDirectory()) {
