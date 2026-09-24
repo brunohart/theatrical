@@ -1,3 +1,4 @@
+import { apiPath } from '../http/path';
 import type { TheatricalHTTPClient } from '../http/client';
 import type {
   PriceCalculation,
@@ -23,7 +24,7 @@ export class PricingResource {
    * @param filter - Optional filter params (category, availableOnly).
    */
   async ticketTypes(sessionId: string, filter?: Omit<TicketTypeFilter, 'sessionId'>): Promise<TicketType[]> {
-    return this.http.get<TicketType[]>(`/ocapi/v1/sessions/${sessionId}/ticket-types`, {
+    return this.http.get<TicketType[]>(apiPath`/ocapi/v1/sessions/${sessionId}/ticket-types`, {
       params: { ...filter },
     });
   }

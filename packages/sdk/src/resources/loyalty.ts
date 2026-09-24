@@ -1,3 +1,4 @@
+import { apiPath } from '../http/path';
 import type { TheatricalHTTPClient } from '../http/client';
 import type {
   LoyaltyMember,
@@ -24,7 +25,7 @@ export class LoyaltyResource {
    * @throws {TheatricalError} When the API returns an error response
    */
   async getMember(memberId: string): Promise<LoyaltyMember> {
-    return this.http.get<LoyaltyMember>(`/ocapi/v1/loyalty/members/${memberId}`);
+    return this.http.get<LoyaltyMember>(apiPath`/ocapi/v1/loyalty/members/${memberId}`);
   }
 
   /**
@@ -47,7 +48,7 @@ export class LoyaltyResource {
    */
   async getPointsBalance(memberId: string): Promise<{ points: number; lifetimePoints: number }> {
     return this.http.get<{ points: number; lifetimePoints: number }>(
-      `/ocapi/v1/loyalty/members/${memberId}/points`,
+      apiPath`/ocapi/v1/loyalty/members/${memberId}/points`,
     );
   }
 
@@ -62,7 +63,7 @@ export class LoyaltyResource {
     filter?: PointsHistoryFilter,
   ): Promise<PaginatedResponse<PointsTransaction>> {
     return this.http.get<PaginatedResponse<PointsTransaction>>(
-      `/ocapi/v1/loyalty/members/${memberId}/history`,
+      apiPath`/ocapi/v1/loyalty/members/${memberId}/history`,
       { params: filter as Record<string, string | number | boolean | undefined> | undefined },
     );
   }
@@ -76,7 +77,7 @@ export class LoyaltyResource {
    */
   async listRedemptionOptions(memberId: string): Promise<RedemptionOption[]> {
     return this.http.get<RedemptionOption[]>(
-      `/ocapi/v1/loyalty/members/${memberId}/redemptions`,
+      apiPath`/ocapi/v1/loyalty/members/${memberId}/redemptions`,
     );
   }
 
@@ -89,7 +90,7 @@ export class LoyaltyResource {
    */
   async redeemPoints(memberId: string, input: RedeemPointsInput): Promise<PointsTransaction> {
     return this.http.post<PointsTransaction>(
-      `/ocapi/v1/loyalty/members/${memberId}/redeem`,
+      apiPath`/ocapi/v1/loyalty/members/${memberId}/redeem`,
       { body: input },
     );
   }

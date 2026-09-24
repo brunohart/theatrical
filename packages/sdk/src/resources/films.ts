@@ -1,3 +1,4 @@
+import { apiPath } from '../http/path';
 import type { TheatricalHTTPClient } from '../http/client';
 import type { Film, FilmDetail, FilmFilter, FilmSearchFilter } from '../types/film';
 import { filmSchema, filmDetailSchema } from '../types/film';
@@ -67,7 +68,7 @@ export class FilmsResource {
    * @returns The base film record
    */
   async get(filmId: string): Promise<Film> {
-    const data = await this.http.get<unknown>(`/ocapi/v1/films/${filmId}`);
+    const data = await this.http.get<unknown>(apiPath`/ocapi/v1/films/${filmId}`);
     return this.parseFilm(data);
   }
 
@@ -82,7 +83,7 @@ export class FilmsResource {
    * @returns Full film detail with cast, crew, and ratings
    */
   async getDetail(filmId: string): Promise<FilmDetail> {
-    const data = await this.http.get<unknown>(`/ocapi/v1/films/${filmId}/detail`);
+    const data = await this.http.get<unknown>(apiPath`/ocapi/v1/films/${filmId}/detail`);
     return this.parseFilmDetail(data);
   }
 
